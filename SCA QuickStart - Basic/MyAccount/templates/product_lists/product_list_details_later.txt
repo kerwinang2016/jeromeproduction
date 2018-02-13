@@ -6,8 +6,6 @@
 	,	items_length = items.length
 	,	items_length_message = '';
 
-	console.log('view.model',view.model);
-	console.log('view.model.get("items")',view.model.get('items'));
 
 	if (items_length === 0)
 	{
@@ -22,8 +20,6 @@
 		items_length_message = _('($(0) Items)').translate(items_length);
 	}
 
-	console.log('product_list_details_later.txt',view);
-
 	var arrObjFilteredItems = [];
 	var arrObjFilteredItemsTotal = 0;
 	var hasArrObjFilteredItems = false;
@@ -31,7 +27,7 @@
 	var hasStFilterSaveForLaterRef = (!_.isNullOrEmpty(stFilterSaveForLaterRef)) ? true : false;
 
 	var collpaseClass = "collapse";
-	
+
 
 	if (hasStFilterSaveForLaterRef)
 	{
@@ -42,7 +38,7 @@
 		hasArrObjFilteredItems = (arrObjFilteredItemsTotal != 0) ? true : false;
 		//collpaseClass = "in collapse";
 	}
-	
+
 
 %>
 
@@ -67,15 +63,15 @@
 			/* Font awesome chevron down*/
 		}
 	</style>
-	<% if(view.model) { 
+	<% if(view.model) {
 
 	var items = view.model.get('items');
-	if(items_length > 0){				
+	if(items_length > 0){
 		var productListDisplay = null;
 		productListDisplay = function (row)
 			{
 				return SC.macros['productListDisplayLater'](row, view, null, arrObjFilteredItems, 'T');
-			}	
+			}
 	%>
 	<header>
 
@@ -92,7 +88,7 @@
 
 		<div data-confirm-message class="confirm-message"></div>
 
-	
+
 	</header>
 
 	<div id="saveForLaterItemsCart"  class="<%=collpaseClass%>" >
@@ -108,14 +104,14 @@
 				Created Date
 			</div>
 			<div class="span4" style="text-align:center;">
-				
+
 			</div>
 		</div>
 		<div class="product-list-items" data-type="product-list-items">
-			<% console.log(items.models);%>
+
 			<%= displayInRows(items.models, productListDisplay, 1) %>
 		</div>
 
-	<% }%> 
+	<% }%>
 	<% } %>
 	</div>

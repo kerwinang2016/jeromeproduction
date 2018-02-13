@@ -10,7 +10,8 @@ var container = nlapiGetWebContainer()
 //,	settings = session.getSiteSettings()
 ,	customer = session.getCustomer()
 ,	context = nlapiGetContext()
-,	order = session.getOrder();
+,	order = session.getOrder()
+, myaccountsuiteleturl = nlapiResolveURL('SUITELET','customscript_myaccountsuitelet',1,true);
 
 //Model.js
 // SiteSettings.js
@@ -495,6 +496,12 @@ Application.defineModel('Profile', {
 			profile.LogoUrl = _.find(customerFieldValues, function(field){
 				return field.name === 'custentity_avt_tailor_logo_url';
 			}).value || '/c.3857857/assets/images/avt/default-logo.jpg';
+			var url = myaccountsuiteleturl;
+					var response = {};
+					var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+					var body = JSON.parse(res.getBody());
+					profile.parent = body[0];
+					profile.parentname = body[1];
 
 		}
 

@@ -4,11 +4,11 @@
 define('OrderHistory', ['OrderHistory.Views','OrderHistory.Router'], function (Views,  Router)
 {
 	'use strict';
-	
+
 	return	{
 		Views: Views
 	,	Router: Router
-	
+
 	,	MenuItems: {
 			id: 'orders'
 		,	name: _('Orders').translate()
@@ -27,7 +27,7 @@ define('OrderHistory', ['OrderHistory.Views','OrderHistory.Router'], function (V
 			,	index: 1
 			}]
 		}
-	
+
 	,	mountToApp: function (application)
 		{
 			return new Router(application);

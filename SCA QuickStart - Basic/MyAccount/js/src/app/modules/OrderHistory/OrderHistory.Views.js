@@ -47,7 +47,6 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 		, showContent: function () {
 			var self = this;
 			self.shipgroups = {};
-			console.log('orderFitProfiles', this.orderFitProfiles);
 
 			self.model.get('lines').filter(function (line) {
 				// Test issue #102
@@ -205,7 +204,6 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 			var self = this;
 
 			//var fitProfile = JSON.parse(this.$(e.target).data('data-item-options'));
-			console.log('fitProfile', this.$(e.target).data('data-item-options'));
 			var application = this.options.application
 				, $link = this.$(e.target)
 				, selected_line_id = this.$(e.target).data('re-order-item-link')
@@ -216,18 +214,11 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 			var detailsLineId = temp[0] + '_' + (parseInt(temp[1]) + 1);
 			var detailsLine = this.model.get('lines').get(detailsLineId)
 
-			//console.log('window.currentFitProfile.profile_collection>',window.currentFitProfile);
 			//var orderOptions = _.union(detailsLine.get('options'), selected_line.get('options'));
-			console.log('reorderItem>this.model', this.model);
-			console.log('reorderItem>detailsLineId', detailsLineId);
-			console.log('reorderItem>detailsLine', detailsLine.get('options'));
-			console.log('reorderItem>selected_line', selected_line.get('options'));
 
 
 			var clientId = _.findWhere(selected_line.get('options'), { id: 'custcol_tailor_client' }).value;
-			console.log('reorderItem>clientId', clientId);
 			var fitProfiles = JSON.parse(_.findWhere(selected_line.get('options'), { id: 'custcol_fitprofile_summary' }).value);
-			console.log('reorderItem>fitProfiles', fitProfiles);
 
 			var fitProfileCollection = [];
 			var param = new Object();
@@ -235,11 +226,9 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 			param.data = JSON.stringify({ filters: ["custrecord_fp_client||anyof|list|" + clientId], columns: ["internalid", "name", "created", "lastmodified", "custrecord_fp_product_type", "custrecord_fp_measure_type", "custrecord_fp_measure_value"] });
 			_.requestUrl("customscript_ps_sl_set_scafieldset", "customdeploy_ps_sl_set_scafieldset", "GET", param).always(function (data) {
 				if (data) {
-					console.log('fitProfileCollection', JSON.parse(data));
 
 					_.each(fitProfiles, function (el) {
 						var selectedFitProfile = _.findWhere(JSON.parse(data), { name: el.value });
-						console.log('selectedFitProfile', selectedFitProfile);
 						fitProfileCollection.push(selectedFitProfile);
 					});
 
@@ -260,9 +249,6 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 					item_to_cart.setOption('custcol_avt_hold_production', 'F');
 					item_to_cart.setOption('custcol_avt_wbs_copy_key', item_to_cart.get('internalid').toString() + '_' + new Date().getTime());
 
-					console.log('fitProfile for add', fitProfileCollection);
-
-					console.log('OrderHistory.Views.js>item_to_cart', item_to_cart);
 
 					application.getCart().addItem(item_to_cart, {
 						success: function () {
@@ -389,16 +375,15 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 					// , data: options
 					// , reset: true
 				// });
-				
+
 			e.preventDefault();
 			var url = "ordershistory"
-				
+
 				url += "?sort=true";
-			
+
 			Backbone.history.navigate(url, true);
 		}
 		, search: function (e) {
-			console.log('searchclicked')
 			e.preventDefault();
 			var url = "ordershistory"
 				, search_keyword = jQuery("input[rel=search]").val();

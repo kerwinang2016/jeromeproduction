@@ -10,27 +10,27 @@ function service (request)
 	{
 		var method = request.getMethod()
 		,	data = JSON.parse(request.getBody() || '{}')
-		,	id = request.getParameter('internalid') || data.internalid		
+		,	id = request.getParameter('internalid') || data.internalid
 		,	ProductList = Application.getModel('ProductList');
 
 		switch (method)
 		{
-			case 'GET':	
+			case 'GET':
 				if (id)
 				{
 					if (id === 'later')
-					{						
+					{
 						Application.sendContent(ProductList.getSavedForLaterProductList());
 					}
 					else
 					{
-						Application.sendContent(ProductList.get(id));
-					}					
+						Application.sendContent(ProductList.get(id),request.getParameter('fitter'));
+					}
 				}
 				else
 				{
 					Application.sendContent(ProductList.search('name'));
-				}					
+				}
 			break;
 
 			case 'POST':
@@ -48,8 +48,8 @@ function service (request)
 				ProductList.delete(id);
 				Application.sendContent({'status': 'ok'});
 			break;
-				
-			default: 
+
+			default:
 				// methodNotAllowedError is defined in ssp library commons.js
 				Application.sendError(methodNotAllowedError);
 		}

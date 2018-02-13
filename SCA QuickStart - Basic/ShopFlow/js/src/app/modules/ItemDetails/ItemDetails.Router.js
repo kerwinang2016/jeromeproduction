@@ -61,16 +61,17 @@ define('ItemDetails.Router', [], function ()
 		}
 
 	,	productDetailsById: function (id, options)
-		{		
+		{
 			var self= this;
 			if (options.indexOf("|") > -1) {
 					this.client = options.split("client=")[1].split("|")[0];
 			} else {
 					this.client = options.split("client=")[1].split("&")[0];
-			}			
+			}
 			var param = new Object();
+			var tailor = SC.Application('Shopping').getUser().get('parent')!=null? SC.Application('Shopping').getUser().get('parent'):SC.Application('Shopping').getUser().id;
 			param.type = "get_client";
-			param.data = JSON.stringify({filters: ["internalid||anyof|integer|" + this.client,'custrecord_tc_tailor||is|integer|'+SC.Application('Shopping').getUser().id], columns: ["internalid", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone"]});
+			param.data = JSON.stringify({filters: ["internalid||anyof|integer|" + this.client,'custrecord_tc_tailor||is|integer|'+tailor], columns: ["internalid", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone"]});
 			jQuery.get(_.getAbsoluteUrl('services/fitprofile.ss'), param).always(function(data){
 				if(data[0]){
 					// Now go grab the data and show it
@@ -84,7 +85,7 @@ define('ItemDetails.Router', [], function ()
 					window.location.href= "http://store.jeromeclothiers.com";
 				}
 			});
-			
+
 		}
 
 	,	productDetails: function (api_query, base_url, options, plist)

@@ -31,7 +31,7 @@ define('FormRenderer.View',  ['Client.Model', 'Profile.Model'], function (Client
 	,	render: function(){
 			var type = this.options.mode.split("|")[1],
 				id = this.options.mode.split("|")[0],
-				parent = this.options.mode.split("|")[2],
+				parent = SC.Application('Shopping').getUser().get('parent')!=null? SC.Application('Shopping').getUser().get('parent'):SC.Application('Shopping').getUser().id;//this.options.mode.split("|")[2],
 				html = ""
 				Model = "";
 

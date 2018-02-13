@@ -13,8 +13,16 @@
 	,	stock_info = item.getStockInfo()
 	,	thumbnail = item.get('_thumbnail')
 
-	,	link_attributes = _.getItemLinkAttributes(item);
-
+	,	link_attributes = _.getItemLinkAttributes(item)
+	, fitprofile = line.get('fitProfileOptions')
+	var formtype = "Jacket"
+	if(fitprofile.length == 3)
+		formtype = '3-Piece-Suit';
+	else if(fitprofile.length == 2)
+		formtype = '2-Piece-Suit';
+	else if(fitprofile.length>0){
+		formtype = fitprofile[0].name;
+	}
 	var item_details = item.get('itemDetails')
 
 	var isDisplayDateNeededHoldFabricHoldProduction = true;
@@ -230,6 +238,9 @@
 				<%= _('Save for Later').translate() %>
 			</button>
 		<% } %>
+		<a class="btn dropdown-toggle show-wishlist" href="/item-types/<%=formtype+'?client='+clientID+'|'+lineID%>">
+			Change Fabric
+		</a>
 	</div>
 	<% } %>
 </article>

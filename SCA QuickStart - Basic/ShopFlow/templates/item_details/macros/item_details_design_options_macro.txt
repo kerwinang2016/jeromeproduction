@@ -1,5 +1,6 @@
 <% registerMacro('itemDetailsDesignOptions', function (designOptions,isItemCheck) { %>
 	<%
+
 	var Jacket = ['Trims','Monogram Underside Collar','Monogram Lining','Branding'];
 	var Trouser = ['Trims','Monogram','Branding'];
 	var Waistcoat = ['Trims','Branding'];
@@ -11,7 +12,6 @@
 	collapse['Waistcoat'] = Waistcoat;
 	collapse['Overcoat'] = Overcoat;
 	collapse['Shirt'] = Shirt;
-	console.log('isItemCheck',isItemCheck);
 		%>
 
 	<% if (designOptions && Object.keys(designOptions).length > 0) { %>
@@ -22,37 +22,63 @@
 			//console.log('objDesignOpt: ' + '\n' + JSON.stringify(objDesignOpt, 'key', '\t'))
 		%>
 		<% if( window.vendor){%>
-			<h2 class="section-header">Fabric Availability</h2><hr/>
-			
-			<% if(window.vendor.vendorLink){ %>
-				<div class="control-group" data-input="designoption-message">
-					<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor Link : </label>
-					<a href='<%= window.vendor.vendorLink %>' style="text-decoration:underline;" target="_blank"><%= window.vendor.vendorLink %></a>
+			<h2 class="section-header">Fabric</h2><hr/>
+			<div class="accordion" id="fabric-availability">
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-target="#fabric-availability-options" data-parent="#fabric-availability">
+							Fabric Availability
+						</a>
+					</div>
+					<div id="fabric-availability-options" class="accordion-body collapse">
+						<% if(window.vendor.vendorLink){ %>
+							<div class="control-group" data-input="designoption-message">
+								<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor Link : </label>
+								<a href='<%= window.vendor.vendorLink %>' style="text-decoration:underline;" target="_blank"><%= window.vendor.vendorLink %></a>
+							</div>
+						<% }else{ %>
+							<div class="control-group" data-input="designoption-message">
+								<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor File : </label>
+								<a href='<%= window.vendor.vendorFile %>' style="text-decoration:underline;" target="_blank"><%= window.vendor.vendorFileName %></a>
+							</div>
+						<% } %>
+							<div class="control-group" data-input="designoption-message">
+								<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;margin-right:10px;">Checked ?</label>
+								<label style="font-size: 1em">
+									<%if(isItemCheck ==='T'){%>
+										<input type="checkbox" value="" id='chkItem' checked>
+									<%}else{%>
+										<input type="checkbox" value="" id='chkItem' >
+									<%}%>
+								</label>
+							</div>
+					</div>
 				</div>
-				
-			<% }else{ %>
-				<div class="control-group" data-input="designoption-message">
-					<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor File : </label>
-					<a href='<%= window.vendor.vendorFile %>' style="text-decoration:underline;" target="_blank"><%= window.vendor.vendorFileName %></a>
+			</div>
+			<div class="accordion" id="fabric-cmt">
+				<div class="accordion-group">
+					<div class="accordion-heading">
+						<a class="accordion-toggle" data-toggle="collapse" data-target="#fabric-cmt-options" data-parent="#fabric-cmt">
+							CMT Fabric
+						</a>
+					</div>
+					<div id="fabric-cmt-options" class="accordion-body collapse">
+						<div class="control-group">
+								<label class="control-label" for="fabric-cmt-vendor" style="font-size: 13px;font-weight: normal;line-height: 18px;width:30%;">Fabric Vendor </label>
+								<input type="text" value="" name="fabric-cmt-vendor" id="fabric-cmt-vendor" class="input-large" style="width:40%;" value="">
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="fabric-cmt-collection" style="font-size: 13px;font-weight: normal;line-height: 18px;width:30%;">Fabric Collection </label>
+								<input type="text" value="" name="fabric-cmt-collection" id="fabric-cmt-collection" class="input-large" style="width:40%;" value="">
+						</div>
+						<div class="control-group">
+							<label class="control-label" for="fabric-cmt-code" style="font-size: 13px;font-weight: normal;line-height: 18px;width:30%;">Fabric Code </label>
+								<input type="text" value="" name="fabric-cmt-code" id="fabric-cmt-code" class="input-large" style="width:40%;" value="">
+						</div>
+					</div>
 				</div>
-			<% } %>
-			
-
-			<div class="control-group" data-input="designoption-message">
-				<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;margin-right:10px;">Checked ?</label>
-				<label style="font-size: 1em">
-					<%if(isItemCheck ==='T'){%>
-						<input type="checkbox" value="" id='chkItem' checked>
-					<%}else{%>
-						<input type="checkbox" value="" id='chkItem' >
-					<%}%>
-                	
-            	</label>
 			</div>
 		<%}%>
-		
-		
-
 		<h2 class="section-header" style="margin-top: 30px"><%= _('Design Options').translate() %></h2><hr/>
 
 	    <div class="accordion" id="design-option">
@@ -86,7 +112,7 @@
 										<h4 class="accordion-toggle" style="margin:8px 0;"><%= component %></h4>
 									</a>
 								<% } %>
-								
+
 									<hr style="margin:6px 0;"/>
 
 									<% if(collapse[clothingType].indexOf(component) !=-1){ %>
@@ -94,7 +120,7 @@
 									<% }else{ %>
 										<div id="design-option-members-<%= clothingType %>-<%=index1%>" class="in collapse" style="background-color:#ececec;">
 									<% } %>
-									
+
 									<%
 										for (var field in currentComponent){
 										var currentField = currentComponent[field];
@@ -152,8 +178,8 @@
 				</div>
 				<% count++; %>
 			<% } %>
-	    </div>
-
+			</div>
+		</div>
 		<div class="control-group" data-input="designoption-message">
 			<label class="control-label" for="designoption-message">Notes</label>
 			<div class="controls">

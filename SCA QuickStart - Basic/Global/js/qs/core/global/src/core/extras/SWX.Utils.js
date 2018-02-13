@@ -177,7 +177,6 @@
 
 		$(function()
 		{
-			console.log( "ready!" );
 
 			var $ = jQuery;
 
@@ -198,14 +197,12 @@
 				$("[id='desktop-only']").show();
 			}
 
-			console.log( "on load" );
 
 			// On Window Resize
 
 			$(window).resize(function()
 			{
 
-				console.log( "window resize" );
 				var isButtMobileToggleVisible = $("[class='navbar navbar-inverse mobile-nav']").find("span[class='icon-bar']").is(":visible");
 				var isDisplayInMobileOnly = (isButtMobileToggleVisible) ? true : false;
 				var isDisplayInDesktopOnly = (!isButtMobileToggleVisible) ? true : false;
@@ -350,7 +347,6 @@
 		}
 			catch(ex)
 		{
-			console.log('Error in getArrObjOrderClientList function: '  + '\n' + ex.tostring())
 			retArrObj = [];
 		}
 		return retArrObj;
@@ -375,7 +371,6 @@
 				cache:false,
 				error: function(jqXHR, textStatus, errorThrown)
 				{
-					console.log('Ajax Error: ' + errorThrown)
 				},
 				async: true,
 				success: function (jsonResponse)
@@ -541,7 +536,6 @@
 			catch(ex)
 		{
 			stReturn = '';
-			console.log('Error in ' + functionName + ': ' + '\n' + ex.toString())
 
 		}
 
@@ -559,7 +553,6 @@
 		var orderIdRef = paramOrderInternalId;
 		var hasOrderIdRef = (!isNullOrEmpty(orderIdRef)) ? true : false;
 
-		//console.log('orderIdRef: ' + orderIdRef + '\n' + 'arrObjCartLines: ' + '\n' + JSON.stringify(arrObjCartLines, 'key', '\t'))
 
 		try
 		{

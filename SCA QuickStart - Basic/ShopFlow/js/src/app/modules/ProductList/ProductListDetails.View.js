@@ -8,11 +8,11 @@ define('ProductListDetails.View'
 	'use strict';
 
 	return Backbone.View.extend({
-		
+
 		template: 'product_list_details'
-		
+
 	,	attributes: {'class': 'ProductListDetailsView'}
-		
+
 	,	events: {
 			// items events
 			'click [data-action="add-to-cart"]' : 'addItemToCartHandler'
@@ -23,7 +23,7 @@ define('ProductListDetails.View'
 		,	'click [data-ui-action="plus-one"]' : 'addPlusOne'
 		,	'click [data-ui-action="minus-one"]' : 'addMinusOne'
 		,	'click [data-action="add-list-to-cart"]': 'addListToCart_'
-
+		,	'click [data-action="update-item"]': 'updateItem'
 		,	'click [data-action="edit-list"]': 'editListHandler'
 		,	'click [data-action="delete-list"]': 'deleteListHandler'
 
@@ -65,25 +65,36 @@ define('ProductListDetails.View'
 			this.addToCartCallback = options.addToCartCallback;
 			this.includeSortingFilteringHeader = options.includeSortingFilteringHeader;
 			this.title = this.model.get('name');
-			
+
 			var collection = this.model.get('items');
 
 			collection.productListId = this.model.get('internalid');
 
 			this.setupListHeader(collection);
-		
-			// set css class for the current display option
-			// this.$el.addClass('display-' + this.getCurrentDisplayOpt());	
-			collection.on('reset', jQuery.proxy(this, 'render'));		
-		}
 
+			// set css class for the current display option
+			// this.$el.addClass('display-' + this.getCurrentDisplayOpt());
+			collection.on('reset', jQuery.proxy(this, 'render'));
+		}
+	,	updateItem: function(e){
+		var itemmodel = this.model.get('items').get(e.target.dataset.id);
+		if(itemmodel.get('options')['custcol_saved_for_later_comment']){
+			itemmodel.get('options')['custcol_saved_for_later_comment'].value = jQuery('#comment_'+e.target.dataset.id).val();
+			itemmodel.get('options')['custcol_saved_for_later_comment'].displayvalue = jQuery('#comment_'+e.target.dataset.id).val();
+		}else{
+			itemmodel.get('options').custcol_saved_for_later_comment = {
+				value:jQuery('#comment_'+e.target.dataset.id).val(),displayvalue:jQuery('#comment_'+e.target.dataset.id).val()
+			}
+		}
+		itemmodel.save();
+	}
 	,	setupListHeader: function(collection)
 		{
 			if (!this.includeSortingFilteringHeader)
 			{
 				return;
 			}
-			
+
 			this.listHeader = new ListHeader({
 				view: this
 			,	application: this.application
@@ -98,7 +109,7 @@ define('ProductListDetails.View'
 		{
 			this.addListToCart(this.model);
 		}
-	
+
 	,	addListToCart: ProductListListsView.prototype.addListToCart
 
 		// Shows the delete confirmation modal view
@@ -120,7 +131,7 @@ define('ProductListDetails.View'
 		{
 			e.preventDefault();
 
-			var self = this			
+			var self = this
 			,	selected_product_list_item_id = self.$(e.target).closest('article').data('id')
 			,	selected_product_list_item = self.model.get('items').findWhere({
 					internalid: selected_product_list_item_id.toString()
@@ -138,7 +149,7 @@ define('ProductListDetails.View'
 			if (this.sflMode)
 			{
 				whole_promise = jQuery.when(add_to_cart_promise, this.deleteListItem(selected_product_list_item)).then(jQuery.proxy(this, 'executeAddToCartCallback'));
-			}			
+			}
 			else
 			{
 				whole_promise = jQuery.when(add_to_cart_promise).then(jQuery.proxy(this, 'showConfirmationHelper', selected_product_list_item));
@@ -190,7 +201,7 @@ define('ProductListDetails.View'
 
 		// Product list item deletion handler
 	,	deleteListItemHandler: function (target)
-		{		
+		{
 			var self = this
 			,	itemid = jQuery(target).closest('article').data('id')
 			,	product_list_item = this.model.get('items').findWhere({
@@ -201,12 +212,12 @@ define('ProductListDetails.View'
 			{
 				if (self.application.getLayout().updateMenuItemsUI)
 				{
-					self.application.getLayout().updateMenuItemsUI();	
+					self.application.getLayout().updateMenuItemsUI();
 				}
-				
+
 				self.deleteConfirmationView.$containerModal.modal('hide');
 				self.render();
-				self.showConfirmationMessage(_('The item was removed from your product list').translate()); 
+				self.showConfirmationMessage(_('The item was removed from your product list').translate());
 
 			};
 
@@ -214,17 +225,17 @@ define('ProductListDetails.View'
 
 			if (productList.length > 0)
 			{
-				productList[0].get('items').remove(product_list_item);	
+				productList[0].get('items').remove(product_list_item);
 			}
-			
-			self.deleteListItem(product_list_item, success);			
+
+			self.deleteListItem(product_list_item, success);
 		}
 
 		// Remove an product list item from the current list
 	,	deleteListItem: function (product_list_item, successFunc)
 		{
 			this.model.get('items').remove(product_list_item);
-			
+
 			// TODO: DDS Review this hack!!!
 			product_list_item.url = ProductListItemModel.prototype.url;
 
@@ -234,7 +245,7 @@ define('ProductListDetails.View'
 		// Edit a product list item from the current list
 	,	askEditListItem : function(e)
 		{
-			var product_list_itemid = this.$(e.target).closest('article').data('id')			
+			var product_list_itemid = this.$(e.target).closest('article').data('id')
 			,	selected_item = this.model.get('items').findWhere({
 				internalid: product_list_itemid.toString()
 			});
@@ -275,15 +286,15 @@ define('ProductListDetails.View'
 
 		// Retrieve the current (if any) items display option
 	,	getDisplayOption: function ()
-		{		
+		{
 			var search = (this.options.params && this.options.params.display) || 'list';
-			
+
 			return _(this.displayOptions).findWhere({
 				id: search
 			});
 		}
 
-	,	render: function() 
+	,	render: function()
 		{
 			Backbone.View.prototype.render.apply(this, arguments);
 
@@ -292,11 +303,11 @@ define('ProductListDetails.View'
 			,	items = this.model.get('items')
 			,	is_single_list = this.application.ProductListModule.isSingleList();
 
-			items.each(function(item) {				
+			items.each(function(item) {
 				if (!item.get('item').ispurchasable)
 				{
 					out_of_stock_items.push(item);
-				}				
+				}
 
 				self.renderOptions(item);
 
@@ -304,7 +315,7 @@ define('ProductListDetails.View'
 				{
 					self.renderMove(item);
 				}
-				
+
 			});
 
 			var warning_message = null;
@@ -328,10 +339,10 @@ define('ProductListDetails.View'
 
 		// Render the item options (matrix and custom)
 	,	renderOptions: function (pli_model)
-		{	
+		{
 			var item_detail_model = pli_model.get('itemDetails');
 			var posible_options = item_detail_model.getPosibleOptions();
-			
+
 			// Will render all options with the macros they were configured
 			this.$('article[data-id="' + pli_model.id + '"]').find('div[data-type="all-options"]').each(function (index, container)
 			{
@@ -369,13 +380,13 @@ define('ProductListDetails.View'
 				collection: self.getMoveLists(self.application.getProductLists(), self.model, product_list_model)
 			,	product: product_list_model.get('item')
 			,	application: self.application
-			,	moveOptions: 
-				{ 
+			,	moveOptions:
+				{
 					parentView: self
 				,	productListItem: product_list_model
 				}
 			});
-			
+
 			jQuery(container).empty().append(control.$el);
 			control.render();
 		}
@@ -388,16 +399,16 @@ define('ProductListDetails.View'
 				return model.get('internalid') !== current_list.get('internalid') &&
 					!model.get('items').find(function (product_item)
 					{
-						return product_item.get('item').internalid+'' === list_item.get('item').internalid+''; 
+						return product_item.get('item').internalid+'' === list_item.get('item').internalid+'';
 					});
 			});
 		}
 
 		// Shows the edit modal view
 	,	editListHandler: function(event)
-		{	
+		{
 			event.preventDefault();
-			ProductListListsView.prototype.editList.apply(this, [this.model]); 
+			ProductListListsView.prototype.editList.apply(this, [this.model]);
 		}
 
 		// Shows the delete modal view
@@ -420,25 +431,25 @@ define('ProductListDetails.View'
 		{
 			var self = this
 			,	list = this.model;
-			this.application.getProductLists().remove(list); 
+			this.application.getProductLists().remove(list);
 			list.url = ProductListModel.prototype.url; //TODO: remove this, it was a fix because something was overwritten this property in our models
 
 			list.destroy().done(function ()
-			{				
-				self.deleteConfirmationView.$containerModal.modal('hide');	
-				Backbone.history.navigate('/productlists', {trigger: true}); 
+			{
+				self.deleteConfirmationView.$containerModal.modal('hide');
+				Backbone.history.navigate('/productlists', {trigger: true});
 				self.application.getLayout().updateMenuItemsUI();
 				self.application.getLayout().currentView.showConfirmationMessage(
 					_('Your $(0) list was removed').
 						translate('<span class="product-list-name">' + list.get('name') + '</span>')
-				);			
-			}); 
+				);
+			});
 		}
 
 		// Get the label for showContent()
 	,	getViewLabel: function ()
 		{
-			return 'productlist_' + (this.model.get('internalid') ? this.model.get('internalid') : 'tmpl_' + this.model.get('templateid')); 
+			return 'productlist_' + (this.model.get('internalid') ? this.model.get('internalid') : 'tmpl_' + this.model.get('templateid'));
 		}
 
 		// override showContent() for showing the breadcrumb
@@ -453,20 +464,20 @@ define('ProductListDetails.View'
 					text: this.model.get('name'),
 					href: '/productlist/' + (this.model.get('internalid') ? this.model.get('internalid') : 'tmpl_' + this.model.get('templateid'))
 				}
-			]; 
+			];
 			if (this.application.ProductListModule.isSingleList())
 			{
 				breadcrumb.splice(0, 1); //remove first
 			}
-			this.application.getLayout().showContent(this, this.getViewLabel(), breadcrumb); 
+			this.application.getLayout().showContent(this, this.getViewLabel(), breadcrumb);
 		}
 
 	,	updateItemQuantityFormSubmit: function (e)
 		{
 			e.preventDefault();
-			this.updateItemQuantity(e); 
+			this.updateItemQuantity(e);
 		}
-		
+
 		// updateItemQuantity:
 		// executes on blur of the quantity input
 		// Finds the item in the product list, updates its quantity and saves the list model
@@ -475,15 +486,15 @@ define('ProductListDetails.View'
 			e.preventDefault();
 
 			var self = this
-			,	product_list_itemid = this.$(e.target).closest('article').data('id')			
+			,	product_list_itemid = this.$(e.target).closest('article').data('id')
 			,	selected_item = this.model.get('items').findWhere({internalid: product_list_itemid.toString()})
 			,	options = jQuery(e.target).closest('form').serializeObject()
 			,	$input = jQuery(e.target).closest('form').find('[name="item_quantity"]')
 			,	new_quantity = parseInt(options.item_quantity, 10)
 			,	current_quantity = parseInt(selected_item.get('quantity'), 10);
-			
+
 			new_quantity = (new_quantity > 0) ? new_quantity : current_quantity;
-			
+
 			$input.val(new_quantity);
 
 			if (new_quantity ===  current_quantity)

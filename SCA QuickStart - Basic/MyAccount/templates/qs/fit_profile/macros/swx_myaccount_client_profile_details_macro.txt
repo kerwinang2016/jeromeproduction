@@ -28,7 +28,6 @@
 
 				if (isRefClientInternalIdEqualToClientInternalId)
 				{
-					console.log('swxMyAccountClientProfileDetails>arrObjRef[dx]',arrObjRef[dx]);
 					clientAddress = '';
 					var refClientFirstName = arrObjRef[dx]['custrecord_tc_first_name'];
 					var refClientFirstLastName = arrObjRef[dx]['custrecord_tc_last_name'];

@@ -1,6 +1,5 @@
 <%
 	var model = view.model;
-
 	var application = view.application;
 	var cart = application.getCart();
 	var cartLines = cart.get('lines');
@@ -29,6 +28,9 @@
 									<h1 itemprop="name">
 										<%= model.get('_pageHeader') %>
 									</h1>
+									<a class="btn dropdown-toggle show-wishlist" href="<%=view.model.get('_breadcrumb')[2].href%>">
+										Change Fabric
+									</a>
 									<!-- removed ratings -->
 									<p class="lead lead-small">
 										<%= SC.macros.showItemPrice(model.getPrice(), model.getStockInfo().isInStock) %>

@@ -5,12 +5,8 @@
 <% } %>
 
 <%
-	//console.log('xyla: ' + '\n' + '/SSP Applications/SCA QuickStart - Basic/MyAccount/templates/layout.txt')
-	
 	var objSiteSettings = view.application.getConfig('siteSettings');
-	
-	//console.log('objSiteSettings: ' + '\n' + JSON.stringify(objSiteSettings, 'key', '\t'))
-	console.log('view.application.getLayout().getmenuItems()',view.application.getLayout().getMenuItems());
+
 %>
 
 
@@ -45,7 +41,7 @@
 			<hr>
 			<ul id="sidebar" class="nav nav-tabs nav-stacked">
 			<% _.each(view.application.getLayout().getMenuItems(), function (item, index) { %>
-				<% if (item.children) { %> 
+				<% if (item.children) { %>
 				<%= tree(item, tree, 0, true) %>
 				<% } else { %>
 				<li data-label="<%= item.id %>" data-permissions="<%= item.permission %>">

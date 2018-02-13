@@ -9,17 +9,11 @@
 
 	var plSku = item_details.get('_sku');
 
-	//console.log('item: ' + '\n' + JSON.stringify(item, 'key', '\t'))
-
 	//var application = view.application;
 	//var model = view.model;
-	//console.log('test: ' + '\n' + JSON.stringify(model, 'key', '\t'))
-
 
 	//var stItem = JSON.stringify(item);
 	//var objItem = JSON.parse(stItem);
-
-	//console.log('objItem: ' + '\n' + JSON.stringify(objItem, 'key', '\t'))
 
 	var clientFullName = '';
 	var objClient = item.get('client');
@@ -45,7 +39,6 @@
 
 	var hasClientFullName = (clientFullName != '' && clientFullName != null) ? true : false;
 
-	//console.log('clientFirstName: ' + clientFirstName + '\n' + 'clientLastName: ' + clientLastName)
 
 	var isDisplay = true;
 
@@ -73,69 +66,32 @@
 %>
 
 <% if (isDisplay) { %>
+<tr>
 <article data-id=<%= item.get('internalid') %> data-item-id=<%= item_details.get('internalid') %> >
 	<div class="row-fluid">
-		<div class="span2 thumbnail cart-item-thumbnail" data-type="product-list-item" >
-			<img src="<%= view.application.resizeImage(thumbnail.url, 'thumbnail') %>" alt="<%=thumbnail.altimagetext %>">
-		</div>
-
-		<div class="span9 details" data-type="item-details">
-			<div class="name">
-				<a href="#" data-touchpoint="home" data-hashtag="#<%= _(item.get('itemDetails').get('_url')).fixUrl() %>"> <%=  item.getProductName() || item.get('name') %></a>
-			</div>
-
-			<div class="lead lead-small price">
-				<%
-					var options = item.get("options")
-					,	tailorPricing = "0.00";
-
-					if(!_.isUndefined(options) && !_.isEmpty(options)){
-						tailorPricing = options.custcol_tailor_cust_pricing.value;
-					}
-				%>
-				<%= _.formatCurrency(tailorPricing)%>
-
-			</div>
-
-			<div>
-				<div class="sku">SKU: <%= plSku %></div>
-
-				<% if (hasClientFullName) { %>
-					<div class="sku">Client Name: <%= clientFullName %></div>
-				<% } %>
-			</div>
-
-
-			<div class="item-details-stock">
-				<%= SC.macros.itemDetailsStock(stock_info) %>
-			</div>
-
-
-			<div class="item-details-options">
-				<div class="options-container" data-type="all-options" data-exclude-options="">
-				</div>
-				<!--
-				<form action="#" data-action="update-quantity-item-list">
-					<% if (product.itemtype !== 'GiftCert') { %>
-						<input type="number" name="item_quantity" id="item_quantity-<%= internalid %>" class="input-mini quantity-<%= internalid %>" value="<%- quantity %>" min="1">
-					<% } else { %>
-						<input type="hidden" name="item_quantity" id="item_quantity-<%= quantity %>" value="1">
-					<% } %>
-				</form>
-				-->
-			</div>
-
-			<div class="cart-item-actions" data-type="item-commands">
-				<% if(!options || !options.hide_actions) { %>
-				<button data-action="add-to-cart" class="btn btn-primary btn-expanded add-to-cart <%= !product.ispurchasable ? 'disabled' : ''%>" <%= !product.ispurchasable ? 'disabled' : ''%>><%= _('Add to cart').translate() %></button>
-				<button class="btn btn-expanded remove" data-action="delete-item"><%= _('Remove').translate() %></button>
-				<% } %>
-			</div>
-		</div>
+	<div class="span-w-10">
+		<%= item.get('lastmodified').split(' ')[0]%>
+	</div>
+	<div class="span2">
+		<%= clientFullName %>
+	</div>
+	<div class="span3">
+		<%= plSku %>
+	</div>
+	<div class="span-w-20-75">
+		<input type="text" style="padding:4px 0;width:100%" id="comment_<%= item.get('internalid') %>" value="<%= item.get('options').custcol_saved_for_later_comment?item.get('options').custcol_saved_for_later_comment.value:'' %>">
+	</div>
+	<div class="span-w-26 fl-r margin-0">
+		<% if(!options || !options.hide_actions) { %>
+		<button class="btn btn-expanded" data-id="<%=item.id %>" data-action="update-item"><%= _('Update').translate() %></button>
+		<button class="btn btn-expanded remove" data-action="delete-item"><%= _('Remove').translate() %></button>
+		<button data-action="add-to-cart" class="btn btn-primary btn-expanded add-to-cart <%= !product.ispurchasable ? 'disabled' : ''%>" <%= !product.ispurchasable ? 'disabled' : ''%>><%= _('Add').translate() %></button>
 		<input data-tag="saved-item" data-id=<%= item.get('internalid') %> data-item-id=<%= item_details.get('internalid') %> type="checkbox">
+		<% } %>
+	</div>
 	</div>
 </article>
-
+</tr>
 <% } %>
 
 <% }) %>

@@ -5,7 +5,7 @@
 function service (request)
 {
 	'use strict';
-	
+
 	// Application is defined in ssp library commons.js
 	try
 	{
@@ -14,7 +14,7 @@ function service (request)
 		,	id = request.getParameter('internalid') ? request.getParameter('internalid') : data.internalid
 		,	product_list_id = request.getParameter('productlistid') ? request.getParameter('productlistid') : data.productlistid
 		,	ProductListItem = Application.getModel('ProductListItem');
-		
+
 		switch (method)
 		{
 			case 'GET':
@@ -25,7 +25,7 @@ function service (request)
 				}));
 			break;
 
-			case 'POST':					
+			case 'POST':
 				Application.sendContent(ProductListItem.create(data), {'status': 201});
 			break;
 
@@ -38,8 +38,8 @@ function service (request)
 				ProductListItem.delete(id);
 				Application.sendContent({'status': 'ok'});
 			break;
-				
-			default: 
+
+			default:
 				// methodNotAllowedError is defined in ssp library commons.js
 				Application.sendError(methodNotAllowedError);
 		}

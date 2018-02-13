@@ -1,4 +1,4 @@
-// ProductLists.Model.js 
+// ProductLists.Model.js
 // -----------------------
 // Model for handling Product Lists (CRUD)
 define('ProductList.Model',['ProductListItem.Collection'], function (ProductListItemCollection)
@@ -26,14 +26,14 @@ define('ProductList.Model',['ProductListItem.Collection'], function (ProductList
 	,	url: function()
 		{
 			var base_url = Backbone.Model.prototype.url.apply(this, arguments);
-			
+
 			return base_url + '&t=' + new Date().getTime();
 		}
-		
+
 	,	initialize: function (data)
 		{
 			var collection;
-
+			console.log(data)
 			if (data && data.items)
 			{
 				collection = new ProductListItemCollection(data.items);
@@ -42,11 +42,11 @@ define('ProductList.Model',['ProductListItem.Collection'], function (ProductList
 			{
 				collection = new ProductListItemCollection([]);
 			}
-			
-			this.set('items', collection);			
+
+			this.set('items', collection);
 		}
 
-		// Returns true if an item with id: productId is in the list 
+		// Returns true if an item with id: productId is in the list
 	,	checked: function (productId)
 		{
 			return this.get('items').some(function (productItem)

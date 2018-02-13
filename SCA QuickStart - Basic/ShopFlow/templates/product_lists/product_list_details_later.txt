@@ -1,7 +1,7 @@
 <%
 	var config = view.application.Configuration.product_lists
 	,	items = view.model.get('items')
-	, 	out_of_stock_items = items.filter(function(product_list_item) { return !product_list_item.get('item').ispurchasable; })
+	, out_of_stock_items = items.filter(function(product_list_item) { return !product_list_item.get('item').ispurchasable; })
 	,	type = view.model.get('type').name
 	,	items_length = items.length
 	,	items_length_message = '';
@@ -18,14 +18,20 @@
 	{
 		items_length_message = _('($(0) Items)').translate(items_length);
 	}
-
-	console.log('product_list_details_later.txt',view);
-
+	var filteredItems = items.models;
+	var fitter =[];
+	_.each(items.models,function(a){
+	var sfitter = _.find(fitter,function(index){return a.get('fitterid') == index.id;})
+	if(!sfitter)
+		fitter.push({id:a.get('fitterid'),name:a.get('fitter')})
+	});
+	if(!view.showarchiveditems)
+	filteredItems = _.filter(items.models, function(item){ return item.get('custrecord_ns_pl_pli_isarchived') == 'F'; });
 	var arrObjFilteredItems = [];
 	var arrObjFilteredItemsTotal = 0;
 	var hasArrObjFilteredItems = false;
-	var stFilterSaveForLaterRef = view.model.get('swx_filter_save_for_later_client');
-	var hasStFilterSaveForLaterRef = (!_.isNullOrEmpty(stFilterSaveForLaterRef)) ? true : false;
+	var stFilterSaveForLaterRef = '';//view.model.get('swx_filter_save_for_later_client');
+	var hasStFilterSaveForLaterRef = false;//(!_.isNullOrEmpty(stFilterSaveForLaterRef)) ? true : false;
 
 	var collpaseClass = "collapse";
 
@@ -39,234 +45,134 @@
 		hasArrObjFilteredItems = (arrObjFilteredItemsTotal != 0) ? true : false;
 		collpaseClass = "in collapse";
 	}
-
-
 %>
+<style>
+    .list-header-title .accordion-toggle:after {
+        font-family: FontAwesome;
+        font-style: normal;
+        font-weight: normal;
+        content: "\f054";
+        /*Font awesome icon chevron right*/
+        float: right;
+        color: grey;
+    }
 
-	<style>
-		.list-header-title .accordion-toggle:after {
-			font-family: FontAwesome;
-			font-style: normal;
-			font-weight: normal;
-			content: "\f054";
-			/*Font awesome icon chevron right*/
-			float: right;
-			color: grey;
+    .list-header-title .accordion-toggle:hover {
+        text-decoration: none;
+        color: grey;
+    }
+
+    .list-header-title .accordion-toggle.collapsed:after {
+        content: "\f078";
+        /* Font awesome chevron down*/
+    }
+		::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+	    color: #555;
+	    opacity: 1; /* Firefox */
 		}
 
-		.list-header-title .accordion-toggle:hover {
-			text-decoration: none;
-			color: grey;
+		:-ms-input-placeholder { /* Internet Explorer 10-11 */
+		    color: #555;
 		}
 
-		.list-header-title .accordion-toggle.collapsed:after {
-			content: "\f078";
-			/* Font awesome chevron down*/
+		::-ms-input-placeholder { /* Microsoft Edge */
+		    color: #555;
 		}
-	</style>
-	<header style="width:75%">
+</style>
+    <header style="width:75%">
+      <h3 class="list-header-title" style="padding-bottom: 20px;border-bottom: 1px solid #eee;">
+        <a data-toggle="collapse" data-target="#saveForLaterItemsCart" aria-expanded="true" aria-controls="collapseOne" class="accordion-toggle" style="text-decoration:none;color:grey;">
+            <!--<%= (type === 'predefined' || type === 'later') ? _(view.model.get('name')).translate() : view.model.get('name') %>-->
+            Saved Items
+        </a>
+				<% if (!hasStFilterSaveForLaterRef) { %>
+          <span class="product-list-details-count"><%= items_length_message %></span>
+        <% } %>
+			</h3>
+			<div data-confirm-message class="confirm-message"></div>
 
+      <% if(view.model) {
+					var items = view.model.get('items');
+					if(items_length > 0){
+							var productListDisplay = null;
 
-		<h3 class="list-header-title" style="padding-bottom: 20px;border-bottom: 1px solid #eee;">
+							if (!hasStFilterSaveForLaterRef){
+								productListDisplay = function (row){
+									return SC.macros['productListDisplayLater'](row, view);
+								}
+							}
+						}
+					}
+				%>
+    </header>
 
-			<a  data-toggle="collapse" data-target="#saveForLaterItemsCart" aria-expanded="true" aria-controls="collapseOne" class="accordion-toggle"
-			 style="text-decoration:none;color:grey;">
-				<!--<%= (type === 'predefined' || type === 'later') ? _(view.model.get('name')).translate() : view.model.get('name') %>-->
-				Saved Items
-			</a>
+    <div id="saveForLaterItemsCart" style="width:75%;" class="<%=collpaseClass%>">
 
-			<% if (!hasStFilterSaveForLaterRef) { %>
-				<span class="product-list-details-count"><%= items_length_message %></span>
-			<% } %>
-
-					<% if (hasStFilterSaveForLaterRef) { %>
-
-						<% if (hasArrObjFilteredItems) { %>
-
-							<% if (arrObjFilteredItemsTotal == 1) { %>
-								<span class="product-list-details-count">(<%= arrObjFilteredItemsTotal %> <%= _('Item found for Client ').translate() %> "<%= stFilterSaveForLaterRef %>")</span>
-								<% } %>
-
-									<% if (arrObjFilteredItemsTotal != 1) { %>
-										<span class="product-list-details-count">(<%= arrObjFilteredItemsTotal %> <%= _('Items found for Client ').translate() %> "<%= stFilterSaveForLaterRef %>")</span>
-										<% } %>
-
+    <% if (items_length > 0) { %>
+        <% if (!hasStFilterSaveForLaterRef) { %>
+          <div class="row-fluid">
+              <div class="span3">
+                  <span><%= _('To order an item now, click "Add"').translate() %></span>
+              </div>
+              <div class="span9">
+                <div class="row-fluid">
+                  <div class="span-w-21">
+                        <input style="color:#999;padding:4px;width:100%;" type="text" value="<%=stFilterSaveForLaterRef%>" name="swx_filter_save_for_later_client" id="swx_filter_save_for_later_client" placeholder="<%= _('Filter by client name').translate() %>" >
+                  </div>
+									<div class="span-w-25">
+										<select style="margin:0;padding:4px;color:#999;width:100%" type="text" name="filter_fitter" id="filter_fitter" >
+											<option selected value="-1">Filter by fitter name</option>
+											<% for(var ik=0;ik<fitter.length;ik++){ %>
+												<option value="<%= fitter[ik].id%>"><%= fitter[ik].name %></option>
 											<% } %>
+										</select>
+									</div>
+                  <div class="span-w-10">
+                      <button id="swx-butt-save-for-later-filter" class="btn btn-primary" style="width: 100%;">Filter</button>
+                  </div>
 
-												<% if (!hasArrObjFilteredItems) { %>
-													<span class="product-list-details-count">(<%= _('No Items found for Client ').translate() %> "<%= stFilterSaveForLaterRef %>")</span>
-													<% } %>
-
-														<% } %>
-
-		</h3>
-
-
-
-
-
-												<div data-confirm-message class="confirm-message"></div>
-
-												<% if(view.model) {
-
-
-
-	var items = view.model.get('items');
-	if(items_length > 0)
-	{
-		var productListDisplay = null;
-
-		if (!hasStFilterSaveForLaterRef)
-		{
-			productListDisplay = function (row)
-			{
-				return SC.macros['productListDisplayLater'](row, view);
-			}
-
-		}
-
-		if (hasStFilterSaveForLaterRef)
-		{
-			productListDisplay = function (row)
-			{
-				return SC.macros['productListDisplayLater'](row, view, null, arrObjFilteredItems, 'T');
-			}
-		}
-
-		/**
-		var productListDisplay = function (row)
-		{
-			return SC.macros['productListDisplayLater'](row, view);
-		}
-		**/
-	%>
-	</header>
-
-	<div id="saveForLaterItemsCart" style="width:75%;" class="<%=collpaseClass%>" >
-
-		<% if (items_length > 0) { %>
-			<% if (!hasStFilterSaveForLaterRef) { %>
-				<div class="row-fluid">
-					<div class="span3">
-						<span><%= _('To buy an item now, click "Add to Cart"').translate() %></span>
+                  <div class="span-w-10">
+                      <button id="swx-butt-save-for-later-filter-clear" class="btn btn-primary" style="width: 100%;">Clear</button>
+                  </div>
+									<div class="span-w-10">
+											<button data-action="archive" class="btn btn-primary" style="width: 100%;">Archive</button>
+									</div>
+									<div class="span-w-10">
+											<button id="add-multiple-save-for-later" class="btn btn-primary" style="width: 100%;">Add</button>
+									</div>
+                </div>
+              </div>
+          </div>
+					<div class="row-fluid">
+							<div style="float:right;">
+								<label style="display:inline;">Show archived Items</label><input  style="margin-left:20px;" id="show-archived-items" data-action="show-archived-items" type="checkbox">
+							</div>
 					</div>
+        <% } %>
 
-					<div class="span9">
-						<div class="row-fluid">
-							<div class="span3">
-								<div>
-									<input type="text" value="<%=stFilterSaveForLaterRef%>" name="swx_filter_save_for_later_client" id="swx_filter_save_for_later_client"
-									 placeholder="<%= _('Filter By Client Name').translate() %>" class="input-large" style="width: 93%;">
-								</div>
 
-							</div>
-
-							<div class="span2">
-								<div><button id="swx-butt-save-for-later-filter" class="btn btn-primary" style="width: 100%;">Filter</button></div>
-							</div>
-
-							<div class="span2">
-								<div><button id="swx-butt-save-for-later-filter-clear" class="btn btn-primary" style="width: 100%;">Clear</button></div>
-							</div>
-							<div class="span3">
-								<div><button id="add-multiple-save-for-later" class="btn btn-primary" style="width: 100%;">Add Multiple Items</button></div>
-							</div>
+        <div class="product-list-items" data-type="product-list-items">
+					<div class="row-fluid">
+						<div class="span-w-10">
+							<strong>Date</strong>
+						</div>
+						<div class="span2">
+							<strong>Client</strong>
+						</div>
+						<div class="span3">
+							<strong>Item</strong>
+						</div>
+						<div class="span-w-20-75">
+							<strong>Comment</strong>
+						</div>
+						<div class="span-w-26">
 						</div>
 					</div>
-				</div>
-				<% } %>
-
-					<% if (hasStFilterSaveForLaterRef) { %>
-
-						<% if (hasArrObjFilteredItems) { %>
-
-							<div class="row-fluid">
-								<div class="span8">
-									<span><%= _('To buy an item now, click "Add to Cart"').translate() %></span>
-								</div>
-
-								<div class="span9">
-
-									<div class="row-fluid">
-										<div class="span3">
-											<div>
-												<input type="text" value="<%=stFilterSaveForLaterRef%>" name="swx_filter_save_for_later_client" id="swx_filter_save_for_later_client"
-												 placeholder="<%= _('Filter By Client Name').translate() %>" class="input-large" style="width: 93%;">
-											</div>
-
-										</div>
-
-										<div class="span2">
-											<div><button id="swx-butt-save-for-later-filter" class="btn btn-primary" style="width: 100%;">Filter</button></div>
-										</div>
-
-										<div class="span2">
-											<div><button id="swx-butt-save-for-later-filter-clear" class="btn btn-primary" style="width: 100%;">Clear</button></div>
-										</div>
-										<div class="span3">
-											<div><button id="add-multiple-save-for-later" class="btn btn-primary" style="width: 100%;">Add Multiple Items</button></div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<% } %>
-
-								<% if (!hasArrObjFilteredItems) { %>
-
-									<div class="row-fluid">
-										<div class="span8">
-											<span>&nbsp;</span>
-										</div>
-
-										<div class="span9">
-
-											<div class="row-fluid">
-												<div class="span3">
-													<div>
-														<input type="text" value="<%=stFilterSaveForLaterRef%>" name="swx_filter_save_for_later_client" id="swx_filter_save_for_later_client"
-														 placeholder="<%= _('Filter By Client Name').translate() %>" class="input-large" style="width: 93%;">
-													</div>
-
-												</div>
-
-												<div class="span2">
-													<div><button id="swx-butt-save-for-later-filter" class="btn btn-primary" style="width: 100%;">Filter</button></div>
-												</div>
-
-												<div class="span2">
-													<div><button id="swx-butt-save-for-later-filter-clear" class="btn btn-primary" style="width: 100%;">Clear</button></div>
-												</div>
-												<div class="span3">
-													<div><button id="add-multiple-save-for-later" class="btn btn-primary" style="width: 100%;">Add Multiple Items</button></div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									<% } %>
-
-
-										<% } %>
-
-											<% } %>
-
-		<% /* TODO: pagination and sub title - commented!
-	<div class="product-list-sub-header">
-	<div class="pull-right" data-type="product-list-actions">
-		<!-- PAGINATION -->
-	</div>
-	</div>
-		*/ %>
-
-			<div class="product-list-items" data-type="product-list-items">
-				<%= displayInRows(items.models, productListDisplay, 1) %>
-			</div>
-
-			<% } else { %>
-				<span class="product-list-header-no-items">
-			<%= _('You don\'t have items in this list yet.').translate() %>
-		</span>
-				<% } %>
+            <%= displayInRows(filteredItems, productListDisplay, 1) %>
+        </div>
+        <% } else { %>
+            	<span class="product-list-header-no-items">
+								<%= _('You don\'t have items in this list yet.').translate() %>
+							</span>
 					<% } %>
-	</div>
+    </div>

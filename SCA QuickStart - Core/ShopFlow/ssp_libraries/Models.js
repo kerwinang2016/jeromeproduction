@@ -32,7 +32,8 @@ var container = nlapiGetWebContainer()
 //,	settings = session.getSiteSettings()
 ,	customer = session.getCustomer()
 ,	context = nlapiGetContext()
-,	order = session.getOrder();
+,	order = session.getOrder()
+, myaccountsuiteleturl = nlapiResolveURL('SUITELET','customscript_myaccountsuitelet',1,true);
 
 //Model.js
 // SiteSettings.js
@@ -199,7 +200,7 @@ Application.defineModel('Profile', {
 
 		profile.internalid = nlapiGetUser() + '';
     if(session.isLoggedIn2()){
-    var url = "https://forms.sandbox.netsuite.com/app/site/hosting/scriptlet.nl?script=213&deploy=1&compid=3857857&h=272f4e9a8e3a11190698";
+    var url = myaccountsuiteleturl;
 				var response = {};
 				var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
         var body = JSON.parse(res.getBody());
@@ -231,8 +232,13 @@ Application.defineModel('LiveOrder', {
 		try
 		{
       var self = this;
+      var url = myaccountsuiteleturl;
+  				var response = {};
+  				var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+          var body = JSON.parse(res.getBody());
+  				var parent = body[0];
 			result.lines = this.getLines(order_fields);
-      // nlapiLogExecution('debug','lines',JSON.stringify(result.lines));
+
       _.each(result.lines, function (line_data)
   		{
         if(!line_data.options){
@@ -248,7 +254,7 @@ Application.defineModel('LiveOrder', {
                 var res = nlapiSearchRecord('customrecord_sc_tailor_client',null,new nlobjSearchFilter('internalid',null,'is',options1.value));
                 if(res){
                   var tcrec = nlapiLoadRecord('customrecord_sc_tailor_client',options1.value);
-                  if(tcrec.getFieldValue('custrecord_tc_tailor') != nlapiGetContext().getUser()){
+                  if(tcrec.getFieldValue('custrecord_tc_tailor') != nlapiGetContext().getUser() && tcrec.getFieldValue('custrecord_tc_tailor') != parseInt(parent,10)){
                     self.removeLine(line_data.internalid);
                     result.lines = self.getLines(order_fields);
                   }
@@ -579,16 +585,18 @@ Application.defineModel('LiveOrder', {
 
 		var items = [];
     var self = this;
-    var url = "https://forms.sandbox.netsuite.com/app/site/hosting/scriptlet.nl?script=213&deploy=1&compid=3857857&h=272f4e9a8e3a11190698";
+    var url = myaccountsuiteleturl;
 				var response = {};
 				var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
         var body = JSON.parse(res.getBody());
 				var parent = body[0];
 		_.each(lines_data, function (line_data)
 		{
+
       var tcrec = nlapiLoadRecord('customrecord_sc_tailor_client',line_data.options.custcol_tailor_client);
       if(tcrec.getFieldValue('custrecord_tc_tailor') == nlapiGetContext().getUser() ||
       tcrec.getFieldValue('custrecord_tc_tailor') == parent){
+
 			var item = {
 					internalid: line_data.item.internalid.toString()
 				,	quantity:  _.isNumber(line_data.quantity) ? parseInt(line_data.quantity, 10) : 1
@@ -1861,9 +1869,27 @@ Application.defineModel('ProductList', {
 		,	lastmodified: new nlobjSearchColumn('lastmodified')
 		};
 	}
+,  processFilterData: function(filterData){
+    if(filterData && filterData.length > 0){
+      var filters = new Array();
+      for(var i = 0; i < filterData.length; i++){
 
+        var filter = new Object();
+        var filterDataArr = filterData[i].split("|");
+
+        filter.field = filterDataArr[0];
+        filter.join = filterDataArr[1];
+        filter.operand = filterDataArr[2];
+        filter.type = filterDataArr[3];
+        filter.value = filterDataArr[4];
+
+        filters.push(filter);
+      }
+      return filters;
+    }
+  }
 	// Returns a product list based on a given id and userId
-,	get: function (id)
+,	get: function (id,plifilters)
 	{
 		'use strict';
 
@@ -1872,11 +1898,16 @@ Application.defineModel('ProductList', {
 		{
 			this.verifySession();
 		}
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 		var filters = [new nlobjSearchFilter('internalid', null, 'is', id)
 			,	new nlobjSearchFilter('isinactive', null, 'is', 'F')
-			,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', nlapiGetUser())]
-		,	product_lists = this.searchHelper(filters, this.getColumns(), true);
+			,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', tailor)]
+		,	product_lists = this.searchHelper(filters, this.getColumns(), true,null,null,plifilters);
 
 		if (product_lists.length >= 1)
 		{
@@ -1894,12 +1925,16 @@ Application.defineModel('ProductList', {
 		'use strict';
 
 		this.verifySession();
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 		var filters = [new nlobjSearchFilter('custrecord_ns_pl_pl_type', null, 'is', this.later_type_id)
-			,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', nlapiGetUser())
+			,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', tailor)
 			,	new nlobjSearchFilter('isinactive', null, 'is', 'F')]
 		,	product_lists = this.searchHelper(filters, this.getColumns(), true);
-
 		if (product_lists.length >= 1)
 		{
 			return product_lists[0];
@@ -1939,7 +1974,7 @@ Application.defineModel('ProductList', {
 		return text ? text.replace(/<br>/g, '\n').replace(/</g, '&lt;').replace(/\>/g, '&gt;') : '';
 	}
 
-,	searchHelper: function(filters, columns, include_store_items, order, template_ids)
+,	searchHelper: function(filters, columns, include_store_items, order, template_ids, plifilters)
 	{
 		'use strict';
 
@@ -1981,7 +2016,8 @@ Application.defineModel('ProductList', {
 							sort: 'created'
 						,	order: '-1'
 						,	page: -1
-					})
+					}, plifilters
+        )
 				};
 
 			if (template_ids && productList.templateid)
@@ -2005,9 +2041,14 @@ Application.defineModel('ProductList', {
 		{
 			this.verifySession();
 		}
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 		var filters = [new nlobjSearchFilter('isinactive', null, 'is', 'F')
-			,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', nlapiGetUser())]
+			,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', tailor)]
 		,	template_ids = []
 		,	product_lists = this.searchHelper(filters, this.getColumns(), false, order, template_ids)
 		,	self = this;
@@ -2071,7 +2112,17 @@ Application.defineModel('ProductList', {
 		'use strict';
 
 		this.verifySession();
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
+        if(parent != nlapiGetUser()){
+    			var res = nlapiRequestURL(url+"&action=createproductlist&user="+parent,JSON.stringify(data));
+    			var body = JSON.parse(res.getBody());
+    			return body;
+    		}
 		var productList = nlapiCreateRecord('customrecord_ns_pl_productlist');
 
 		data.templateid && productList.setFieldValue('custrecord_ns_pl_pl_templateid', data.templateid);
@@ -2080,7 +2131,7 @@ Application.defineModel('ProductList', {
 		data.name && productList.setFieldValue('name', this.sanitize(data.name));
 		data.description && productList.setFieldValue('custrecord_ns_pl_pl_description', this.sanitize(data.description));
 
-		productList.setFieldValue('custrecord_ns_pl_pl_owner', nlapiGetUser());
+		productList.setFieldValue('custrecord_ns_pl_pl_owner', tailor);
 
 		return nlapiSubmitRecord(productList);
 	}
@@ -2093,8 +2144,13 @@ Application.defineModel('ProductList', {
 		this.verifySession();
 
 		var product_list = nlapiLoadRecord('customrecord_ns_pl_productlist', id);
-
-		if (parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== nlapiGetUser())
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
+		if (parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== nlapiGetUser() && parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== parseInt(parent,10))
 		{
 			throw unauthorizedError;
 		}
@@ -2114,10 +2170,15 @@ Application.defineModel('ProductList', {
 		'use strict';
 
 		this.verifySession();
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 		var product_list = nlapiLoadRecord('customrecord_ns_pl_productlist', id);
 
-		if (parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== nlapiGetUser())
+		if (parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== nlapiGetUser() && parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== parseInt(parent,10))
 		{
 			throw unauthorizedError;
 		}
@@ -2154,10 +2215,15 @@ Application.defineModel('ProductListItem', {
 		'use strict';
 
 		this.verifySession();
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 		var filters = [new nlobjSearchFilter('internalid', null, 'is', id)
 				,	new nlobjSearchFilter('isinactive', null, 'is', 'F')
-				,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', 'custrecord_ns_pl_pli_productlist', 'is', nlapiGetUser())]
+				,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', 'custrecord_ns_pl_pli_productlist', 'is', tailor)]
 		,	sort_column = 'custrecord_ns_pl_pli_item'
 		,	sort_direction = 'ASC'
 		,	productlist_items = this.searchHelper(filters, sort_column, sort_direction, true);
@@ -2177,12 +2243,17 @@ Application.defineModel('ProductListItem', {
 		'use strict';
 
 		this.verifySession();
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 		var ProductList = Application.getModel('ProductList')
 		,	product_list_item = nlapiLoadRecord('customrecord_ns_pl_productlistitem', id)
 		,	parent_product_list = ProductList.get(product_list_item.getFieldValue('custrecord_ns_pl_pli_productlist'));
 
-		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser())
+		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser() && parseInt(parent_product_list.owner.id, 10) !== parseInt(tailor,10))
 		{
 			throw unauthorizedError;
 		}
@@ -2225,7 +2296,12 @@ Application.defineModel('ProductListItem', {
 		'use strict';
 
 		this.verifySession();
-
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 		if (!(data.productList && data.productList.id))
 		{
 			throw notFoundError;
@@ -2234,7 +2310,7 @@ Application.defineModel('ProductListItem', {
 		var ProductList = Application.getModel('ProductList')
 		,	parent_product_list = ProductList.get(data.productList.id);
 
-		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser())
+		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser() && parseInt(parent_product_list.owner.id, 10) !== parseInt(tailor,10))
 		{
 			throw unauthorizedError;
 		}
@@ -2252,7 +2328,8 @@ Application.defineModel('ProductListItem', {
 		data.item && data.item.internalid && productListItem.setFieldValue('custrecord_ns_pl_pli_item', data.item.internalid);
 		data.priority && data.priority.id && productListItem.setFieldValue('custrecord_ns_pl_pli_priority', data.priority.id);
 		productListItem.setFieldValue('custrecord_ns_pl_pli_productlist', data.productList.id);
-
+    if(!productListItem.getFieldValue('custrecord_ns_pl_pli_fitter'))
+    productListItem.setFieldValue('custrecord_ns_pl_pli_fitter',nlapiGetUser());
 		data.internalid = nlapiSubmitRecord(productListItem);
 
 		return data;
@@ -2264,12 +2341,18 @@ Application.defineModel('ProductListItem', {
 		'use strict';
 
 		this.verifySession();
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 
 		var ProductList = Application.getModel('ProductList')
 		,	product_list_item = nlapiLoadRecord('customrecord_ns_pl_productlistitem', id)
 		,	parent_product_list = ProductList.get(product_list_item.getFieldValue('custrecord_ns_pl_pli_productlist'));
 
-		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser())
+		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser() && parseInt(parent_product_list.owner.id, 10) !== parseInt(tailor,10) )
 		{
 			throw unauthorizedError;
 		}
@@ -2281,16 +2364,24 @@ Application.defineModel('ProductListItem', {
 		data.item && data.item.id && product_list_item.setFieldValue('custrecord_ns_pl_pli_item', data.item.id);
 		data.priority && data.priority.id && product_list_item.setFieldValue('custrecord_ns_pl_pli_priority', data.priority.id);
 		data.productList && data.productList.id && product_list_item.setFieldValue('custrecord_ns_pl_pli_productlist', data.productList.id);
-
+    if(!product_list_item.getFieldValue('custrecord_ns_pl_pli_fitter'))
+    product_list_item.setFieldValue('custrecord_ns_pl_pli_fitter',nlapiGetUser());
+    product_list_item.setFieldValue('custrecord_ns_pl_pli_isarchived',data.custrecord_ns_pl_pli_isarchived);
 		nlapiSubmitRecord(product_list_item);
 	}
 
 	// Retrieves all Product List Items related to the given Product List Id
-,	search: function (product_list_id, include_store_item, sort_and_paging_data)
+,	search: function (product_list_id, include_store_item, sort_and_paging_data, plifilters)
 	{
 		'use strict';
 
 		this.verifySession();
+    var url = myaccountsuiteleturl;
+        var response = {};
+        var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+        var body = JSON.parse(res.getBody());
+        var parent = body[0];
+        var tailor = parent?parent:nlapiGetUser();
 
 		if (!product_list_id)
 		{
@@ -2300,9 +2391,12 @@ Application.defineModel('ProductListItem', {
 		var filters = [
 			new nlobjSearchFilter('custrecord_ns_pl_pli_productlist', null, 'is', product_list_id)
 		,	new nlobjSearchFilter('isinactive', null, 'is', 'F')
-		,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', 'custrecord_ns_pl_pli_productlist', 'is', nlapiGetUser())]
+		,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', 'custrecord_ns_pl_pli_productlist', 'is', tailor )]
 		,	sort_column = sort_and_paging_data.sort
 		,	sort_direction = sort_and_paging_data.order;
+    if(plifilters && plifilters.custrecord_ns_pl_pli_fitter){
+      filters.push(new nlobjSearchFilter('custrecord_ns_pl_pli_fitter',null,'anyof',plifilters.custrecord_ns_pl_pli_fitter))
+    }
 
 		if (!sort_column)
 		{
@@ -2314,7 +2408,7 @@ Application.defineModel('ProductListItem', {
 			sort_direction = '-1';
 		}
 
-		return this.searchHelper(filters, sort_column, sort_direction === '-1' ? 'DESC' : 'ASC', include_store_item);
+		return this.searchHelper(filters, sort_column, sort_direction === '-1' ? 'DESC' : 'ASC', include_store_item,plifilters);
 	}
 
 ,	getObjClient: function (paramOptions)
@@ -2408,7 +2502,7 @@ Application.defineModel('ProductListItem', {
 		return objRet;
 	}
 
-,	searchHelper: function (filters, sort_column, sort_direction, include_store_item)
+,	searchHelper: function (filters, sort_column, sort_direction, include_store_item,plifilters)
 	{
 		'use strict';
 
@@ -2425,6 +2519,10 @@ Application.defineModel('ProductListItem', {
 		,	item_type: new nlobjSearchColumn('type', 'custrecord_ns_pl_pli_item')
 		,	priority: new nlobjSearchColumn('custrecord_ns_pl_pli_priority')
 		,	lastmodified: new nlobjSearchColumn('lastmodified')
+    , fitter: new nlobjSearchColumn('custrecord_ns_pl_pli_fitter')
+    , custrecord_ns_pl_pli_isarchived: new nlobjSearchColumn('custrecord_ns_pl_pli_isarchived')
+    //, comment: new nlobjSearchColumn('custrecord_ns_pl_pli_comment')
+    , parent: new nlobjSearchColumn('custrecord_ns_pl_pl_owner','custrecord_ns_pl_pli_productlist')
 		};
 
 		productListItemColumns[sort_column] && productListItemColumns[sort_column].setSort(sort_direction === 'DESC');
@@ -2473,6 +2571,9 @@ Application.defineModel('ProductListItem', {
 				,	options: JSON.parse(productListItemSearchRecord.getValue('custrecord_ns_pl_pli_options') || '{}')
 				,	quantity: parseInt(productListItemSearchRecord.getValue('custrecord_ns_pl_pli_quantity'), 10)
 				,	created: productListItemSearchRecord.getValue('created')
+        , fitter: productListItemSearchRecord.getText('custrecord_ns_pl_pli_fitter')?productListItemSearchRecord.getText('custrecord_ns_pl_pli_fitter'):productListItemSearchRecord.getText('custrecord_ns_pl_pl_owner','custrecord_ns_pl_pli_productlist')
+        , fitterid:productListItemSearchRecord.getValue('custrecord_ns_pl_pli_fitter')?productListItemSearchRecord.getValue('custrecord_ns_pl_pli_fitter'):productListItemSearchRecord.getValue('custrecord_ns_pl_pl_owner','custrecord_ns_pl_pli_productlist')
+        //, comment: productListItemSearchRecord.getValue('custrecord_ns_pl_pli_comment')
 				,	lastmodified: productListItemSearchRecord.getValue('lastmodified')
 					// we temporary store the item reference, after this loop we use StoreItem.preloadItems instead doing multiple StoreItem.get()
 				,	store_item_reference: {id: itemInternalId, type: itemType}
@@ -2485,29 +2586,27 @@ Application.defineModel('ProductListItem', {
 					,	firstname: ''
 					,	lastname: ''
 					}
+        ,	custrecord_ns_pl_pli_isarchived: productListItemSearchRecord.getValue('custrecord_ns_pl_pli_isarchived')
 				};
-
-			/**
-			var objClient = self.getObjClient(productListItem['options']);
-
-			productListItem['client']['id'] = objClient['internalid']
-			productListItem['client']['firstname'] = objClient['firstname']
-			productListItem['client']['lastname'] = objClient['lastname']
-			**/
 
 			var clientInternalId = self.getObjClientInternalid(productListItem['options']);
 			var isClientInternalIdExistInMapping = (isObjectExist(objClientMapping['' + clientInternalId + ''])) ? true : false;
 
 			if (isClientInternalIdExistInMapping)
 			{
+
 				productListItem['client']['id'] = objClientMapping['' + clientInternalId + '']['internalid']
 				productListItem['client']['firstname'] = objClientMapping['' + clientInternalId + '']['firstname']
 				productListItem['client']['lastname'] = objClientMapping['' + clientInternalId + '']['lastname']
 
 			}
-
-
-			productlist_items.push(productListItem);
+      if(plifilters && plifilters.client &&
+        productListItem.client.firstname.indexOf(plifilters.client) == -1 &&
+        productListItem.client.firstname.indexOf(plifilters.client) == -1)
+        {}
+      else{
+  			productlist_items.push(productListItem);
+      }
 		});
 
 		var store_item_references = _(productlist_items).pluck('store_item_reference')

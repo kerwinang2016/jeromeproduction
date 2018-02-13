@@ -3,7 +3,7 @@ SC.sessioncheck = function(){
 	self = this;
 	//console.log('hastimedout');
 	jQuery.ajax({
-		url: 'https://jerome.na2.securedcheckout.com/c.3857857/myaccount/services/live-order.ss'
+		url: '/c.3857857/myaccount/services/live-order.ss'
 	});
 	setTimeout(function(){
 		self.recurring();

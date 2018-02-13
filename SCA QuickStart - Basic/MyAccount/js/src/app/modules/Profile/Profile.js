@@ -1,12 +1,12 @@
 // Profile.js
 // -----------------
 // Defines the Profile module (Collection, Views, Router)
-// As the profile is instanciated in the application (without definining a model) 
+// As the profile is instanciated in the application (without definining a model)
 // the validation is configured here in the mountToApp
 define('Profile', ['Profile.Views','Profile.Router','User.Model'], function (Views, Router, UserModel)
 {
 	'use strict';
-		
+
 	return	{
 
 		Views: Views
@@ -18,11 +18,17 @@ define('Profile', ['Profile.Views','Profile.Router','User.Model'], function (Vie
 			,	url: 'overview'
 			,	index: 0
 			}
+		,{
+				id: 'stocklist'
+			,	name: _('Stock List').translate() + '<span class="label label-warning pull-right">new</span>'
+			,	url: 'stocklist'
+			,	index: 7
+			}
 		,	{
 				id: 'settings'
 			,	name: _('Settings').translate()
 			,	index: 4
-			,	children: 
+			,	children:
 				[
 					{
 						id: 'profileinformation'
@@ -47,13 +53,13 @@ define('Profile', ['Profile.Views','Profile.Router','User.Model'], function (Vie
 					,	name: _('Design Options Restriction').translate()
 					,	url: 'designoptionsrestriction'
 					,	index: 6
-					}			
+					}
 				,	{
 						id: 'favouriteoptions'
 					,	name: _('Favourite Options').translate()
 					,	url: 'favouriteoptions'
 					,	index: 7
-					}	
+					}
 				]
 			}
 		]
@@ -69,7 +75,7 @@ define('Profile', ['Profile.Views','Profile.Router','User.Model'], function (Vie
 			application.UserModel = UserModel.extend({
 				urlRoot: 'services/profile.ss'
 			});
-			
+
 			application.getUser().on('change:name change:lastname change:companyname', function ()
 			{
 				Layout.updateHeader();

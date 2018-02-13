@@ -6,7 +6,18 @@ define('Profile.Views', function ()
 	'use strict';
 
 	var Views = {};
+	Views.StockList = Backbone.View.extend({
+			template: 'stocklist'
+		,	title: _('Stock List').translate()
+		,	attributes: {'class': 'StockListView'}
+		, events: {
 
+		}
+		, initialize: function(options){
+			this.application = options.application;
+			this.model = options.model;
+		}
+	});
 	// home page view
 	Views.Home = Backbone.View.extend({
 
@@ -263,7 +274,7 @@ define('Profile.Views', function ()
 				if(data){
 					self.values = JSON.parse(JSON.parse(data));
 				}
-				
+
 				self.options.application.getLayout().showContent(self, 'designoptionsrestriction', [{
 					text: self.title
 				,	href: 'designoptionsrestriction'
@@ -297,7 +308,7 @@ define('Profile.Views', function ()
 					formatValues.push(formatValue);
 				}
 			});
-			
+
 			param.data = JSON.stringify(formatValues);
 			param.type = "save_designoption_restriction";
 			param.id = this.options.application.getUser().get("internalid");

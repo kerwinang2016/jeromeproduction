@@ -12,7 +12,7 @@
 			return line.get('item').get('itemtype') === 'GiftCert';
 		})
 	//Test Issue #111 - Sales order PDF
-	,	url = "https://jerome.securedcheckout.com/app/site/hosting/scriptlet.nl?script=121&deploy=1&custparam_record_id=" + model.get('internalid') + "&custparam_record_type=salesorder&custparam_template=5"
+	,	url = "https://"+window.location.hostname+"/app/site/hosting/scriptlet.nl?script=121&deploy=1&custparam_record_id=" + model.get('internalid') + "&custparam_record_type=salesorder&custparam_template=5"
 
 	,	elements = [
 			{addClass: 'order-date', value: _('Date: $(0)').translate(model.get('date'))}

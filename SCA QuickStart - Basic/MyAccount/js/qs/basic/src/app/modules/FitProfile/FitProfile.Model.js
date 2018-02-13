@@ -17,9 +17,10 @@ define('FitProfile.Model', ['Client.Model', 'Client.Collection', 'Profile.Model'
 			var self = this;
 			this.set({current_client: null, current_profile: null, current_user: userID});
 			//Initialize Clients Collection
+			var tailor = SC.Application('MyAccount').getUser().get('parent')!=null? SC.Application('MyAccount').getUser().get('parent'):SC.Application('MyAccount').getUser().id;
 			var param = new Object();
 			param.type = "get_client";
-			param.data = JSON.stringify({filters: ["custrecord_tc_tailor||anyof|list|" + userID], columns: ["internalid", "created", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_dob", "custrecord_tc_company", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone", "custrecord_tc_notes"]});
+			param.data = JSON.stringify({filters: ["custrecord_tc_tailor||anyof|list|" + tailor], columns: ["internalid", "created", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_dob", "custrecord_tc_company", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone", "custrecord_tc_notes"]});
 			_.requestUrl("customscript_ps_sl_set_scafieldset", "customdeploy_ps_sl_set_scafieldset", "GET", param).always(function(data){
 				if(data){
 					self.client_collection.add(JSON.parse(data));
@@ -42,7 +43,7 @@ define('FitProfile.Model', ['Client.Model', 'Client.Collection', 'Profile.Model'
 				var currentUser = this.get("current_user");
 
 				console.log('currentUser: ' + currentUser)
-				
+
 				var param = new Object();
 				param.type = "get_profile";
 				param.data = JSON.stringify({filters: ["custrecord_fp_client||anyof|list|" + clientID], columns: ["internalid", "name", "created", "lastmodified", "custrecord_fp_product_type", "custrecord_fp_measure_type", "custrecord_fp_measure_value"]});

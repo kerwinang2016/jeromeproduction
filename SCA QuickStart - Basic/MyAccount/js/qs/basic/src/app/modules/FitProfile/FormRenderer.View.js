@@ -31,7 +31,7 @@ define('FormRenderer.View',  ['Client.Model', 'Profile.Model'], function (Client
 	,	render: function(){
 			var type = this.options.mode.split("|")[1],
 				id = this.options.mode.split("|")[0],
-				parent = this.options.mode.split("|")[2],
+				parent = SC.Application('MyAccount').getUser().get('parent')!=null? SC.Application('MyAccount').getUser().get('parent'):SC.Application('MyAccount').getUser().id;//this.options.mode.split("|")[2],
 				html = ""
 				Model = "";
 
@@ -148,7 +148,7 @@ define('FormRenderer.View',  ['Client.Model', 'Profile.Model'], function (Client
 					param.id = this.id;
 				}
 				param.data = JSON.stringify(dataToSend);
-				
+
 				_.requestUrl("customscript_ps_sl_set_scafieldset", "customdeploy_ps_sl_set_scafieldset", "POST", param).always(function(data){
 					var newRec = JSON.parse(data.responseText)
 					if(data.status){
@@ -159,15 +159,15 @@ define('FormRenderer.View',  ['Client.Model', 'Profile.Model'], function (Client
 							self.options.profileModel[self.type + "_collection"].add(newRec.rec);
 						}
 						jQuery(".cancel-action").trigger("click");
-
+						var tailor = SC.Application('MyAccount').getUser().get('parent')!= null? SC.Application('MyAccount').getUser().get('parent'):SC.Application('MyAccount').getUser().id;
 						var param = new Object();
 						param.type = "get_client";
-						param.data = JSON.stringify({filters: ["custrecord_tc_tailor||anyof|list|" + SC.Application('MyAccount').getLayout().currentView.model.get('current_user')], columns: ["internalid", "created", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_dob", "custrecord_tc_company", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone", "custrecord_tc_notes"]});
+						param.data = JSON.stringify({filters: ["custrecord_tc_tailor||anyof|list|" + tailor], columns: ["internalid", "created", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_dob", "custrecord_tc_company", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone", "custrecord_tc_notes"]});
 						_.requestUrl("customscript_ps_sl_set_scafieldset", "customdeploy_ps_sl_set_scafieldset", "GET", param).always(function(data){
 							if(data){
 								var client_model = SC.Application('MyAccount').getLayout().currentView.model;
 								client_model.set('swx_client_profile_order_history', '');
-								
+
 								jQuery("div[data-type='alert-placeholder']").empty();
 								client_model.client_collection.reset(JSON.parse(data));
 								var clientCollection = client_model.client_collection;
@@ -177,19 +177,19 @@ define('FormRenderer.View',  ['Client.Model', 'Profile.Model'], function (Client
 								client_model.set('swx_order_client_email',email);
 								client_model.set('swx_order_client_phone',phone);
 								client_model.set('swx_is_display_client_details', '');
-								
+
 								var objFilters = {};
 								objFilters['name'] = client_model.get('swx_order_client_name');
 								objFilters['email'] = client_model.get('swx_order_client_email');
 								objFilters['phone'] = client_model.get('swx_order_client_phone');
-								
+
 								var arrObjClient = _.getArrObjOrderClientList(arrObjClientCollection, objFilters)
-								
+
 								jQuery("[id='order-history']").empty();
 								var arrObjClientList = [];
 								jQuery("#swx-order-client-list").empty();
 								jQuery("#swx-order-client-list").html(SC.macros.swxOrderClientList(arrObjClient));
-								
+
 								_.toggleMobileNavButt();
 								jQuery('#swx-order-client-name').val(firstname + ' ' + lastname);
 								jQuery('#swx-order-client-email').val(email);
@@ -197,13 +197,13 @@ define('FormRenderer.View',  ['Client.Model', 'Profile.Model'], function (Client
 
 							}
 						});
-						
+
 						self.options.application.getLayout().currentView.showContent();
 						self.options.application.getLayout().currentView.displayProfiles(JSON.parse(data.responseText), self.id, true);
 					}
 				});
 			}
-			
+
 		}
 	});
 });

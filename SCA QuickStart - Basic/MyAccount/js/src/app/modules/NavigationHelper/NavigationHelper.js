@@ -290,14 +290,12 @@ define('NavigationHelper', ['Session', 'UrlHelper'], function (Session)
 					,	hashtag = target_data.hashtag
 					,	new_url = ''
 					,	clean_hashtag = hashtag && hashtag.replace('#', '');
-					console.log('getTargetTouchpoint');
 					// If we already are in the target touchpoint then we return the hashtag or the original href.
 					// We don't want to absolutize this url so we just return it.
 					if (target_data.touchpoint === application.getConfig('currentTouchpoint'))
 					{
 						new_url = clean_hashtag ? ('#' + clean_hashtag) : this.getUrl($target);
 						new_url = target_data.keepOptions ? this.getKeepOptionsUrl($target) : new_url;
-						console.log('currentTouchpoint');
 					}
 					else
 					{
@@ -330,7 +328,6 @@ define('NavigationHelper', ['Session', 'UrlHelper'], function (Session)
 					{
 						new_url = application.addCrossDomainParameters(new_url);
 					}
-					console.log(new_url);
 					return new_url;
 				}
 

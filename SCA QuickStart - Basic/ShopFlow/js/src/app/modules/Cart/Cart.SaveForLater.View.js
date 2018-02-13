@@ -23,15 +23,13 @@ define('Cart.SaveForLater.View', ['ErrorManagement', 'ProductListDetails.View', 
 
 			var self = this;
 
-			var stFilterSaveForLaterClientName = this.model.get('swx_filter_save_for_later_client');
+			// var stFilterSaveForLaterClientName = this.model.get('swx_filter_save_for_later_client');
 
-			application.getSavedForLaterProductList(stFilterSaveForLaterClientName).done(function(json)
+			application.getSavedForLaterProductList().done(function(json)
 			{
 				var objSFL = json;
-				objSFL['swx_filter_save_for_later_client'] = stFilterSaveForLaterClientName;
-
+				// objSFL['swx_filter_save_for_later_client'] = stFilterSaveForLaterClientName;
 				self.renderSaveForLaterSectionHelper(new ProductListModel(objSFL));
-
 			});
 		}
 
@@ -42,6 +40,7 @@ define('Cart.SaveForLater.View', ['ErrorManagement', 'ProductListDetails.View', 
 
 			this.product_list_details_view = new application.ProductListModule.Views.Details({ application: application, model: pl_model, sflMode:true, addToCartCallback:function() {self.addToCart(); } } );
 			this.product_list_details_view.template = 'product_list_details_later';
+			this.product_list_details_view.showarchiveditems = false;
 			this.$('[data-type=saved-for-later-placeholder]').empty();
 			this.$('[data-type=saved-for-later-placeholder]').append(this.product_list_details_view.render().el);
 		}

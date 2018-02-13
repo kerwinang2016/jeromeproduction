@@ -135,7 +135,6 @@
 			if (!view.hasRenderedInModal)
 			{
 				var element_id = view.$el.attr('id');
-				console.log('SHIOW IN MODL');
 				this.$containerModal = view.$containerModal = jQuery(
 					SC.macros.modal(view.page_header || view.title || '')
 				).closest('div');

@@ -8,7 +8,7 @@ define('ProductListLists.View'
 	'use strict';
 
 	return Backbone.View.extend({
-		
+
 		template: 'product_list_lists'
 
 	,	title: _('Product Lists').translate()
@@ -26,16 +26,16 @@ define('ProductListLists.View'
 		}
 
 	,	initialize: function (options)
-		{			
+		{
 			this.options = options;
 			this.application = options.application;
 		}
 
 	,	render: function()
 		{
-			Backbone.View.prototype.render.apply(this, arguments); 
+			Backbone.View.prototype.render.apply(this, arguments);
 			//if there are no list we show the list creation form
-			if (!this.collection.length) 
+			if (!this.collection.length)
 			{
 				this.newProductListView = new ProductListCreationView({
 					application: this.application
@@ -44,12 +44,12 @@ define('ProductListLists.View'
 				});
 				this.newProductListView.render();
 				this.$('[data-type="new-product-list"]').append(this.newProductListView.$el);
-			}			
+			}
 		}
 
 	,	sortBy: function ()
 		{
-			// TODO: sortBy implementation 
+			// TODO: sortBy implementation
 		}
 
 		// Show create new product list modal form
@@ -75,16 +75,16 @@ define('ProductListLists.View'
 			,	body: _('Are you sure you want to remove this list?').translate()
 			,	confirm_delete_method: 'deleteListHandler'
 			});
-			this.application.getLayout().showInModal(this.deleteConfirmationView);				
+			this.application.getLayout().showInModal(this.deleteConfirmationView);
 		}
 
 		// called from the sub view when the user confirms he wants to delete the product list.
-	,	deleteListHandler: function(target) 
+	,	deleteListHandler: function(target)
 		{
 			var self = this
-			,	list = this.getListFromDom(jQuery(target)); 
+			,	list = this.getListFromDom(jQuery(target));
 
-			this.collection.remove(list); 
+			this.collection.remove(list);
 			list.url = ProductListModel.prototype.url;
 
 			list.destroy().done(function ()
@@ -94,11 +94,11 @@ define('ProductListLists.View'
 					_('Your $(0) list was removed').
 						translate('<span class="product-list-name">' + list.get('name') + '</span>')
 				);
-				self.deleteConfirmationView.$containerModal.modal('hide');				
-			}); 
+				self.deleteConfirmationView.$containerModal.modal('hide');
+			});
 		}
 
-		// temporarily highlights a list that has been recently added or edited 
+		// temporarily highlights a list that has been recently added or edited
 	,	highlightList: function (internalid)
 		{
 			var $list_dom = jQuery(this.el).find('article[data-product-list-id='+ internalid +']');
@@ -123,18 +123,18 @@ define('ProductListLists.View'
 					internalid: list_id
 				});
 
-			this.addListToCart(list); 
+			this.addListToCart(list);
 		}
 
 		// Adds an entire list to the cart
 	,	addListToCart: function (list)
 		{
 			console.log('ProductListLists.View.js >> addListToCart')
-			
+
 			// collect the items data to add to cart
 			var add_items = []
 			,	self = this
-			,	not_purchasable_items_count = 0; 
+			,	not_purchasable_items_count = 0;
 
 			list.get('items').each(function (item)
 			{
@@ -160,14 +160,14 @@ define('ProductListLists.View'
 				else
 				{
 					not_purchasable_items_count++;
-				}			
+				}
 			});
 
 			if (add_items.length === 0)
 			{
 				var errorMessage = _('All items in the list are not available for purchase.').translate();
 
-				self.showWarningMessage(errorMessage); 
+				self.showWarningMessage(errorMessage);
 
 				return;
 			}
@@ -175,10 +175,10 @@ define('ProductListLists.View'
 			// add the items to the cart and when its done show the confirmation view
 			this.application.getCart().addItems(add_items).done(function ()
 			{
-				// before showing the confirmation view we need to fetch the items of the list with all the data. 
-				self.application.getProductList(list.get('internalid')).done(function(model) 
+				// before showing the confirmation view we need to fetch the items of the list with all the data.
+				self.application.getProductList(list.get('internalid')).done(function(model)
 				{
-					self.addedToCartView = new ProductListAddedToCartView({						
+					self.addedToCartView = new ProductListAddedToCartView({
 						application: self.application
 					,	parentView: self
 					,	list: new ProductListModel(model) //pass the model with all the data
@@ -198,24 +198,24 @@ define('ProductListLists.View'
 						confirmMessage =  _('Good! $(1) item from your $(0) list was successfully added to your cart. You can continue to <a href="" data-touchpoint="viewcart">view your cart and checkout</a>').
 						translate('<a class="product-list-name" href="/productlist/' + list.get('internalid') + '">'+list.get('name')+'</a>', list.get('items').length);
 					}
-					
-					self.showConfirmationMessage(confirmMessage); 
-					self.application.getLayout().showInModal(self.addedToCartView); 
-				});	
-			}); 
+
+					self.showConfirmationMessage(confirmMessage);
+					self.application.getLayout().showInModal(self.addedToCartView);
+				});
+			});
 		}
 
 		// Edit list click handler
-	,	editListHandler: function (e) 
+	,	editListHandler: function (e)
 		{
-			var list = this.getListFromDom(jQuery(e.target)); 
-			this.editList(list); 
+			var list = this.getListFromDom(jQuery(e.target));
+			this.editList(list);
 		}
 
 		// Get the list (collection) from dom
 	,	getListFromDom: function ($target)
 		{
-			var list_id = $target.closest('[data-product-list-id]').data('product-list-id') + ''; 
+			var list_id = $target.closest('[data-product-list-id]').data('product-list-id') + '';
 			return this.options.collection.where({internalid: list_id})[0];
 		}
 
@@ -239,7 +239,7 @@ define('ProductListLists.View'
 
 		// override showContent() for showing the breadcrumb
 	,	showContent: function()
-		{			
+		{
 			this.application.getLayout().showContent(this, this.getViewLabel(), [{
 				text: _('Product Lists').translate(),
 				href: '/productlists'

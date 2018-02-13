@@ -40,7 +40,6 @@
 					var selectedField = _.where(field, {name: option_value.name})
 					if(selectedField && selectedField.length){
 						selectedField = selectedField[0]
-						console.log(selectedField)
 						for(var i = 0;i < selectedField.values.length; i++){
 							if(selectedField.label == 'CMT Lining Code' || selectedField.label == 'CMT Lining Quantity'){
 								var value = new Object();

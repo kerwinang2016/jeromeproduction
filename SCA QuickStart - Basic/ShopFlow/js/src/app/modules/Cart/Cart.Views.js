@@ -1,7 +1,7 @@
 // Cart.Views.js
 // -------------
 // Cart and Cart Confirmation views
-define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model','Session'], function (ErrorManagement, FitProfileModel, ItemDetailsModel,Session)
+define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model','Session','ProductList.Model'], function (ErrorManagement, FitProfileModel, ItemDetailsModel,Session,ProductListModel)
 {
 	'use strict';
 
@@ -49,6 +49,8 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 		,	'click [data-action="copy-to-cart"]' : 'copyItemToCartHandler'
 		, 'click [id="btn-proceed-checkout"]': 'validateItems'
 
+		, 'click [data-action="archive"]': 'archiveItems'
+		, 'click [data-action="show-archived-items"]': 'filterArchivedItems'
 		}
 
 	, validateItems: function(e){
@@ -150,7 +152,6 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 			e.preventDefault();
 			var self = this;
 			var items = jQuery('input[data-tag="saved-item"]:checked');
-			console.log(items)
 			if(items.length >0){
 				for(var i=0;i<items.length;i++){
 					var selected_product_list_item_id = items[i].getAttribute('data-id')
@@ -160,7 +161,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 					,	selected_item = selected_product_list_item.get('item')
 					,	selected_item_internalid = selected_item.internalid
 					,	item_detail = self.product_list_details_view.getItemForCart(selected_item_internalid, selected_product_list_item.get('quantity'));
-					console.log(selected_product_list_item_id)
+
 					item_detail.set('_optionsDetails', selected_item.itemoptions_detail);
 					item_detail.setOptionsArray(selected_product_list_item.getOptionsArray(), true);
 					var add_to_cart_promise = this.product_list_details_view.addItemToCart(item_detail)
@@ -191,9 +192,9 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 			this.options = options;
 			this.sflMode = options.sflMode;
 			this.addToCartCallback = options.addToCartCallback;
+			//this.product_list_details_view.showarchiveditems = false;
 
-
-			this.model.set('swx_filter_save_for_later_client', '');
+			//this.model.set('swx_filter_save_for_later_client', '');
 		}
 
 		// showContent:
@@ -259,46 +260,6 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 					} else if (typeof itemOptions[item_id] === 'object'){
 
 						if (item_id.indexOf(CONSTANTS.DESIGNOPTIONS) >= 0){ // handling design options
-
-							/**
-							var selections = [];
-							var clothType = item_id.replace(CONSTANTS.DESIGNOPTIONS, ""); // removes the custcol_designoptions prefix to get the clothType
-							clothType = clothType.charAt(0).toUpperCase() + clothType.slice(1); // capitalize string
-							var currentItemSelectedOptions = JSON.parse(itemOptions[item_id].label);
-							for (var index in currentItemSelectedOptions){
-								var currentSelectedOption = currentItemSelectedOptions[index];
-								for (var clothingIndex in designOptionsConfig){
-									var currentCloth = designOptionsConfig[clothingIndex];
-									if (currentCloth.item_type == clothType){
-										for (var optionsIndex in currentCloth.options){
-											var currentOptions = currentCloth.options[optionsIndex];
-											for (var fieldIndex in currentOptions.fields){
-												var currentField = currentOptions.fields[fieldIndex];
-												if (currentField.name == currentSelectedOption.name){
-													for (var valueIndex in currentField.values){
-														var currentValue = currentField.values[valueIndex];
-														if (currentValue == currentSelectedOption.value){
-															selections.push(
-																	{ 	"name" 	: currentField.label,
-																		"value"	: currentField.texts[valueIndex]
-																	});
-															break;
-														}
-													}
-												};
-											}
-										}
-									}
-								}
-							}
-							designOptions.push({
-								header: clothType,
-								selections : selections
-							})
-							**/
-
-							/** start D.A. debug **/
-
 							var selections = [];
 							var clothType = item_id.replace(CONSTANTS.DESIGNOPTIONS, ""); // removes the custcol_designoptions prefix to get the clothType
 							clothType = clothType.charAt(0).toUpperCase() + clothType.slice(1); // capitalize string
@@ -362,43 +323,53 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 						}
 					}
 				}
-
 				line.set('designOptions', designOptions);
-
 			});
 		}
 
-
+	, archiveItems: function(e){
+		e.preventDefault();
+		var self = this;
+		var items = jQuery('input[data-tag="saved-item"]:checked');
+		var saveditems = this.product_list_details_view.model.get('items');
+		if(items.length >0){
+			for(var i=0;i<items.length;i++){
+				var saveditem = saveditems.get(items[i].dataset.id);
+				saveditem.set('custrecord_ns_pl_pli_isarchived','T');
+				saveditem.save();
+			}
+		}
+	}
+	, filterArchivedItems: function(e){
+			e.preventDefault();
+			var self = this;
+			var $target = jQuery(e.target);
+			self.product_list_details_view.showarchiveditems = jQuery('#show-archived-items')[0].checked;
+			self.product_list_details_view.render();
+			jQuery('#saveForLaterItemsCart').collapse('show');
+			jQuery('#show-archived-items').prop('checked',self.product_list_details_view.showarchiveditems)
+	}
 	,	swxFilterSaveForLaterClick: function (e)
 		{
 			e.preventDefault();
 			var self = this;
 			var $target = jQuery(e.target);
-
+			var fitterfilter = jQuery('#filter_fitter').val();
 			var stFilterSaveForLaterValue = jQuery("[id='swx_filter_save_for_later_client']").val();
-
-			this.model.set('swx_filter_save_for_later_client', jQuery.trim(stFilterSaveForLaterValue));
-
-			// disable inputs and buttons
-			$target.find('input, button').prop('disabled', true);
-
-			this.model.save().success(
-				function ()
-				{
-					self.showContent();
-				}
-			).error(
-				function (jqXhr)
-				{
-
-				}
-			).always(
-				function ()
-				{
-					// enable inputs and buttons
-					$target.find('input, button').prop('disabled', false);
-				}
-			);
+			var filters = {};
+			if(fitterfilter != -1){
+					filters.custrecord_ns_pl_pli_fitter = fitterfilter;
+			}
+			if(stFilterSaveForLaterValue != ""){
+				filters.client = stFilterSaveForLaterValue;
+			}
+			this.product_list_details_view.model.fetch({ data: ({filters:JSON.stringify(filters)})}).done(function(data2){
+				self.product_list_details_view.model = new ProductListModel(data2);
+				self.product_list_details_view.render();
+				jQuery('#saveForLaterItemsCart').collapse('show');
+				jQuery('#filter_fitter').val(fitterfilter);
+				jQuery("[id='swx_filter_save_for_later_client']").val(stFilterSaveForLaterValue);
+			});
 		}
 
 	,	swxFilterSaveForLaterClearClick: function (e)
@@ -406,31 +377,13 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 			e.preventDefault();
 			var self = this;
 			var $target = jQuery(e.target);
-
-			var stFilterSaveForLaterValue = '';
-
-			this.model.set('swx_filter_save_for_later_client', stFilterSaveForLaterValue);
-
-			// disable inputs and buttons
-			$target.find('input, button').prop('disabled', true);
-
-			this.model.save().success(
-				function ()
-				{
-					self.showContent();
-				}
-			).error(
-				function (jqXhr)
-				{
-
-				}
-			).always(
-				function ()
-				{
-					// enable inputs and buttons
-					$target.find('input, button').prop('disabled', false);
-				}
-			);
+			this.product_list_details_view.model.fetch().done(function(data2){
+				self.product_list_details_view.model = new ProductListModel(data2);
+				self.product_list_details_view.render();
+				jQuery('#saveForLaterItemsCart').collapse('show');
+				jQuery('#filter_fitter').val('-1');
+				jQuery("[id='swx_filter_save_for_later_client']").val('');
+			});
 		}
 
 	,	swxSetHoldFabricClick: function (e)

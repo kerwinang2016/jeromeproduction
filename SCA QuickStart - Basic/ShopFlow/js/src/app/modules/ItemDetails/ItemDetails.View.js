@@ -73,14 +73,20 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 this.productList = options.pList.split("|")[1];
                 this.itemList = options.pList.split("|")[2];
             } else {
+              if(this.getClientId(historyFragment)){
                 this.client = this.getClientId(historyFragment).split('|')[0]// || historyFragment.split("?")[1].split("client=")[1].split("&")[0] || null;
                 this.productList = this.getClientId(historyFragment).split('|')[1];
+              }
             }
 
             if (!this.model) {
                 throw new Error('A model is needed');
             }
-
+            _.suiteRest('getVendorLink', this.model.get('internalid')).always(function (data) {
+                if (data) {
+                    window.vendor = data;
+                }
+            });
             jQuery(document).ready(function () {
                 jQuery("[data-type='alert-placeholder']").empty();
             });
@@ -218,24 +224,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             window.tempQuantity = "";
             window.tempFitProfileMessage = "";
 
-			/**
-			var arrAllSelectedOptions = _.getArrAllSelectedOptions();
-			var arrErrConflictCodes = _.getArrErrConflictCodes(arrAllSelectedOptions);
-			var arrErrConflictCodesTotal = (!_.isNullOrEmpty(arrErrConflictCodes)) ? arrErrConflictCodes.length : 0;
-			var hasConflictCodes = (arrErrConflictCodesTotal != 0) ? true : false;
-
-			if (hasConflictCodes)
-			{
-				console.log('arrErrConflictCodesTotal: ' + arrErrConflictCodesTotal + '\n' + 'arrErrConflictCodes: ' + '\n' + JSON.stringify(arrErrConflictCodes, 'key', '\t'));
-
-				var modalTitleErrConflictCode = 'Selected Options Error';
-				var modalContentErrConflictCode = _.getHtmlErrConflictCodes(arrErrConflictCodes);
-				_.displayModalWindow(modalTitleErrConflictCode, modalContentErrConflictCode, true)
-
-				return false;
-			}
-			**/
-
             var arrSelectedValues = _.getArrAllSelectedOptions();
             var objSelectSelectedValues = _.getObjSelectSelectedValues();
             var objConflictCodeMapping = OBJ_CONFLICT;
@@ -258,6 +246,11 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     , layout = this.application.getLayout()
                     , cart_promise
                     , error_message = _('Sorry, there is a problem with this Item and can not be purchased at this time. Please check back later.').translate();
+
+
+                self.model.setOption('custcol_custom_fabric_code', jQuery('#fabric-cmt-code').val());
+                self.model.setOption('custcol_custom_fabric_collection', jQuery('#fabric-cmt-collection').val());
+                self.model.setOption('custcol_custom_fabric_vendor', jQuery('#fabric-cmt-vendor').val());
 
                 var categories = _.where(self.model.get("facets"), { id: "category" })[0].values[0].values;
                 //remove the line item that's being edited
@@ -314,8 +307,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     self.model.setOption('custcol_fitprofile_message', jQuery('#fitprofile-message').val());
                     self.model.setOption('custcol_tailor_cust_pricing', self.$('span[itemprop="price"]').attr("data-rate") ? self.$('span[itemprop="price"]').attr("data-rate").replace(",", "") : "0.00");
                     self.model.setOption('custcol_tailor_client', self.client);
-
-
                     //self.model.setOption('custcol_itm_category_url', _.where(self.model.get("facets"), {id: "category"})[0].values[0].values[0].values[0].id.replace('Home/', ''));
                     self.model.setOption('custcol_itm_category_url', _.where(categories, { url: "Item Types" })[0].values[0].id.replace('Home/', ''));
                     var fitProfileSummary = []
@@ -577,7 +568,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
         // after events because those are triggered by showContent
         , showInModal: function (options) {
             this.template = 'quick_view';
-
             return this.application.getLayout().showInModal(this, options);
         }
 
@@ -586,16 +576,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             this.title = this.model.get('_pageTitle');
             this.page_header = this.model.get('_pageHeader');
             var vendorName = _.where(this.model.get("facets"), { id: "custitem_vendor_name" })[0].values[0].label;
-
-            _.suiteRest('getVendorLink', this.model.get('internalid')).always(function (data) {
-
-                if (data) {
-                    window.vendor = data;
-
-                }
-
-            });
-
             this.computeDetailsArea();
         }
 
