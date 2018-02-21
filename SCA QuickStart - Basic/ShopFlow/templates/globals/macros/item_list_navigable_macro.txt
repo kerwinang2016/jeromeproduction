@@ -125,39 +125,12 @@
 
 
 								%>
-
-								<form action="#" data-action="update-dateneeded">
 									<label for="custcol_avt_date_needed"><%= _('Date Needed:').translate() %>
 										<input type="hidden" name="internalid" id="update-internalid-<%= line_id %>" class="update-internalid-<%= line_id %>" value="<%- line_id %>">
-										<input class="input-date" id="custcol_avt_date_needed" pattern="(\d){4}-(\d){1,2}-(\d){1,2}" placeholder="<%= _('YYYY-MM-DD').translate() %>" name="custcol_avt_date_needed" type="date" value="<%= (isEmptyDateNeeded) ? '' : stDateNeeded %>"   data-action="range-filter">
+										<input class="input-date" id="custcol_avt_date_needed" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" placeholder="<%= _('MM-DD-YYYY').translate() %>" name="custcol_avt_date_needed" type="date" value="<%= (isEmptyDateNeeded) ? '' : stDateNeeded %>"   data-action="range-filter">
 									</label>
-								</form>
 							</div>
 							<!-- end avt date needed -->
-
-							<!-- start avt hold fabric -->
-							<div>
-								<%
-									var holdFabricValue =  _.where(line.get("options"), {id: "CUSTCOL_AVT_HOLD_FABRIC"})[0].value;
-								%>
-								<form action="#" data-action="update-options">
-									<input type="hidden" name="internalid" id="update-internalid-<%= line_id %>" class="update-internalid-<%= line_id %>" value="<%- line_id %>">
-									<input type="checkbox" name="custcol_avt_hold_fabric" id="update-internalid-<%= line_id %>" value="<%- line_id %>" data-cart-option-id="custcol_avt_hold_fabric" <%= (holdFabricValue == 'T') ? 'checked' : ''%> style="margin-bottom: 5px;"> <span style="font-size: 12px;"><%= _('Hold Fabric').translate() %></span>
-								</form>
-							</div>
-							<!-- end avt hold fabric -->
-
-							<!-- start avt hold production  -->
-							<div>
-								<%
-									var holdProductionValue =  _.where(line.get("options"), {id: "CUSTCOL_AVT_HOLD_PRODUCTION"})[0].value;
-								%>
-								<form action="#" data-action="update-options">
-									<input type="hidden" name="internalid" id="update-internalid-<%= line_id %>" class="update-internalid-<%= line_id %>" value="<%- line_id %>">
-									<input type="checkbox" name="custcol_avt_hold_production" id="update-internalid-<%= line_id %>" value="<%- line_id %>" data-cart-option-id="custcol_avt_hold_production" <%= (holdProductionValue == 'T') ? 'checked' : ''%> style="margin-bottom: 5px;"> <span style="font-size: 12px;"><%= _('Hold Production').translate() %></span>
-								</form>
-							</div>
-							<!-- end avt hold production  -->
 
 						</div>
 						<!-- end avt date needed, hold fabric, hold production -->

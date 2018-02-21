@@ -20,9 +20,15 @@ define('Profile', ['Profile.Views','Profile.Router','User.Model'], function (Vie
 			}
 		,{
 				id: 'stocklist'
-			,	name: _('Stock List').translate() + '<span class="label label-warning pull-right">new</span>'
+			,	name: _('Stock List').translate()
 			,	url: 'stocklist'
 			,	index: 7
+			}
+		,{
+				id: 'termsandconditions'
+			,	name: _('Terms and Conditions').translate()
+			, url: 'termsandconditions'
+			,	index: 8
 			}
 		,	{
 				id: 'settings'

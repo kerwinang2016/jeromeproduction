@@ -133,8 +133,6 @@ define('ProductListDetails.View'
 			item_detail.setOptionsArray(selected_product_list_item.getOptionsArray(), true);
 
 			item_detail.setOption('custcol_avt_date_needed', '1/1/1900');
-			item_detail.setOption('custcol_avt_hold_fabric', 'F');
-			item_detail.setOption('custcol_avt_hold_production', 'F');
 
 
 			var add_to_cart_promise = this.addItemToCart(item_detail)

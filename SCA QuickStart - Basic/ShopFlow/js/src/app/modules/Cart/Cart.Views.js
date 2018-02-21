@@ -36,12 +36,10 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 		,	'submit form[data-action="estimate-tax-ship"]': 'estimateTaxShip'
 		,	'click [data-action="remove-shipping-address"]': 'removeShippingAddress'
 		,	'change [data-action="estimate-tax-ship-country"]': 'changeCountry'
-		,	'click [name="custcol_avt_hold_fabric"]': 'swxSetHoldFabricClick'
-		,	'click [name="custcol_avt_hold_production"]': 'swxSetHoldProductionClick'
 
 		,	'blur [name="custcol_avt_date_needed"]': 'swxSetDateNeeded'
 		//,	'keyup [name="custcol_avt_date_needed"]': 'swxSetDateNeeded'
-		,	'submit [data-action="update-dateneeded"]': 'swxSetDateNeededFormSubmit'
+		//,	'submit [data-action="update-dateneeded"]': 'swxSetDateNeededFormSubmit'
 
 		,	'click [id="swx-butt-save-for-later-filter"]': 'swxFilterSaveForLaterClick'
 		,	'click [id="swx-butt-save-for-later-filter-clear"]': 'swxFilterSaveForLaterClearClick'
@@ -338,6 +336,9 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				saveditem.set('custrecord_ns_pl_pli_isarchived','T');
 				saveditem.save();
 			}
+			self.product_list_details_view.render();
+			jQuery('#saveForLaterItemsCart').collapse('show');
+			jQuery('#show-archived-items').prop('checked',self.product_list_details_view.showarchiveditems)
 		}
 	}
 	, filterArchivedItems: function(e){
@@ -385,212 +386,42 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				jQuery("[id='swx_filter_save_for_later_client']").val('');
 			});
 		}
-
-	,	swxSetHoldFabricClick: function (e)
-		{
+	,	swxSetDateNeeded: function (e){
 			e.preventDefault();
-			var checkBoxName = 'custcol_avt_hold_fabric';
-			var self = this
-			,	$line = null
-			,	options = jQuery(e.target).closest('form').serializeObject()
-			,	line = this.model.get('lines').get(options.internalid);
+			var self = this;
+			var item = jQuery(e.target).closest('article')[0].id;
 
-			if (!line)
-			{
-				return;
+			if(e.target.value){
+				var unformattedDate = new Date(e.target.value);
+				var dateneeded = unformattedDate.getDate()+'/'+parseFloat(unformattedDate.getMonth()+1)+'/'+unformattedDate.getFullYear()
+				var isValidDate = this.validateDateNeeded(dateneeded);
+
+				if( this.model.get('lines').length > 1)
+					var r = confirm('Would you like to apply this date to all items?');
+					if(r == true){
+						_.each(this.model.get('lines').models,function(model,index){
+							 var a = _.find(model.get('options'),function(op){return op.id == 'CUSTCOL_AVT_DATE_NEEDED'});
+							 a.value = dateneeded;
+							 a.displayvalue = dateneeded;
+	 						model.save();
+						});
+						// jQuery("input[id='custcol_avt_date_needed']").each(function(index,elem) {
+					  //       elem.value = e.target.value;
+					  //   });
+					}
+					else{
+						var a = _.find(this.model.get('lines').models,function(m){return m.id == item;});
+						var b = _.find(a.get('options'),function(op){return op.id == 'CUSTCOL_AVT_DATE_NEEDED'});
+						b.value = dateneeded;
+						b.displayvalue = dateneeded;
+						a.save();
+					}
+					this.model.save().done(function(){
+					self.showContent();
+				});
 			}
 
-			var	$input = jQuery(e.target).closest('form').find('[name="' + checkBoxName + '"]');
-			var isCheckBoxChecked = $input.is(":checked");
-			var	checkBoxValue = (isCheckBoxChecked) ? 'T' : 'F';
-
-			this.storeColapsiblesState();
-			var stLine = JSON.stringify(line);
-			var objLine = JSON.parse(stLine) || {};
-			var objOptions = objLine['options'];
-			for (var dx in objOptions)
-			{
-				if (dx == checkBoxName)
-				{
-					objOptions[dx] = checkBoxValue
-				}
-			}
-			line.set('options', objOptions);
-
-			this.model.updateLine(line).success(function ()
-			{
-				self.showContent()
-			}).error(function (jqXhr)
-				{
-					jqXhr.preventDefault = true;
-					var result = JSON.parse(jqXhr.responseText);
-
-					self.showError(result.errorMessage, $line, result.errorDetails);
-				}
-			).always(function ()
-				{
-					$input.prop('disabled', false);
-				}
-			);
 		}
-
-
-	,	swxSetHoldProductionClick: function (e)
-		{
-			e.preventDefault();
-			var checkBoxName = 'custcol_avt_hold_production';
-			var self = this
-			,	$line = null
-			,	options = jQuery(e.target).closest('form').serializeObject()
-			,	line = this.model.get('lines').get(options.internalid);
-
-			if (!line)
-			{
-				return;
-			}
-
-			var	$input = jQuery(e.target).closest('form').find('[name="' + checkBoxName + '"]');
-			var isCheckBoxChecked = $input.is(":checked");
-			var	checkBoxValue = (isCheckBoxChecked) ? 'T' : 'F';
-
-			this.storeColapsiblesState();
-			var stLine = JSON.stringify(line);
-			var objLine = JSON.parse(stLine) || {};
-			var objOptions = objLine['options'];
-			for (var dx in objOptions)
-			{
-				if (dx == checkBoxName)
-				{
-					objOptions[dx] = checkBoxValue
-				}
-			}
-			line.set('options', objOptions);
-
-			this.model.updateLine(line).success(function ()
-			{
-				self.showContent()
-			}).error(function (jqXhr)
-				{
-					jqXhr.preventDefault = true;
-					var result = JSON.parse(jqXhr.responseText);
-
-					self.showError(result.errorMessage, $line, result.errorDetails);
-				}
-			).always(function ()
-				{
-					$input.prop('disabled', false);
-				}
-			);
-		}
-
-
-	,	swxSetDateNeeded: _.throttle(function (e)
-		{
-			e.preventDefault();
-
-			var defaultDateNeeded = '1/1/1900';
-			var stDateValue = '';
-			var self = this
-			,	$line = null
-			,	options = jQuery(e.target).closest('form').serializeObject()
-			,	line = this.model.get('lines').get(options.internalid);
-
-			if (!line)
-			{
-				return;
-			}
-
-			var	new_date = jQuery.trim(options.custcol_avt_date_needed);
-			var	$input = jQuery(e.target).closest('form').find('[name="custcol_avt_date_needed"]');
-
-			var isValidDate = this.validateDateNeeded(new_date);
-
-			if (!isValidDate)
-			{
-				new_date = '';
-				stDateValue = defaultDateNeeded;
-			}
-
-			if (isValidDate)
-			{
-
-				var dateRef = _.stringToDate(new_date);
-
-				var stDate = dateRef.getDate();
-				var stMonth = dateRef.getMonth() + 1;
-				var stYear = dateRef.getFullYear();
-
-				stDateValue = stDate + '/' + stMonth + '/' + stYear;
-
-			}
-			this.storeColapsiblesState();
-
-			var r = true;
-			if( this.model.get('lines').length > 1)
-				r = confirm('Would you like to apply this date to all items?');
-			if(r == true){
-				jQuery("input[id='custcol_avt_date_needed']").each(function(index,elem) {
-		        elem.value = new_date;
-		    });
-				this.model.get('lines').forEach(function(model,index){
-					var stLine = JSON.stringify(model);
-					var objLine = JSON.parse(stLine) || {};
-					var objOptions = objLine['options'];
-					for (var dx in objOptions)
-					{
-						if (dx == 'custcol_avt_date_needed')
-						{
-							//objOptions[dx] = _.stringToDate(new_date);
-							objOptions[dx] = stDateValue;
-						}
-					}
-					model.set('options', objOptions);
-					self.model.updateLine(model).success(function ()
-					{
-						self.showContent()
-					})
-
-				})
-
-
-			}
-			else{
-				var stLine = JSON.stringify(line);
-				var objLine = JSON.parse(stLine) || {};
-				var objOptions = objLine['options'];
-				for (var dx in objOptions)
-				{
-					if (dx == 'custcol_avt_date_needed')
-					{
-						//objOptions[dx] = _.stringToDate(new_date);
-						objOptions[dx] = stDateValue;
-					}
-				}
-				$input.val(new_date);
-				line.set('options', objOptions);
-
-				this.model.updateLine(line).success(function ()
-				{
-					self.showContent()
-				}).error(function (jqXhr)
-					{
-						jqXhr.preventDefault = true;
-						var result = JSON.parse(jqXhr.responseText);
-
-						self.showError(result.errorMessage, $line, result.errorDetails);
-					}
-				).always(function ()
-					{
-						$input.prop('disabled', false);
-					}
-				);
-			}
-
-
-		}, 600, {leading:false})
-
-
-
 	,	validateDateNeeded: function (date_needed)
 		{
 			var is_valid = true;

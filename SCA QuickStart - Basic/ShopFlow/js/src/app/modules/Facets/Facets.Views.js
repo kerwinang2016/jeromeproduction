@@ -28,6 +28,7 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 		,	'slide div[data-toggle="slider"]': 'updateRangeValues'
 		,	'stop div[data-toggle="slider"]': 'updateRangeSelection'
 		,	'submit [data-toggle="add-to-cart"]': 'addToCart'
+		, 'click [data-filter="facet"]': 'refreshView'
 		}
 
 	,	initialize: function (options)
@@ -55,6 +56,11 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 				this.client = "?client=" + clientId;
 			}
 		}
+	, refreshView: function(e){
+		e.preventDefault();
+		this.model.faceturl = "";
+		console.log(this);
+	}
 	, getClientId: function(fragment)
 		{
 			var fragmentArray = fragment.split("?");
@@ -159,7 +165,6 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 						return (translator.getFacetConfig(b.id).priority || 0) - (translator.getFacetConfig(a.id).priority || 0);
 					})
 				,	content = '';
-				console.log(ordered_facets)
 				_.each(ordered_facets, function (facet)
 				{
 					var facet_config = translator.getFacetConfig(facet.id);
@@ -325,7 +330,7 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 			var keywords = this.translator.getOptionValue('keywords')
 			,	resultCount = this.model.get('total')
 			,	self = this;
-
+			console.log(this.model);
 			if (keywords)
 			{
 				keywords = decodeURIComponent(keywords);

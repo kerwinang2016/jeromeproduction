@@ -131,9 +131,14 @@ define('ItemDetails.Router', [], function ()
 
 						// we first prepare the view
 						view.prepView();
+						_.suiteRest('getVendorLink', model.get('internalid')).always(function (data) {
+                if (data) {
+                    window.vendor = data;
+                }
+								// then we show the content
+								view.showContent();
+            });
 
-						// then we show the content
-						view.showContent();
 					}
 					else
 					{

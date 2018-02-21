@@ -12,7 +12,7 @@ define('ProductListLists.View'
 		template: 'product_list_lists'
 
 	,	title: _('Product Lists').translate()
-	
+
 	,	attributes: {'class': 'ProductListListsView'}
 
 	,	events:
@@ -151,8 +151,6 @@ define('ProductListLists.View'
 					item_detail.setOptionsArray(item.getOptionsArray(), true);
 
 					item_detail.setOption('custcol_avt_date_needed', '1/1/1900');
-					item_detail.setOption('custcol_avt_hold_fabric', 'F');
-					item_detail.setOption('custcol_avt_hold_production', 'F');
 
 
 					add_items.push(item_detail);

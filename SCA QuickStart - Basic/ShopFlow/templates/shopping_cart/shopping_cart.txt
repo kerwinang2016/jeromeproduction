@@ -1,5 +1,5 @@
 <%
-	var lines = view.model.get('lines') 
+	var lines = view.model.get('lines')
 	,	application = view.options.application
 	,	continueURL = application.getConfig('siteSettings.sitetype') === 'ADVANCED' ?  _(application.getConfig('defaultSearchUrl')).fixUrl() : ''
 	,	crumbTrail = [
@@ -17,24 +17,24 @@
     } else {
         continueURL = "/tailorclient";
     }
-	
+
 	var paramFragmentValue = _.getUrlParameterValue('fragment');
 	var isFragmentCart = (paramFragmentValue == 'cart') ? true : false;
-	
+
 	console.log('isFragmentCart: ' + isFragmentCart);
-	
+
 	if (isFragmentCart)
 	{
 		//jQuery("li[class='mini-cart-summary-container']").find("[data-hashtag='#cart']").click()
 		jQuery("[id='swx-minicart-gotocart']").click();
 	}
-	
+
 %>
 
 <style>
     .breadcrumb.hidden-phone{
         margin-bottom: 0px;
-        
+
         padding-bottom: 0px;
     }
 
@@ -51,8 +51,8 @@
 		<header class="shopping-cart-header">
 			<a class="pull-right btn btn-expanded continue-shopping" href="<%= continueURL %>" data-touchpoint="home" data-hashtag="#<%= continueURL %>">
 				<%= _('Continue Shopping').translate() %>
-			</a>			
-			<h1 class="no-margin-top"><%= view.page_header %></h1>			
+			</a>
+			<h1 class="no-margin-top"><%= view.page_header %></h1>
 		</header>
 	</div>
 <div class="gradient-content">

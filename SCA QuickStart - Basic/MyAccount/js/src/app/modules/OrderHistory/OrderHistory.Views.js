@@ -245,8 +245,6 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 					item_to_cart.set('quantity', 1);
 
 					item_to_cart.setOption('custcol_avt_date_needed', '1/1/1900');
-					item_to_cart.setOption('custcol_avt_hold_fabric', 'F');
-					item_to_cart.setOption('custcol_avt_hold_production', 'F');
 					item_to_cart.setOption('custcol_avt_wbs_copy_key', item_to_cart.get('internalid').toString() + '_' + new Date().getTime());
 
 

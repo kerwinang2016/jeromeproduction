@@ -16,12 +16,19 @@ define('Profile.Router',  ['Profile.Views','PlacedOrder.Collection','Profile.Upd
 		,	'designoptionsrestriction': 'designOptionsRestriction'
 		,	'favouriteoptions': 'favouriteOptions'
 		, 'stocklist': 'stockList'
+		, 'termsandconditions' : 'termsAndConditions'
 		}
 
 	,	initialize: function (application)
 		{
 			this.application = application;
 		}
+	,	termsAndConditions: function(){
+		var view = new Views.TermsAndConditions({
+				application:this.application
+		});
+		view.showContent();
+	}
 	, stockList: function(){
 
 			var view = new Views.StockList({

@@ -1086,22 +1086,6 @@ Application.defineModel('PlacedOrder', {
 					});
 				}
 
-				if (placed_order.getLineItemValue('item', 'custcol_avt_hold_fabric', i)) {
-					lineOption.push({
-						id: 'custcol_avt_hold_fabric'
-						, name: 'Hold Fabric'
-						, value: placed_order.getLineItemValue('item', 'custcol_avt_hold_fabric', i) || 'F'
-					});
-				}
-
-				if (placed_order.getLineItemValue('item', 'custcol_avt_hold_production', i)) {
-					lineOption.push({
-						id: 'custcol_avt_hold_production'
-						, name: 'Hold Production'
-						, value: placed_order.getLineItemValue('item', 'custcol_avt_hold_production', i) || 'F'
-					});
-				}
-
 				/** end date needed, hold fabric, hold production **/
 
 					if(item_type != 'Markup'){
@@ -4398,7 +4382,7 @@ Application.defineModel('ProductList', {
 		var filters = [new nlobjSearchFilter('internalid', null, 'is', id)
 			, new nlobjSearchFilter('isinactive', null, 'is', 'F')
 			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', parseInt(parent,10))]
-			, product_lists = this.searchHelper(filters, this.getColumns(), true);
+			, product_lists = this.searchHelper(filters, this.getColumns(), true, null, null, parent);
 
 		if (product_lists.length >= 1) {
 			return product_lists[0];
@@ -4420,7 +4404,7 @@ Application.defineModel('ProductList', {
 		var filters = [new nlobjSearchFilter('custrecord_ns_pl_pl_type', null, 'is', this.later_type_id)
 			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', parent)
 			, new nlobjSearchFilter('isinactive', null, 'is', 'F')]
-			, product_lists = this.searchHelper(filters, this.getColumns(), true);
+			, product_lists = this.searchHelper(filters, this.getColumns(), true,null, null, parent);
 
 		if (product_lists.length >= 1) {
 			return product_lists[0];
@@ -4454,7 +4438,7 @@ Application.defineModel('ProductList', {
 		return text ? text.replace(/<br>/g, '\n').replace(/</g, '&lt;').replace(/\>/g, '&gt;') : '';
 	}
 
-	, searchHelper: function (filters, columns, include_store_items, order, template_ids) {
+	, searchHelper: function (filters, columns, include_store_items, order, template_ids, parentparam) {
 		'use strict';
 
 		// Sets the sort order
@@ -4494,7 +4478,7 @@ Application.defineModel('ProductList', {
 						sort: 'created'
 						, order: '-1'
 						, page: -1
-					})
+					},parentparam)
 				};
 
 			if (template_ids && productList.templateid) {
@@ -4522,7 +4506,7 @@ Application.defineModel('ProductList', {
 		var filters = [new nlobjSearchFilter('isinactive', null, 'is', 'F')
 			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', parent)]
 			, template_ids = []
-			, product_lists = this.searchHelper(filters, this.getColumns(), false, order, template_ids)
+			, product_lists = this.searchHelper(filters, this.getColumns(), false, order, template_ids, parent)
 			, self = this;
 
 		// Add possible missing predefined list templates
@@ -4798,18 +4782,23 @@ Application.defineModel('ProductListItem', {
 	}
 
 	// Retrieves all Product List Items related to the given Product List Id
-	, search: function (product_list_id, include_store_item, sort_and_paging_data) {
+	, search: function (product_list_id, include_store_item, sort_and_paging_data, parentparam) {
 		'use strict';
 
 		this.verifySession();
-		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+		var parent;
+		if(!parentparam){
+			var url = myaccountsuiteleturl;
+			var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+			var body = JSON.parse(res.getBody());
+			parent = body[0];
+		}
+		else {
+			parent = parentparam;
+		}
 		if (!product_list_id) {
 			return []; //it may happens when target list is a template and don't have a record yet.
 		}
-
 		var filters = [
 			new nlobjSearchFilter('custrecord_ns_pl_pli_productlist', null, 'is', product_list_id)
 			, new nlobjSearchFilter('isinactive', null, 'is', 'F')

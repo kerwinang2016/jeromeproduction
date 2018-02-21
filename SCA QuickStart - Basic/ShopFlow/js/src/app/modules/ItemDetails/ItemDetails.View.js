@@ -82,11 +82,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             if (!this.model) {
                 throw new Error('A model is needed');
             }
-            _.suiteRest('getVendorLink', this.model.get('internalid')).always(function (data) {
-                if (data) {
-                    window.vendor = data;
-                }
-            });
             jQuery(document).ready(function () {
                 jQuery("[data-type='alert-placeholder']").empty();
             });
@@ -247,10 +242,12 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     , cart_promise
                     , error_message = _('Sorry, there is a problem with this Item and can not be purchased at this time. Please check back later.').translate();
 
-
-                self.model.setOption('custcol_custom_fabric_code', jQuery('#fabric-cmt-code').val());
-                self.model.setOption('custcol_custom_fabric_collection', jQuery('#fabric-cmt-collection').val());
-                self.model.setOption('custcol_custom_fabric_vendor', jQuery('#fabric-cmt-vendor').val());
+                var fabricdetails = {
+                  code:jQuery('#fabric-cmt-code').val(),
+                  collection:jQuery('#fabric-cmt-collection').val(),
+                  vendor:jQuery('#fabric-cmt-vendor').val()
+                }
+                self.model.setOption('custcol_custom_fabric_details', JSON.stringify(fabricdetails));
 
                 var categories = _.where(self.model.get("facets"), { id: "category" })[0].values[0].values;
                 //remove the line item that's being edited
@@ -356,8 +353,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 self.holdfabric = 'F';
                 self.holdproduction = 'F';
                 self.model.setOption('custcol_avt_date_needed', self.dateneeded);
-                self.model.setOption('custcol_avt_hold_fabric', self.holdfabric);
-                self.model.setOption('custcol_avt_hold_production', self.holdproduction);
                 //self.model.setOption('custcolcustcol_item_check','T');
               self.model.setOption('custcolcustcol_item_check', jQuery("#chkItem").is(':checked')?'T':'F');
 
@@ -576,6 +571,8 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             this.title = this.model.get('_pageTitle');
             this.page_header = this.model.get('_pageHeader');
             var vendorName = _.where(this.model.get("facets"), { id: "custitem_vendor_name" })[0].values[0].label;
+
+
             this.computeDetailsArea();
         }
 
@@ -718,14 +715,25 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         if (options[x].id == "CUSTCOL_FITPROFILE_MESSAGE") {
                             optionsHolder["CUSTCOL_FITPROFILE_MESSAGE"] = options[x];
                         }
-                        if (options[x].id == "CUSTCOL_FITPROFILE_SUMMARY") {
+                        else if (options[x].id == "CUSTCOL_FITPROFILE_SUMMARY") {
                             optionsHolder["CUSTCOL_FITPROFILE_SUMMARY"] = options[x];
                         }
-                        if (options[x].id == "CUSTCOL_FABRIC_QUANTITY") {
+                        else if (options[x].id == "CUSTCOL_FABRIC_QUANTITY") {
                             optionsHolder["CUSTCOL_FABRIC_QUANTITY"] = options[x];
                         }
-                        if (options[x].id == "CUSTCOL_DESIGNOPTION_MESSAGE") {
+                        else if (options[x].id == "CUSTCOL_DESIGNOPTION_MESSAGE") {
                             optionsHolder["CUSTCOL_DESIGNOPTION_MESSAGE"] = options[x];
+                        }
+                        else if( options[x].id == 'CUSTCOLCUSTCOL_ITEM_CHECK'){
+                          jQuery('#chkItem').prop('checked',options[x].value=='T'?true:false);
+                        }
+                        else if( options[x].id == 'CUSTCOL_CUSTOM_FABRIC_DETAILS'){
+                          if(options[x].value){
+                            var fabdetails = JSON.parse(options[x].value);
+                            jQuery('#fabric-cmt-vendor').val(fabdetails.vendor);
+                            jQuery('#fabric-cmt-collection').val(fabdetails.collection);
+                            jQuery('#fabric-cmt-code').val(fabdetails.code);
+                          }
                         }
                     }
                 }
@@ -943,20 +951,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             }
         }
         , getDesignOptions: function (clothingType) {
-			/**
-			var designOptionsList = new Array();
-			if(clothingType !== '&nbsp;'){
-				jQuery("div#design-option-"+clothingType+" select").each(function(index){
-					var currentDesignOptions = {
-						'name'	:	jQuery(this).attr("id"),
-						'value'	:	jQuery(this).val()
-					};
-					designOptionsList.push(currentDesignOptions);
-				});
-			}
-			return designOptionsList;
-			**/
-
             if (clothingType !== '&nbsp;') {
                 var designOptionsList = [];
                 jQuery("div#design-option-" + clothingType + "").find(":input").each(function () {

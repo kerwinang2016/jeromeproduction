@@ -18,6 +18,17 @@ define('Profile.Views', function ()
 			this.model = options.model;
 		}
 	});
+	Views.TermsAndConditions = Backbone.View.extend({
+			template: 'termsandconditions'
+		,	title: _('Terms and Conditions').translate()
+		,	attributes: {'class': 'Terms and Conditions'}
+		, events: {
+
+		}
+		, initialize: function(options){
+			this.application = options.application;
+		}
+	});
 	// home page view
 	Views.Home = Backbone.View.extend({
 

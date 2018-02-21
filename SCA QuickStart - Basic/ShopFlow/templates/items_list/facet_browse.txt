@@ -1,18 +1,18 @@
 <%
 	var fileLocationPath = '/SCA QuickStart - Basic/ShopFlow/templates/items_list/facet_browse.txt'
 	//console.log('/SCA QuickStart - Basic/ShopFlow/templates/items_list/facet_browse.txt')
-	
+
 	var model = view.model
 	,	items = model.get('items')
 	,	facets = model.get('facets')
 	,	translator = view.translator;
-	
+
 	//var translateorFacet = translator.facets
 	//translateorFacet.push({'priority' : 10, 'behavior' : 'single', 'value' : []})
-	
+
 	var	isOrderPage = "Item Types" == SC._applications.Shopping.getLayout().currentView.category.itemid
 	,	span = isOrderPage ? "span12" : "span9"
-		// Some calls to macros so we have can reuse them 
+		// Some calls to macros so we have can reuse them
 	,	facetsDisplayResults = facetsDisplay(translator)
 
 	,	itemListSummaryResult = itemListSummary({
@@ -25,15 +25,15 @@
 			currentPage: translator.getOptionValue('page')
 		,	totalPages: view.totalPages
 		,	extraClass: 'pagination-small pull-right'
-		,	pager: function (page, rawClientID) { 
+		,	pager: function (page, rawClientID) {
 				var result = "";
 				if (rawClientID){ // fix for pagination not handling the client parameter
-					var url = translator.cloneForOption('page', page).getUrl();	
+					var url = translator.cloneForOption('page', page).getUrl();
 					var arr = url.split("?")
 					arr.splice(1,0, "?" + rawClientID + "&")
 					result = arr.join("");
 				} else {
-					result = translator.cloneForOption('page', page).getUrl();	
+					result = translator.cloneForOption('page', page).getUrl();
 				}
 				return result;
 			}
@@ -59,18 +59,7 @@
 	,	page_header = _(view.page_header).substitute({
 			itemscount: model.get('total')
 		});
-		
-	/**
-	console.log(fileLocationPath + '\n' + 'facet_browse >> facets: ' + '\n' + JSON.stringify(facets, 'key', '\t'));
-	console.log(fileLocationPath + '\n' + 'view.options.application.getConfig(\'defaultPaginationSettings\'): ' + '\n' + JSON.stringify(view.options.application.getConfig('defaultPaginationSettings'), 'key', '\t'));
-	console.log(fileLocationPath + '\n' + 'view.options.application.getConfig(\'facets\'): ' + '\n' + JSON.stringify(view.options.application.getConfig('facets'), 'key', '\t'));
-	console.log(fileLocationPath + '\n' + 'view.options.application.getConfig(\'itemsDisplayOptions\'): ' + '\n' + JSON.stringify(view.options.application.getConfig('itemsDisplayOptions'), 'key', '\t'));
-	console.log(fileLocationPath + '\n' + 'translator.getOptionValue(\'page\'): ' + '\n' + translator.getOptionValue('page'));
-	**/
 
-	//console.log(fileLocationPath + '\n' + 'facet_browse >> facets: ' + '\n' + JSON.stringify(facets, 'key', '\t'));
-
-		
 %>
 <div data-cms-area="item_list_banner" data-cms-area-filters="page_type"></div>
 <div class="view-header container" itemscope itemtype="http://schema.org/WebPage">
@@ -102,7 +91,7 @@
 			<% } %>
 			<!-- /visible-phone -->
 			<div class="facet-header <%= translator.facets.length ? 'no-facets-selected' : '' %>">
-				
+
 				<!-- hidden-phone -->
 				<h1 class="hidden-phone">
 					<%= page_header %>

@@ -85,9 +85,6 @@
             <!--<%= (type === 'predefined' || type === 'later') ? _(view.model.get('name')).translate() : view.model.get('name') %>-->
             Saved Items
         </a>
-				<% if (!hasStFilterSaveForLaterRef) { %>
-          <span class="product-list-details-count"><%= items_length_message %></span>
-        <% } %>
 			</h3>
 			<div data-confirm-message class="confirm-message"></div>
 
@@ -135,7 +132,7 @@
                       <button id="swx-butt-save-for-later-filter-clear" class="btn btn-primary" style="width: 100%;">Clear</button>
                   </div>
 									<div class="span-w-10">
-											<button data-action="archive" class="btn btn-primary" style="width: 100%;">Archive</button>
+											<button data-action="archive" class="btn btn-primary" style="width: 100%;padding:4px 0px;">Archive</button>
 									</div>
 									<div class="span-w-10">
 											<button id="add-multiple-save-for-later" class="btn btn-primary" style="width: 100%;">Add</button>
@@ -144,7 +141,7 @@
               </div>
           </div>
 					<div class="row-fluid">
-							<div style="float:right;">
+							<div style="float:right;padding-right:20px;">
 								<label style="display:inline;">Show archived Items</label><input  style="margin-left:20px;" id="show-archived-items" data-action="show-archived-items" type="checkbox">
 							</div>
 					</div>

@@ -18,15 +18,16 @@ define('Facets.Model', ['ItemDetails.Collection', 'Session'], function (ItemDeta
 					{}
 				,	this.searchApiMasterOptions
 				,	Session.getSearchApiParams()
-				)
+			)\]
 			);
 			var tailor = SC.ENVIRONMENT.PROFILE.parentname?SC.ENVIRONMENT.PROFILE.parentname:SC.ENVIRONMENT.PROFILE.name;
-			return url + '&custitem_applicable_tailor=' + encodeURIComponent(tailor);
+			return url + '&custitem_applicable_tailor=' + encodeURIComponent(tailor)+this.faceturl;
 		}
 
 	,	initialize: function ()
 		{
 			// Listen to the change event of the items and converts it to an ItemDetailsCollection
+			this.faceturl = '';
 			this.on('change:items', function (model, items)
 			{
 				if (!(items instanceof ItemDetailsCollection))
