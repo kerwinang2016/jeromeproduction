@@ -6,23 +6,23 @@ define('FitProFile.Router',  ['FitProFile.Views', 'FitProfile.Model', 'FormRende
 	'use strict';
 
 	return Backbone.Router.extend({
-		
+
 		routes: {
 			'fitprofile': 'fitProfile'
 		,	'fitprofile/:id': 'renderForm'
 		}
-				
+
 	,	initialize: function (application, clients)
 		{
 			this.application = application;
 			this.clients = clients;
 		}
-		
+
 		// load the home page
 	,	fitProfile: function ()
 		{
 			var application = this.application;
-			
+
 
 			var	view = new Views.Home({
 				application: application
@@ -38,10 +38,11 @@ define('FitProFile.Router',  ['FitProFile.Views', 'FitProfile.Model', 'FormRende
 			var	view = new FormRenderer({
 				application: application
 			,	profileModel: application.getLayout().currentView.model
-			,	mode: id				
+			,	mode: id
 			});
 
 			view.showContent();
+			console.log(view)
 		}
 	});
 });

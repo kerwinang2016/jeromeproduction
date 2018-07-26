@@ -4,58 +4,63 @@
         "config": [
             {
                 "name": "Neck",
-                "min": 31,
-                "max": 59
+                "min": 22,
+                "max": 68
             },
             {
                 "name": "Shoulder",
-                "min": 36,
-                "max": 72
+                "min": 26,
+                "max": 78
             },
             {
                 "name": "Chest",
-                "min": 88,
-                "max": 184
+                "min": 52,
+                "max": 220
             },
             {
                 "name": "Waist",
-                "min": 76,
-                "max": 182
+                "min": 50,
+                "max": 218
             },
             {
                 "name": "Hips",
-                "min": 82,
-                "max": 184
+                "min": 42,
+                "max": 230
             },
             {
                 "name": "Upperarm",
-                "min": 32,
-                "max":60
+                "min": 26,
+                "max":77
             },
             {
                 "name": "Sleeve-Left",
-                "min": 52,
-                "max": 79
+                "min": 42,
+                "max": 91
             },
             {
                 "name": "Sleeve-Right",
-                "min":52,
-                "max": 79
+                "min":42,
+                "max": 91
             },
             {
                 "name": "Cuff-Left",
-                "min": 21,
-                "max": 33
+                "min": 15,
+                "max": 39
             },
             {
                 "name": "Cuff-Right",
-                "min": 21,
-                "max": 33
+                "min": 15,
+                "max": 39
             },
             {
                 "name": "Back-Length",
-                "min": 67,
-                "max": 95
+                "min": 49,
+                "max": 112
+            },
+            {
+                "name": "Front-Length",
+                "min": 49,
+                "max": 103
             }
         ]
     },
@@ -64,23 +69,23 @@
         "config": [
             {
                 "name": "Shoulder",
-                "min": 36,
+                "min": 34,
                 "max": 72
             },
             {
                 "name": "Chest",
-                "min": 82,
-                "max": 198
+                "min": 76,
+                "max": 201
             },
             {
                 "name": "Waist",
-                "min": 74,
-                "max": 194
+                "min": 67,
+                "max": 197
             },
             {
                 "name": "Seat",
-                "min": 83,
-                "max": 200
+                "min": 76,
+                "max": 202
             },
             {
                 "name": "Back-Lt",
@@ -90,21 +95,31 @@
             {
                 "name": "Sleeve L",
                 "min": 47,
-                "max": 82
+                "max": 84
             },
             {
                 "name": "Sleeve R",
                 "min": 47,
-                "max": 82
+                "max": 84
             },
             {
                 "name": "Upperarm",
-                "min": 35,
+                "min": 31,
                 "max": 64
             },
             {
                 "name": "Cuff",
-                "min": 21,
+                "min": 19,
+                "max": 45
+            },
+            {
+                "name": "Front-Lt",
+                "min": 60,
+                "max": 95
+            },
+            {
+                "name": "Top-Button",
+                "min": 25,
                 "max": 45
             }
         ]
@@ -114,38 +129,44 @@
         "config": [
             {
                 "name": "waist",
-                "min": 64,
+                "min": 56,
                 "max": 182
             },
             {
                 "name": "seat",
-                "min": 85,
-                "max": 195
+                "min": 74,
+                "max": 198
             },
             {
                 "name": "u-rise",
-                "min": 51,
-                "max": 101
+                "min": 50,
+                "max": 102
             },
             {
                 "name": "outseam-l",
-                "min": 78,
+                "min": 77,
                 "max": 133
             },
             {
                 "name": "outseam-r",
-                "min": 78,
+                "min": 77,
                 "max": 133
             },
             {
                 "name": "thigh",
-                "min": 56,
-                "max": 116
+                "min": 51,
+                "max": 117
             },
+            {
+                "name": "knee",
+                "min": 32,
+                "max": 82
+            }
+			,
             {
                 "name": "foot",
                 "min": 27,
-                "max": 71
+                "max": 75
             }
         ]
     },
@@ -154,18 +175,28 @@
         "config": [
             {
                 "name": "chest",
-                "min": 78,
-                "max": 193
+                "min": 72,
+                "max": 196
             },
             {
                 "name": "waist",
-                "min": 74,
-                "max": 190
+                "min": 68,
+                "max": 193
             },
             {
                 "name": "back-lt",
-                "min": 42,
+                "min": 40,
                 "max": 77
+            },
+            {
+                "name": "front-lt",
+                "min": 48,
+                "max": 86
+            },
+            {
+                "name": "top-button",
+                "min": 20,
+                "max": 58
             }
         ]
     }

@@ -1,4 +1,4 @@
-﻿<%	
+<%
 
 	var SiteSettings
 	,	siteType
@@ -70,8 +70,9 @@
 		<% if (Error) { %>
 		<script>SC.ENVIRONMENT.contextError = <%= JSON.stringify(Error) %>;</script>
 		<% } %>
-		<script src="<%= session.getAbsoluteUrl('checkout', 'js/Application-015f4d5219e3.js') %>"></script>
-		<script src="<%= session.getAbsoluteUrl('checkout', 'templates/Templates-0160295ef954.js') %>"></script>
+		<script src="<%= session.getAbsoluteUrl('checkout', 'js/Application-016250d45bf3.js') %>"></script>
+		<script src="<%= session.getAbsoluteUrl('checkout', 'templates/Templates-016250a1de4c.js') %>"></script>
+		
 	</head>
 	<body>
 
@@ -92,7 +93,7 @@
 		<div id="main" class="main"></div>
 
 		<% if (siteType && siteType === 'ADVANCED') { %>
-		<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/Styles-015c128aef6a.css') %>">
+		<link rel="stylesheet" href="<%= session.getAbsoluteUrl('checkout', 'skins/standard/Styles-0161df242a35.css') %>">
 		<% } %>
 
 	</body>

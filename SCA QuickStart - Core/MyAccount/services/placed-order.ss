@@ -32,6 +32,7 @@ function service (request)
 			switch (method)
 			{
 				case 'GET':
+
 					//If the id exist, sends the response of Order.get(id), else sends the response of (Order.list(page) || [])
 					//if (clientNameandSOID){
 					//	Application.sendContent(id ? PlacedOrder.get(id) : (PlacedOrder.list(page, clientName,soid,sort,clientId) || []));
@@ -41,10 +42,12 @@ function service (request)
 
 				break;
 				case 'PUT':
-					if(data.dateneeded){
-						PlacedOrder.setDateNeeded(data);
-					}
+					//if(data.dateneeded){
+					//	PlacedOrder.setDateNeeded(data);
+					//}
+					PlacedOrder.saveLine(data);
 					Application.sendContent(PlacedOrder.get(data.solinekey.split('_')[0]));
+
 					break;
 				default:
 					// methodNotAllowedError is defined in ssp library commons.js

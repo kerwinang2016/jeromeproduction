@@ -1,5 +1,5 @@
 <% registerMacro('productListDisplayCondensed', function(item, view) { %>
-	<% 							
+	<%
 		var product = item.get('item')
 		,	quantity = item.get('quantity')
 		,	priority = item.get('priority')
@@ -10,7 +10,7 @@
 
 		if(!_.isUndefined(item.get("options").custcol_fitprofile_summary)){
 			fit_profiles = JSON.parse(item.get("options").custcol_fitprofile_summary.value);
-		}	
+		}
 	%>
 <article data-id=<%= item.get('internalid') %> data-item-id=<%= item_details.get('internalid') %> >
 	<div class="row-fluid">
@@ -27,15 +27,15 @@
 					</div>
 				</div>
 				<div class="row-fluid item-details-pricing">
-					<div class="item-details-price">		
-						<strong><%= _.formatCurrency(item.get("options").custcol_tailor_cust_pricing.value) %></strong>											
+					<div class="item-details-price">
+						<strong><%= _.formatCurrency(item.get("options").custcol_tailor_cust_pricing.value) %></strong>
 					</div>
 				</div>
 				<div class="row-fluid item-details-options">
 					<div class="options-container" data-type="all-options" data-exclude-options="custcol_tailor_cust_pricing,custcol_fitprofile_jacket,custcol_fitprofile_overcoat,custcol_fitprofile_shirt,custcol_fitprofile_trouser,custcol_fitprofile_waistcoat,custcol_fitprofile_summary,custcol_tailor_client,custcol_fitprofile_message,custcol_itm_category_url"></div>
 				</div>
-					
-			</div>		
+
+			</div>
 		</div>
 		<div class="span2 item-commands action-box">
 			<div class="item-commands-crud">
@@ -44,6 +44,6 @@
 				<div class="pull-right move" data-type="productlist-control-move"></div>
 			</div>
 		</div>
-	</div>		
-</article>	
+	</div>
+</article>
 <% }) %>

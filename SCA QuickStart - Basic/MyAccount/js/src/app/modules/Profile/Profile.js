@@ -30,6 +30,12 @@ define('Profile', ['Profile.Views','Profile.Router','User.Model'], function (Vie
 			, url: 'termsandconditions'
 			,	index: 8
 			}
+		,{
+				id: 'contactus'
+			,	name: _('Contact Us').translate()
+			, url: 'contactus'
+			,	index: 9
+			}
 		,	{
 				id: 'settings'
 			,	name: _('Settings').translate()

@@ -40,7 +40,7 @@ define('FitProfile.Model', ['Client.Model', 'Client.Collection', 'Profile.Model'
 			if(clientID){
 				var param = new Object();
 				param.type = "get_profile";
-				param.data = JSON.stringify({filters: ["custrecord_fp_client||anyof|list|" + clientID], columns: ["internalid", "name", "custrecord_fp_product_type", "custrecord_fp_measure_type", "custrecord_fp_measure_value"]});
+				param.data = JSON.stringify({filters: ["custrecord_fp_client||anyof|list|" + clientID], columns: ["internalid", "name", "custrecord_fp_product_type", "custrecord_fp_measure_type", "custrecord_fp_measure_value","custrecord_fp_block_value"]});
 				_.requestUrl("customscript_ps_sl_set_scafieldset", "customdeploy_ps_sl_set_scafieldset", "GET", param).always(function(data){
 					if(data){
 						self.profile_collection = new ProfileCollection().add(JSON.parse(data));

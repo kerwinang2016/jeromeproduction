@@ -3,7 +3,7 @@
 	var application = view.application;
 	var cart = application.getCart();
 	var cartLines = cart.get('lines');
-
+	var item = view.model.get('custitem_clothing_type').split(', ');
 %>
 	<div class="view-header container" itemscope itemtype="http://schema.org/WebPage">
 		<%= breadcrumb(model.get('_breadcrumb')) %>
@@ -95,22 +95,20 @@
 																</div>
 																<div id="fabric-availability-options" class="accordion-body collapse">
 																	<% if(window.vendor.vendorLink){ %>
-																		<div class="control-group" data-input="designoption-message">
-																			<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor Link : </label>
+																		<div class="control-group" >
+																			<label class="control-label" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor Link : </label>
 																			<a href='<%= window.vendor.vendorLink %>' style="text-decoration:underline;" target="_blank"><%= window.vendor.vendorLink %></a>
 																		</div>
 																	<% }else{ %>
-																		<div class="control-group" data-input="designoption-message">
-																			<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor File : </label>
+																		<div class="control-group" >
+																			<label class="control-label" style="font-size: 13px;font-weight: normal;line-height: 18px;">Vendor File : </label>
 																			<a href='<%= window.vendor.vendorFile %>' style="text-decoration:underline;" target="_blank"><%= window.vendor.vendorFileName %></a>
 																		</div>
 																	<% } %>
-																		<div class="control-group" data-input="designoption-message">
-																			<label class="control-label" for="designoption-message" style="font-size: 13px;font-weight: normal;line-height: 18px;margin-right:10px;">Checked ?</label>
+																		<div class="control-group" >
+																			<label class="control-label" style="font-size: 13px;font-weight: normal;line-height: 18px;margin-right:10px;">Checked ?</label>
 																			<label style="font-size: 1em">
-
-																				<input type="checkbox" value="" id='chkItem' >
-
+																				<input type="checkbox" value="" id='chkItem'>
 																			</label>
 																		</div>
 																</div>
@@ -170,6 +168,42 @@
 																		<% if (model.get('_itemType') !== 'GiftCert'){
 												var minimum_quantity = model.get('_minimumQuantity', true);
 											%>
+											<div class="control-group" >
+												<label class="control-label" style="width:100px;font-size: 13px;font-weight: normal;line-height: 18px;">Design</label>
+													<select id="fabric_extra" style="width:220px;" class="display-option-dropdown" name="fabric_extra" data-type="fabric_extra">
+														<option value="" name="">	</option>
+														<%
+														var extra = window.extraQuantity[1].values;
+
+														if(item.length == 3){
+															var results = _.filter(extra, function(fextra){
+																return fextra.code == '3-Piece Suit';
+															});
+															_.each(results[0].design,function(option){ %>
+															<option
+																value="<%= option.value %>"
+																name="<%=option.cpde%>"><%= option.code %></option>
+															<% });
+															}if(item.length == 2){
+																var results = _.filter(extra, function(fextra){
+																	return fextra.code == '2-Piece Suit';
+																});
+																_.each(results[0].design,function(option){ %>
+																<option
+																	value="<%= option.value %>"
+																	name="<%=option.cpde%>"><%= option.code %></option>
+																<% });
+															}else{
+																var results = _.filter(extra, function(fextra){
+																	return fextra.code == item[0];
+																});
+																_.each(results[0].design,function(option){ %>
+																<option
+																	value="<%= option.value %>"
+																	name="<%=option.code%>"><%= option.code %></option>
+																<% });} %>
+																</select>
+											</div>
 																			<% if(model.get('itemtype') === 'NonInvtPart') { %>
 																				<% if(model.get('custitem_clothing_type') !== "&nbsp;") { %>
 																					<label style="width:100px" for="quantity"> <%=_('Metres').translate(minimum_quantity)%></label>
@@ -253,8 +287,9 @@
 									</div>
 									<% if (model.get('_itemType') !== 'GiftCert'){ %>
 										<label for="quantity">
-						<%= model.get('_minimumQuantity') !== 1 ? _('Quantity (Minimum of $(0) required)').translate(model.get('_minimumQuantity')) : _('Quantity').translate() %>
-					</label>
+										<%= model.get('_minimumQuantity') !== 1 ? _('Quantity (Minimum of $(0) required)').translate(model.get('_minimumQuantity')) : _('Quantity').translate() %>
+									</label>
+
 										<div class="control-group">
 											<input type="number" name="quantity" id="quantity" class="input-mini quantity" value="<%- model.get('quantity') %>" min="1">
 											<% } else { %>

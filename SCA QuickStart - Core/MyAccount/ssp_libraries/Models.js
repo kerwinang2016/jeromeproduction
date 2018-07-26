@@ -424,26 +424,22 @@ Application.defineModel('Profile', {
 // ----------
 // Handles fetching orders
 Application.defineModel('PlacedOrder', {
-	setDateNeeded: function (options) {
+	saveLine: function(options){
 		var recid = options.solinekey.split('_')[0];
-		//NOTE: This is for sandbox
-		//nlapiRequestURL('https://forms.sandbox.netsuite.com/app/site/hosting/scriptlet.nl?script=189&deploy=1&compid=3857857&h=8ae0b4c46639c406c38a&recid=' + recid + '&solinekey=' + options.solinekey + '&dateneeded=' + options.dateneeded);
-		//NOTE: This is for production
-		nlapiRequestURL('https://forms.na2.netsuite.com/app/site/hosting/scriptlet.nl?script=181&deploy=1&compid=3857857&h=bf9b68501c2e0a0da79f&recid=' + recid + '&solinekey=' + options.solinekey + '&dateneeded=' + options.dateneeded);
+		var url = 'https://forms.na2.netsuite.com/app/site/hosting/scriptlet.nl?script=181&deploy=1&compid=3857857&h=bf9b68501c2e0a0da79f&recid=';
+		nlapiRequestURL(url + recid + '&so_id=' + options.so_id + '&custcol_avt_date_needed=' + options.custcol_avt_date_needed + '&custcol_flag='+options.custcol_flag +'&custcol_flag_comment='+options.custcol_flag_comment);
 	}
-
 	, list: function (page, clientName,soid,sort,clientId) {
 		'use strict';
-				var url = myaccountsuiteleturl;
-				var response = {};
-				var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-				var body = JSON.parse(res.getBody());
-
-				if(body[0] != nlapiGetUser()){
-					//We have a parent.. then we need to just get the orders from the script
-					var res = nlapiRequestURL(url+"&action=getorders&user="+body[0]+"&page="+page+"&clientname="+clientName+"&soid="+soid+"&sort="+sort+"&clientid="+clientId);
-					return JSON.parse(res.getBody());
-				}
+		var url = myaccountsuiteleturl;
+		var response = {};
+		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+		var body = JSON.parse(res.getBody());
+		if(body[0] != nlapiGetUser()){
+			//We have a parent.. then we need to just get the orders from the script
+			var res = nlapiRequestURL(url+"&action=getorders&user="+body[0]+"&page="+page+"&clientname="+clientName+"&soid="+soid+"&sort="+sort+"&clientid="+clientId);
+			return JSON.parse(res.getBody());
+		}else{
 		// if the store has multiple currencies we add the currency column to the query
 		var isMultiCurrency = context.getFeature('MULTICURRENCY')
 			, total_field = 'custbody_total_tailor_price'
@@ -460,16 +456,16 @@ Application.defineModel('PlacedOrder', {
 				, new nlobjSearchColumn(total_field)
 				, new nlobjSearchColumn('custbody_customer_name')
 			];
-			// columns.push(new nlobjSearchColumn('custcol_expected_delivery_date'))//This
+			// columns.push(new nlobjSearchColumn('custcol_expected_delivery_date'))
 			columns.push(new nlobjSearchColumn('custcol_expected_production_date'))
 			columns.push(new nlobjSearchColumn('custcol_tailor_delivery_days'))
 			columns.push(new nlobjSearchColumn('custcol_so_id'))
 			columns.push(new nlobjSearchColumn('item'))
-			columns.push(new nlobjSearchColumn('custcol_avt_date_needed'))//This
-			columns.push(new nlobjSearchColumn('custcol_avt_fabric_status'))//This
+			columns.push(new nlobjSearchColumn('custcol_avt_date_needed'))
+			columns.push(new nlobjSearchColumn('custcol_avt_fabric_status'))
 			columns.push(new nlobjSearchColumn('custcol_avt_date_sent'))
-			columns.push(new nlobjSearchColumn('custcol_avt_cmt_status'))//This
-			columns.push(new nlobjSearchColumn('custcol_avt_cmt_date_sent'))//This
+			columns.push(new nlobjSearchColumn('custcol_avt_cmt_status'))
+			columns.push(new nlobjSearchColumn('custcol_avt_cmt_date_sent'))
 			columns.push(new nlobjSearchColumn('custcol_avt_fabric_text'))
 			columns.push(new nlobjSearchColumn('custcol_avt_cmt_status_text'))
 			columns.push(new nlobjSearchColumn('custcol_cmt_production_time'))
@@ -478,13 +474,14 @@ Application.defineModel('PlacedOrder', {
 			columns.push(new nlobjSearchColumn('custcol_avt_saleorder_line_key'))
 			columns.push(new nlobjSearchColumn('custcol_avt_cmt_tracking'))
 			columns.push(new nlobjSearchColumn('custcol_fabric_delivery_days'))
+			var flagcol = new nlobjSearchColumn('custcol_flag');
+			columns.push(flagcol)
+			columns.push(new nlobjSearchColumn('custcol_flag_comment'))
 			if (isMultiCurrency) {
 				columns.push(new nlobjSearchColumn('currency'));
 			}
 			if(sort && sort == 'true'){
-				filters.push(new nlobjSearchFilter('status', null, 'anyof', ['SalesOrd:D','SalesOrd:E','SalesOrd:F','SalesOrd:B']));
-			  //filters.push(new nlobjSearchFilter('custcol_avt_cmt_date_sent',null,'onorafter','tendaysago'));
-			  //filters.push(new nlobjSearchFilter('custcol_expected_production_date',null,'onorafter','tendaysago'));
+				filters.push(new nlobjSearchFilter('status', null, 'anyof', ['SalesOrd:D','SalesOrd:E','SalesOrd:F','SalesOrd:B','SalesOrd:G']));
 			}
 			filters.push(new nlobjSearchFilter('mainline', null, 'is', 'F'));
 
@@ -493,15 +490,12 @@ Application.defineModel('PlacedOrder', {
 				filters.push(new nlobjSearchFilter('website', null, 'anyof', [session.getSiteSettings(['siteid']).siteid, '@NONE@']));
 			}
 			var result = {};
-
-
 			if(clientId)
 				filters.push(new nlobjSearchFilter('custcol_tailor_client',null,'is',clientId));
 
 			if(soid){
 				filters.push( new nlobjSearchFilter('custcol_so_id', null, 'startswith', soid));
 			}
-
 			if(clientName){
 				filters.push( new nlobjSearchFilter('custcol_tailor_client_name', null, 'contains', clientName));
 			}
@@ -513,13 +507,15 @@ Application.defineModel('PlacedOrder', {
 			});
 			// result.totalRecordsFound = result.totalRecordsFound;
 			// result.records = result.records;
-			//nlapiLogExecution('debug','Results Records Length', result.records.length);
+			nlapiLogExecution('debug','Results Records Length', result.records.length);
 			result.records = _.map(result.records || [], function (record) {
 			var dateneeded = record.getValue('custcol_avt_date_needed');//this
 			var expdeliverydate = record.getValue('custcol_expected_delivery_date');
 			var fabricstatus = record.getValue('custcol_avt_fabric_status');
 			var cmtstatus = record.getValue('custcol_avt_cmt_status');
 			var datesent = record.getValue('custcol_avt_cmt_date_sent');
+			var custcol_flag_comment = record.getValue('custcol_flag_comment');
+			var custcol_flag = record.getValue('custcol_flag');
 			var custcol_expected_production_date = record.getValue('custcol_expected_production_date');//this
 			var cmtstatuscheck = false, fabstatuscheck = false, expFabDateNeeded, dateNeeded, confirmedDate;
 			var custcol_tailor_delivery_days = record.getValue('custcol_tailor_delivery_days');
@@ -555,7 +551,7 @@ Application.defineModel('PlacedOrder', {
 				if (cmtstatustext != "") cmtstatustext += '-';
 				cmtstatustext += record.getValue('custcol_avt_cmt_tracking');
 			}
-			if((record.getText('status') == 'Cancelled' || record.getText('status') == 'Billed' || record.getText('status') == 'Closed')
+			if((record.getText('status') == 'Cancelled' || record.getText('status') == 'Closed')//|| record.getText('status') == 'Billed'  Removed Billed
 			|| ((record.getText('custcol_avt_cmt_status') == 'Delivered' ||
 			record.getText('custcol_avt_cmt_status') == 'Left factory') && morethan10days)){
 				clearstatus = true;
@@ -643,7 +639,9 @@ Application.defineModel('PlacedOrder', {
 				, item: record.getText('item')
 				//,	fabricstatus: record.getText('custcol_avt_fabric_status')
 				//,	cmtstatus: record.getText('custcol_avt_cmt_status')
-				, dateneeded: dateneeded
+				, custcol_flag: custcol_flag
+				, custcol_flag_comment: custcol_flag_comment
+				, custcol_avt_date_needed: dateneeded
 				, tranline_status: cmtstatuscheck || fabstatuscheck//record.getText('custcol_avt_solinestatus')
 				, fabricstatus: record.getValue('custcol_avt_fabric_text')
 				, cmtstatus: cmtstatustext//record.getValue('custcol_avt_cmt_status_text')
@@ -653,21 +651,24 @@ Application.defineModel('PlacedOrder', {
 		var results_per_page = SC.Configuration.results_per_page;
 
 		if(sort == 'true'){
-			//nlapiLogExecution('debug','sort',sort);
+			nlapiLogExecution('debug','sort',sort);
 			result.records.sort(function(a,b){
-				return (a.tranline_status === b.tranline_status)? 0 : a.tranline_status? -1 : 1
+				return (a.tranline_status === b.tranline_status )? 0 : a.tranline_status? -1 : 1;
 			});
-			result.records = _.filter(result.records,function(a){
-					return a.clearstatus === false;
+			result.records.sort(function(a,b){
+				return (a.clearstatus === b.clearstatus)? 0 : a.clearstatus? 1: -1;
 			})
-
+			result.records.sort(function(a,b){
+				return (a.custcol_flag === b.custcol_flag)? 0 : a.custcol_flag == 'F'? 1 : -1
+			});
 		}
-
-					var range_start = (page * results_per_page) - results_per_page
-					,	range_end = page * results_per_page;
-					result.records = result.records.slice(range_start, range_end);
-
+		nlapiLogExecution('debug','Range Start', range_start);
+		nlapiLogExecution('debug','Range End', range_end);
+		var range_start = (page * results_per_page) - results_per_page
+		,	range_end = page * results_per_page;
+		result.records = result.records.slice(range_start, range_end);
 		return result;
+		}
 	}
 
 	, get: function (id) {
@@ -677,7 +678,7 @@ Application.defineModel('PlacedOrder', {
 		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
 		var body = JSON.parse(res.getBody());
 		var self = this;
-		if(body[0] != nlapiGetUser()){
+		//if(body[0] != nlapiGetUser()){
 			//We have a parent.. then we need to just get the orders from the script
 			var res = nlapiRequestURL(url+"&action=getorder&user="+body[0]+"&id="+id);
 			var result = JSON.parse(res.getBody());
@@ -706,30 +707,30 @@ Application.defineModel('PlacedOrder', {
 			//this.setLines(placed_order, result);
 			return result;
 
-		}
-		var placed_order = nlapiLoadRecord('salesorder', id)
-			, result = this.createResult(placed_order);
-
-		this.setAddresses(placed_order, result);
-		this.setShippingMethods(placed_order, result);
-		this.setLines(placed_order, result);
-		this.setFulfillments(result);
-		this.setPaymentMethod(placed_order, result);
-		this.setReceipts(result, placed_order);
-		this.setReturnAuthorizations(result, placed_order);
-
-		result.promocode = (placed_order.getFieldValue('promocode')) ? {
-			internalid: placed_order.getFieldValue('promocode')
-			, name: placed_order.getFieldText('promocode')
-			, code: placed_order.getFieldText('couponcode')
-		} : null;
-
-		// convert the obejcts to arrays
-		result.addresses = _.values(result.addresses);
-		result.shipmethods = _.values(result.shipmethods);
-		result.lines = _.values(result.lines);
-		result.fulfillments = _.values(result.fulfillments);
-		result.receipts = _.values(result.receipts);
+		//}
+		// var placed_order = nlapiLoadRecord('salesorder', id)
+		// 	, result = this.createResult(placed_order);
+		//
+		// this.setAddresses(placed_order, result);
+		// this.setShippingMethods(placed_order, result);
+		// this.setLines(placed_order, result);
+		// this.setFulfillments(result);
+		// this.setPaymentMethod(placed_order, result);
+		// this.setReceipts(result, placed_order);
+		// this.setReturnAuthorizations(result, placed_order);
+		//
+		// result.promocode = (placed_order.getFieldValue('promocode')) ? {
+		// 	internalid: placed_order.getFieldValue('promocode')
+		// 	, name: placed_order.getFieldText('promocode')
+		// 	, code: placed_order.getFieldText('couponcode')
+		// } : null;
+		//
+		// // convert the obejcts to arrays
+		// result.addresses = _.values(result.addresses);
+		// result.shipmethods = _.values(result.shipmethods);
+		// result.lines = _.values(result.lines);
+		// result.fulfillments = _.values(result.fulfillments);
+		// result.receipts = _.values(result.receipts);
 
 		return result;
 	}
@@ -936,16 +937,9 @@ Application.defineModel('PlacedOrder', {
 
 		// load clients for this record since result doesn't include first name & last name
 		var customer_id = placed_order.getFieldValue('entity');
-		var profile_filters = [
-			new nlobjSearchFilter('custrecord_tc_tailor', null, 'is', customer_id)
-		]
-
-			, profile_columns = [
-				new nlobjSearchColumn('custrecord_tc_first_name')
-				, new nlobjSearchColumn('custrecord_tc_last_name')
-			]
-
-			, profiles = nlapiSearchRecord('customrecord_sc_tailor_client', null, profile_filters, profile_columns);
+		var profile_filters = [new nlobjSearchFilter('custrecord_tc_tailor', null, 'is', customer_id)]
+		, profile_columns = [new nlobjSearchColumn('custrecord_tc_first_name'), new nlobjSearchColumn('custrecord_tc_last_name')]
+		, profiles = nlapiSearchRecord('customrecord_sc_tailor_client', null, profile_filters, profile_columns);
 
 		// special function for retrieving client name
 
@@ -982,6 +976,20 @@ Application.defineModel('PlacedOrder', {
 
 				var lineOption = [];
 
+				// if (placed_order.getLineItemValue('item', 'custcol_flag_comment', i)) {
+					lineOption.push({
+						id: 'custcol_flag_comment'
+						, name: 'Flag Comment'
+						, value: placed_order.getLineItemText('item', 'custcol_flag_comment', i)
+					});
+				// }
+				// if (placed_order.getLineItemValue('item', 'custcol_flag', i)) {
+					lineOption.push({
+						id: 'custcol_flag'
+						, name: 'Flag'
+						, value: placed_order.getLineItemText('item', 'custcol_flag', i)
+					});
+				// }
 				if (placed_order.getLineItemValue('item', 'custcol_designoption_message', i)) {
 					lineOption.push({
 						id: 'custcol_designoption_message'
@@ -4138,13 +4146,16 @@ Application.defineModel('LivePayment', {
 
 	, submit: function (data) {
 		'use strict';
-
+		nlapiLogExecution('debug','paymentdata',JSON.stringify(data));
+		var url = myaccountsuiteleturl;
+		var res = nlapiRequestURL(url+"&action=createpayment&user="+nlapiGetUser(), JSON.stringify(data));
+		var payment_record_id = JSON.parse(res.getBody());
 		// update record
-		var payment_record = this.update(this.create(), data)
-			// save record.
-			, payment_record_id = nlapiSubmitRecord(payment_record)
+		// var payment_record = this.update(this.create(), data)
+		// 	// save record.
+		// 	, payment_record_id = nlapiSubmitRecord(payment_record)
 			// create new record to next payment.
-			, new_payment_record = this.get();
+		var new_payment_record = this.get();
 
 		if (payment_record_id !== '0') {
 			// send confirmation

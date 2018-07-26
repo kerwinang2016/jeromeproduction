@@ -4,7 +4,9 @@
 			FabricQuantity = {name:"Fabric Quantity", value: null},
 			ClientName = {name:"Client Name", value:null},
 			HoldFabric = {name:"Hold Fabric", value:null},
-			HoldProduction = {name:"Hold Production", value: null};
+			HoldProduction = {name:"Hold Production", value: null},
+			Flag = {name:"Flag", value:null},
+			FlagComment = {name:"Flag Comment", value:null};
 	_.each(options, function (option)
 	{
 		var type = "",
@@ -94,6 +96,15 @@
 			else
 			HoldProduction.value = 'Yes';
 		}
+		else if(option.name == 'Flag'){
+			if(option.value == 'T'){
+				Flag.value = 'Yes'
+			}
+			else Flag.value = 'No'
+		}
+		else if(option.name == 'Flag Comment'){
+				FlagComment.value = option.value;
+		}
 		});
 %>
 <div class="clientname">
@@ -105,6 +116,11 @@
 <div class="holdproduction">
 	<%= HoldProduction.name + ': '+ HoldProduction.value %>
 </div>-->
+<% if(Flag.value == 'Yes'){ %>
+<div class="flag">
+	<%= FlagComment.name +': '+ FlagComment.value %>
+</div>
+<% } %>
 <div id="design-option" style="margin-top: 5px;">
 	<div class="accordion" id="design-options-<%=lineid%>">
 

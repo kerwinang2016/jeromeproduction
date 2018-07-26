@@ -1,4 +1,13 @@
 [
+  {
+    "profile":["Slim","Regular","Comfortable","Finished"],
+    "make":"Shirt",
+    "adjust":[{
+      "part":"Back-Length",
+      "adjustpart":"Front-Length",
+      "value":"-2"
+      }]
+  },
   {"profile":["Slim"],
     "make":"Jacket",
     "Upperarm":[{

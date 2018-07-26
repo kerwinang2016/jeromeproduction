@@ -37,10 +37,10 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 		,	'click [data-action="remove-shipping-address"]': 'removeShippingAddress'
 		,	'change [data-action="estimate-tax-ship-country"]': 'changeCountry'
 
-		,	'blur [name="custcol_avt_date_needed"]': 'swxSetDateNeeded'
+		//,	'blur [name="custcol_avt_date_needed"]': 'swxSetDateNeeded'
 		//,	'keyup [name="custcol_avt_date_needed"]': 'swxSetDateNeeded'
 		//,	'submit [data-action="update-dateneeded"]': 'swxSetDateNeededFormSubmit'
-
+		, 'change [name="custcol_avt_date_needed"]': 'swxSetDateNeeded'
 		,	'click [id="swx-butt-save-for-later-filter"]': 'swxFilterSaveForLaterClick'
 		,	'click [id="swx-butt-save-for-later-filter-clear"]': 'swxFilterSaveForLaterClearClick'
 		, 'click [id="add-multiple-save-for-later"]': 'addMultipleItemsToCart'
@@ -84,7 +84,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 
 				if(orderItemCode!==itemCode){
 					hasError = true;
-					//errorMessages.push('Order Item Code is not the same with the SKU Item Code');
+					// errorMessages.push('Order Item Code is not the same with the SKU Item Code');
 
 					//jQuery("[data-id='"+itemid+"']").find('[class="alert-placeholder"]').append(SC.macros.message('Item name is different to SKU', 'error', true));
 					jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Item name is different to SKU', 'error', true));
@@ -102,8 +102,18 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				}else{
 					previousClientId = forCheckClientId;
 				}
+				var fpSummary = _.where(line.get("options"), {id: "CUSTCOL_FITPROFILE_SUMMARY"})[0].value;
+				var fpSummaryJSON = JSON.parse(fpSummary);
 
-
+				if(fpSummaryJSON[0].name == 'Shirt' && fpSummaryJSON[0].type == 'Body'){
+					var shirtProfile = _.where(line.get("options"), {id: "CUSTCOL_FITPROFILE_SHIRT"});
+					var shirtProfileJSON = JSON.parse(shirtProfile[0].value);
+					var flength = _.where(shirtProfileJSON,{name: 'Front-Length'});
+					if(!flength || flength.length==0 || flength[0].value == '0'){
+						hasError = true;
+						jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Please update shirt fit profile to include front length measurement', 'error', true));
+					}
+				}
 				for(var i=0;i<itemoptions.length;i++){
 					if(itemoptions[i].id == "CUSTCOL_AVT_DATE_NEEDED"){
 						if(itemoptions[i].value == '1/1/1900'){
@@ -118,8 +128,8 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				previousLineInternalId = line.get('internalid');
 			});
 			if(hasError){
-				//jQuery("[data-id='"+itemid+"']").find('[data-type="alert-placeholder"]').append(SC.macros.message(errorMessages, 'error', true));
-				return ;
+				// jQuery("[data-id='"+itemid+"']").find('[data-type="alert-placeholder"]').append(SC.macros.message(errorMessages, 'error', true));
+				return;
 			}
 			else{
 				window.location.href = Session.get('touchpoints.checkout');
@@ -228,9 +238,6 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 			var optionData = this.model.get("options");
 			optionData.custbody_avt_wbs_hold_date_needed_json = '';
 			this.model.set("options", optionData);
-
-
-
 
 		}
 	,	renderLineItemOptions : function(designOptionsConfig, view){
@@ -390,24 +397,20 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 			e.preventDefault();
 			var self = this;
 			var item = jQuery(e.target).closest('article')[0].id;
-
-			if(e.target.value){
-				var unformattedDate = new Date(e.target.value);
-				var dateneeded = unformattedDate.getDate()+'/'+parseFloat(unformattedDate.getMonth()+1)+'/'+unformattedDate.getFullYear()
+			if(jQuery(e.target).val()){
+				var unformattedDate = new Date(jQuery(e.target).val());
+				var month = parseFloat(unformattedDate.getMonth())+parseFloat(1)
+				var dateneeded = unformattedDate.getDate()+'/'+month+'/'+unformattedDate.getFullYear();
 				var isValidDate = this.validateDateNeeded(dateneeded);
-
-				if( this.model.get('lines').length > 1)
+				if( this.model.get('lines').length > 1){
 					var r = confirm('Would you like to apply this date to all items?');
 					if(r == true){
 						_.each(this.model.get('lines').models,function(model,index){
 							 var a = _.find(model.get('options'),function(op){return op.id == 'CUSTCOL_AVT_DATE_NEEDED'});
 							 a.value = dateneeded;
 							 a.displayvalue = dateneeded;
-	 						model.save();
+							 model.save();
 						});
-						// jQuery("input[id='custcol_avt_date_needed']").each(function(index,elem) {
-					  //       elem.value = e.target.value;
-					  //   });
 					}
 					else{
 						var a = _.find(this.model.get('lines').models,function(m){return m.id == item;});
@@ -416,11 +419,20 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 						b.displayvalue = dateneeded;
 						a.save();
 					}
-					this.model.save().done(function(){
-					self.showContent();
-				});
-			}
+				}else{
+					var a = _.find(this.model.get('lines').models,function(m){return m.id == item;});
+					var b = _.find(a.get('options'),function(op){return op.id == 'CUSTCOL_AVT_DATE_NEEDED'});
+					b.value = dateneeded;
+					b.displayvalue = dateneeded;
+					a.save();
+				}
+				setTimeout(function(){
+					self.model.save().done(function(data){
+						self.showContent();
+					});
+				}, 1000)
 
+			}
 		}
 	,	validateDateNeeded: function (date_needed)
 		{

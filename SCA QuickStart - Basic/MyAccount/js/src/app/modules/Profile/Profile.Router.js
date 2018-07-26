@@ -17,6 +17,7 @@ define('Profile.Router',  ['Profile.Views','PlacedOrder.Collection','Profile.Upd
 		,	'favouriteoptions': 'favouriteOptions'
 		, 'stocklist': 'stockList'
 		, 'termsandconditions' : 'termsAndConditions'
+		, 'contactus' : 'contactUs'
 		}
 
 	,	initialize: function (application)
@@ -25,6 +26,12 @@ define('Profile.Router',  ['Profile.Views','PlacedOrder.Collection','Profile.Upd
 		}
 	,	termsAndConditions: function(){
 		var view = new Views.TermsAndConditions({
+				application:this.application
+		});
+		view.showContent();
+	}
+	,	contactUs: function(){
+		var view = new Views.ContactUs({
 				application:this.application
 		});
 		view.showContent();

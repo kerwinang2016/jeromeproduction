@@ -2,6 +2,7 @@
 
 	var type = field.type
 	,	label = field.label
+	, optional = field.optional == 'true'? true:false
 	,	name = field.name
 	,	inputHtml = ""
 	,	finishValue = 0;
@@ -116,10 +117,10 @@
 						</div>
 						<div class="span3-profile">
 							<% if(config!=null){ %>
-								<span min-value="<%= config.min %>" max-value="<%= config.max %>" id="finish_<%= name %>"><%= finishValue %></span>
+								<span data-optional="<%= optional %>" min-value="<%= config.min %>" max-value="<%= config.max %>" id="finish_<%= name %>"><%= finishValue %></span>
 								<% }else{ %>
 
-									<span id="finish_<%= name %>"><%= finishValue %></span>
+									<span data-optional="<%= optional %>" id="finish_<%= name %>"><%= finishValue %></span>
 									<% } %>
 						</div>
 						<div class="span3-profile">

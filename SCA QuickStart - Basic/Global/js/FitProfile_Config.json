@@ -127,24 +127,25 @@
 						,	{"label":"Sleeve L", "name":"Sleeve-L", "type":"text"}
 						,	{"label":"Sleeve R", "name":"Sleeve-R", "type":"text"}
 						,	{"label":"Upperarm", "name":"Upperarm", "type":"text"}
-						,	{"label":"Cuff", "name":"Cuff", "type":"text"}
+						,	{"label":"Cuff**", "name":"Cuff", "type":"text" ,"optional":"true"}
+						,	{"label":"Front Lt**", "name":"Front-Lt", "type":"text","optional":"true"}
+						,	{"label":"Top Button**", "name":"Top-Button", "type":"text","optional":"true"}
 						]
 					}
 				,	{
 						"label": "Body profile"
 					,	"name": "body-profile"
 					,	"fields": [
-							{"label":"Shoulder L", "name":"shoulder-description-l", "type":"select", "options": ["","High Min 1","High Avg 1.5","High Max 2.5","Sloping Min 1","Sloping Avg 1.5","Sloping Max 2.5"]}
-						,	{"label":"Shoulder R", "name":"shoulder-description-r", "type":"select", "options": ["","High Min 1","High Avg 1.5","High Max 2.5","Sloping Min 1","Sloping Avg 1.5","Sloping Max 2.5"]}
-						,	{"label":"Posture", "name":"Posture", "type":"select", "options": ["","Stooping Min 1","Stooping Avg 1.5","Stooping Max 2","Erect Min 1","Erect Avg 1.5","Erect Max 2"]}
-						,	{"label":"Chest", "name":"chest-stature", "type":"select", "options": ["","Full YES","Flat YES"]}
-						,	{"label":"Stomach", "name":"stomach-stature", "type":"select", "options": ["","Stout YES"]}
-						,	{"label":"Collar Pos", "name":"collar-position", "type":"select", "options": ["","Raise 0.5","Raise 1","Lower -0.5","Lower -1"]}
-						,	{"label":"H/Collar", "name":"collar-half", "type":"select", "options": ["","Collar -0.25","Collar -0.5"]}
-						,	{"label":"Shlder Pos", "name":"shoulder-position", "type":"select", "options": ["","Forward 0.5","Forward 1","Back -0.5","Back -1"]}
-						,	{"label":"Arm Pos", "name":"arm-position", "type":"select", "options": ["","Forward 1","Forward 2","Forward 3","Forward 4","Back -1","Back -2","Back -3","Back -4"]}
-						,	{"label":"Armhole Dp", "name":"armhole-depth", "type":"select", "options": ["","Raise 0.5","Raise 1","Raise 1.5","Raise 2","Lower -0.5","Lower -1","Lower -1.5","Lower -2"]}
-						,	{"label":"Top Button", "name":"top-button", "type":"select", "options": ["","Raise 1","Raise 2","Raise 3","Lower -1","Lower -2","Lower -3"]}
+							{"label":"Shoulder L", "name":"shoulder-description-l", "type":"select", "options": ["","High Min 0.5","High Avg 1","High Ext 1.5","High Max 2","Sloping Min 0.5","Sloping Avg 1","Sloping Ext 1.5","Sloping Max 2"]}
+						,	{"label":"Shoulder R", "name":"shoulder-description-r", "type":"select", "options": ["","High Min 0.5","High Avg 1","High Ext 1.5","High Max 2","Sloping Min 0.5","Sloping Avg 1","Sloping Ext 1.5","Sloping Max 2"]}
+						,	{"label":"Posture", "name":"Posture", "type":"select", "options": ["","Stooping Min 0.5","Stooping Avg 1","Stooping Ext 1.5","Stooping Max 2","Erect Min 0.5","Erect Avg 1","Erect Ext 1.5","Erect Max 2"]}
+						,	{"label":"Chest", "name":"chest-stature", "type":"select", "options": ["","Flat Min 0.5","Flat Avg 1","Flat Ext 1.25","Flat Max 1.5","Full Min 0.5","Full Avg 1","Full Ext 1.25","Full Max 1.5"]}
+						,	{"label":"Stomach", "name":"stomach-stature", "type":"select", "options": ["","Flat Min 0.5","Flat Avg 1","Flat More 1.5","Flat Ext 2","Flat Max 2.5","Full Min 0.5","Full Avg 1","Full More 1.5","Full Ext 2","Full Max 2.5"]}
+						,	{"label":"Collar Pos", "name":"collar-position", "type":"select", "options": ["","Raise Min 0.5","Raise Avg 1","Raise Max 2","Lower Min 0.5","Lower Avg 1","Lower Max 1.5"]}
+						,	{"label":"Collar Lt", "name":"collar-length", "type":"select", "options": ["","Shorten Min 0.5","Shorten Avg 1","Shorten Max 1.5"]}
+						,	{"label":"Shlder Pos", "name":"shoulder-position", "type":"select", "options": ["","Forward Min 0.5","Forward Max 1","Back Min 0.5","Back Max 1"]}
+						,	{"label":"Arm Pos", "name":"arm-position", "type":"select", "options": ["","Forward Min 1","Forward Avg 2","Forward Ext 3","Forward Max 4","Back Min 1","Back Avg 2","Back Ext 3","Back Max 4"]}
+						,	{"label":"Armhole Dp", "name":"armhole-depth", "type":"select", "options": ["","Raise Min 0.5","Raise Avg 1","Raise Ext 1.5","Raise Max 2","Lower Min 0.5","Lower Avg 1","Lower Ext 1.5","Lower Max 2"]}
 						]
 					}
 				]
@@ -217,14 +218,17 @@
 					"Slim": [
 						{"field":"seat", "value": 4}
 					,	{"field":"thigh", "value": 5}
+                    ,	{"field":"knee", "value": 5}
 					],
 					"Regular": [
 						{"field":"seat", "value": 7.5}
 					,	{"field":"thigh", "value": 8.5}
+                    ,	{"field":"knee", "value": 8.5}
 					],
 					"Comfortable": [
 						{"field":"seat", "value": 10.5}
 					,	{"field":"thigh", "value": 11.5}
+                    ,	{"field":"knee", "value": 11.5}
 					],
 					"Finished": []
 				}
@@ -247,6 +251,7 @@
 						,	{"label":"Outseam L", "name":"outseam-l", "type":"text"}
 						,	{"label":"Outseam R", "name":"outseam-r", "type":"text"}
 						,	{"label":"Thigh", "name":"thigh", "type":"text"}
+						,	{"label":"Knee", "name":"knee", "type":"text"}
 						,	{"label":"Foot", "name":"foot", "type":"text"}
 						]
 					}
@@ -254,9 +259,9 @@
 						"label": "Body profile"
 					,	"name": "body-profile"
 					,	"fields": [
-							{"label":"Front Rise", "name":"front-rise", "type":"select", "options": ["","Raise 1","Raise 1.5","Raise 2","Raise 2.5","Lower -1","Lower -1.5","Lower -2"]}
-						,	{"label":"Back Rise", "name":"back-rise", "type":"select", "options": ["","Raise 1","Raise 1.5","Raise 2","Raise 2.5","Lower -1","Lower -1.5","Lower -2"]}
-						,	{"label":"Flat Seat", "name":"flat-seat", "type":"select", "options": ["","Reduce -1","Reduce -2"]}
+							{"label":"Front Rise", "name":"front-rise", "type":"select", "options": ["","Raise Min 1","Raise More 1.5","Raise Avg 2","Raise Ext 2.5","Raise Ext 3","Raise Max 3.5","Lower Min 0.5","Lower Avg 1","Lower Ext 1.5","Lower Max 2"]}
+						,	{"label":"Back Rise", "name":"back-rise", "type":"select", "options": ["","Raise Min 1","Raise More 1.5","Raise Avg 2","Raise Ext 2.5","Raise Ext 3","Raise Max 3.5","Lower Min 0.5","Lower Avg 1","Lower Ext 1.5","Lower Max 2"]}
+						,	{"label":"Seat Stature", "name":"seat-stature", "type":"select", "options": ["","Flat Min 1","Flat Avg 1.5","Flat Max 2"]}
 						]
 					}
 				]
@@ -365,17 +370,19 @@
 							{"label":"Chest", "name":"chest", "type":"text"}
 						,	{"label":"Waist", "name":"waist", "type":"text"}
 						,	{"label":"Back Lt", "name":"back-lt", "type":"text"}
+						,	{"label":"Front Lt**", "name":"front-lt", "type":"text","optional":"true"}
+						,	{"label":"Top Button**", "name":"top-button", "type":"text","optional":"true"}
 						]
 					}
 				,	{
 						"label": "Body profile"
 					,	"name": "body-profile"
 					,	"fields": [
-							{"label":"Shoulder L", "name":"shoulder-description-l", "type":"select", "options": ["","High Min 1","High Avg 1.5","High Max 2.5","Sloping Min 1","Sloping Avg 1.5","Sloping Max 2.5"]}
-						,	{"label":"Shoulder R", "name":"shoulder-description-r", "type":"select", "options": ["","High Min 1","High Avg 1.5","High Max 2.5","Sloping Min 1","Sloping Avg 1.5","Sloping Max 2.5"]}
-						,	{"label":"Posture", "name":"Posture", "type":"select", "options": ["","Stooping Min 1","Stooping Avg 1.5","Stooping Max 2","Erect Min 1","Erect Avg 1.5","Erect Max 2"]}
-						,	{"label":"Chest", "name":"chest-stature", "type":"select", "options": ["","Full YES","Flat YES"]}
-						,	{"label":"Stomach", "name":"stomach-stature", "type":"select", "options": ["","Stout YES"]}
+							{"label":"Shoulder L", "name":"shoulder-description-l", "type":"select", "options": ["","High Min 0.5","High Avg 1","High Ext 1.5","High Max 2","Sloping Min 0.5","Sloping Avg 1","Sloping Ext 1.5","Sloping Max 2"]}
+						,	{"label":"Shoulder R", "name":"shoulder-description-r", "type":"select", "options": ["","High Min 0.5","High Avg 1","High Ext 1.5","High Max 2","Sloping Min 0.5","Sloping Avg 1","Sloping Ext 1.5","Sloping Max 2"]}
+						,	{"label":"Posture", "name":"Posture", "type":"select", "options": ["","Stooping Min 0.5","Stooping Avg 1","Stooping Ext 1.5","Stooping Max 2","Erect Min 0.5","Erect Avg 1","Erect Ext 1.5","Erect Max 2"]}
+						,	{"label":"Stomach", "name":"stomach-stature", "type":"select", "options": ["","Flat Min 0.5","Flat Avg 1","Flat More 1.5","Flat Ext 2","Flat Max 2.5","Full Min 0.5","Full Avg 1","Full More 1.5","Full Ext 2","Full Max 2.5"]}
+						,	{"label":"Armhole", "name":"armhole", "type":"select", "options": ["","Raise Min 0.5","Raise Avg 1","Raise Max 1.5","Lower Min 0.5","Lower Avg 1","Lower Max 1.5"]}
 						]
 					}
 				]
@@ -458,7 +465,7 @@
 							{"label":"Chest Pkt", "name":"Chest-Pocket-Position", "type":"select", "min":-2, "max":3}
 						,	{"label":"Vent Length", "name":"Vent-Length", "type":"select", "min":-2, "max":2}
 						]
-					}					
+					}
 				]
 			}
 		]
@@ -528,18 +535,18 @@
 						,	{"label":"Cuff L", "name":"Cuff-Left", "type":"text"}
 						,	{"label":"Cuff R", "name":"Cuff-Right", "type":"text"}
                     	,	{"label":"Back Lt", "name":"Back-Length", "type":"text"}
+                    	,	{"label":"Front Lt", "name":"Front-Length", "type":"text"}
 						]
 					}
 				,	{
 						"label": "Body profile"
 					,	"name": "body-profile"
 					,	"fields": [
-							{"label":"Shoulder L", "name":"shoulder-description-l", "type":"select", "options": ["","High Min  1","High Avg 1.5","High Max 2.5","Sloping Min 1","Sloping Avg 1.5","Sloping Max 2.5"]}
-						,	{"label":"Shoulder R", "name":"shoulder-description-r", "type":"select", "options": ["","High Min 1","High Avg 1.5","High Max 2.5","Sloping Min 1","Sloping Avg 1.5","Sloping Max 2.5"]}
-						,	{"label":"Chest", "name":"chest-stature", "type":"select", "options": ["","Full YES","Flat YES"]}
+							{"label":"Shoulder L", "name":"shoulder-description-l", "type":"select", "options": ["","High Min  0.5","High Avg 1","High Ext 1.5","High Max 2","Sloping Min 0.5","Sloping Avg 1","Sloping Ext 1.5","Sloping Max 2"]}
+						,	{"label":"Shoulder R", "name":"shoulder-description-r", "type":"select", "options": ["","High Min  0.5","High Avg 1","High Ext 1.5","High Max 2","Sloping Min 0.5","Sloping Avg 1","Sloping Ext 1.5","Sloping Max 2"]}
+						,	{"label":"Chest", "name":"chest-stature", "type":"select", "options": ["","Full Min 0.5","Full Avg 1","Full Max 1.5","Flat Min 0.5","Flat Avg 1","Flat Max 1.5"]}
 						,	{"label":"Armhole", "name":"armhole", "type":"select", "options": ["","Raise Min 1","Raise Avg 2.5","Raise Max 4","Lower Min 1","Lower Avg 2.5","Lower Max 4"]}
 						,	{"label":"Collar Pos", "name":"collar-position", "type":"select", "options": ["","Raise Min 1","Raise Avg 1.5","Raise Max 2","Lower Min 1","Lower Avg 1.5","Lower Max 2"]}
-						,	{"label":"Front Lt", "name":"front-length", "type":"select", "options": ["","Lengthen Min 1","Lengthen Avg 1.5","Lengthen Max 2","Shorten Min 1","Shorten Avg 1.5","Shorten Max 2"]}
 						]
 					}
 				]

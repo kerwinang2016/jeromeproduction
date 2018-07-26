@@ -12,9 +12,9 @@
 	,	item = line.get('item')
 	,	stock_info = item.getStockInfo()
 	,	thumbnail = item.get('_thumbnail')
-
 	,	link_attributes = _.getItemLinkAttributes(item)
 	, fitprofile = line.get('fitProfileOptions')
+
 	var formtype = "Jacket"
 	if(fitprofile.length == 3)
 		formtype = '3-Piece-Suit';
@@ -28,6 +28,7 @@
 	var isDisplayDateNeededHoldFabricHoldProduction = true;
 	var isDisplayButtCopy = true;
 %>
+
 <article id="<%- line_id %>" class="item-list-navigable <%= line_id %>" data-id=<%= item.get('internalid') %>>
 	<div class="item">
 		<div class="thumbnail">
@@ -57,7 +58,7 @@
 							var tailorPricingColumn = _.where(line.get("options"), {id: "CUSTCOL_TAILOR_CUST_PRICING"})
 							,	tailorPricing = "0.00";
 
-							if(!_.isUndefined(tailorPricingColumn)){
+							if(!_.isUndefined(tailorPricingColumn) && tailorPricingColumn[0]){
 								tailorPricing = tailorPricingColumn[0].value;
 							}
 						%>
@@ -94,7 +95,7 @@
 						<!-- start avt date needed, hold fabric, hold production -->
 						<div class="sku">
 							<!-- start avt date needed -->
-							<div style="margin-bottom: 10px;">
+							<div style="margin-bottom: 10px;" class="form-control">
 								<%
 									var defaultDateNeeded = '1/1/1900';
 									var dateNeededValue =  defaultDateNeeded;
@@ -125,10 +126,9 @@
 
 
 								%>
-									<label for="custcol_avt_date_needed"><%= _('Date Needed:').translate() %>
-										<input type="hidden" name="internalid" id="update-internalid-<%= line_id %>" class="update-internalid-<%= line_id %>" value="<%- line_id %>">
-										<input class="input-date" id="custcol_avt_date_needed" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" placeholder="<%= _('MM-DD-YYYY').translate() %>" name="custcol_avt_date_needed" type="date" value="<%= (isEmptyDateNeeded) ? '' : stDateNeeded %>"   data-action="range-filter">
-									</label>
+									<label for="custcol_avt_date_needed"><%= _('Date Needed:').translate() %></label>
+									<input type="hidden" name="internalid" id="update-internalid-<%= line_id %>" class="update-internalid-<%= line_id %>" value="<%- line_id %>">
+									<input data-provide="datepicker" id="custcol_avt_date_needed_<%= line_id %>" placeholder="<%= _('yyyy-mm-dd').translate() %>" name="custcol_avt_date_needed" value="<%= (isEmptyDateNeeded) ? '' : stDateNeeded %>">
 							</div>
 							<!-- end avt date needed -->
 

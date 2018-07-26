@@ -17,7 +17,7 @@ function service (request)
 				// Live payment model is defined on ssp library Models.js
 			,	LivePayment = Application.getModel('LivePayment')
 			,	data = JSON.parse(request.getBody() || '{}');
-			
+
 			switch (method)
 			{
 				case 'GET':
@@ -27,7 +27,7 @@ function service (request)
 				case 'POST':
 					Application.sendContent(LivePayment.submit(data));
 				break;
-				
+
 				default:
 					// methodNotAllowedError is defined in ssp library commons.js
 					Application.sendError(methodNotAllowedError);
@@ -35,7 +35,7 @@ function service (request)
 		}
 		else
 		{
-			// unauthorizedError is defined in ssp library commons.js			
+			// unauthorizedError is defined in ssp library commons.js
 			Application.sendError(unauthorizedError);
 		}
 	}

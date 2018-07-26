@@ -72,9 +72,9 @@
 			<div class="mini-cart-actions row-fluid">
 
 				<% if (!isSecureSite) { %>
-					<a id="swx-minicart-gotocart" href="/cart" data-touchpoint="<%= has_cart_router ? current_touchpoint : 'viewcart' %>" data-hashtag="#cart" class="btn btn-view-cart span">
+					<a style="background:none;" id="swx-minicart-gotocart" href="/cart" data-touchpoint="<%= has_cart_router ? current_touchpoint : 'viewcart' %>" data-hashtag="#cart" class="btn btn-view-cart span">
 				<% } else { %>
-					<a id="swx-minicart-gotocart" href="/cart" data-touchpoint="home" data-hashtag="#cart" class="btn btn-view-cart span">
+					<a style="background:none;" id="swx-minicart-gotocart" href="/cart" data-touchpoint="home" data-hashtag="#cart" class="btn btn-view-cart span">
 				<% } %>
 
 					<%= _('View Cart').translate() %>
@@ -98,7 +98,7 @@
 				<% } %>
 			</a>
 		</li>
-		<li style="display: none"><a id="swx-minicart-gotocart" href="/cart" data-touchpoint="<%= has_cart_router ? current_touchpoint : 'viewcart' %>" data-hashtag="#cart"></li>
+		<li style="display: none"><a style="background:none;" id="swx-minicart-gotocart" href="/cart" data-touchpoint="<%= has_cart_router ? current_touchpoint : 'viewcart' %>" data-hashtag="#cart"></li>
 	</ul>
 <% } %>
 </div>

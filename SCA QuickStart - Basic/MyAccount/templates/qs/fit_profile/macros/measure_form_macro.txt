@@ -53,6 +53,7 @@
 
 							var fieldName = field.name;
 
+							console.log('values',values);
 							var bodyValue = 0
 							,	allowance = 0
 							,	baseAllowance = 0
@@ -86,28 +87,31 @@
 								baseAllowance = baseAllowance && baseAllowance.value ? baseAllowance.value : 0;
 							}
 						%>
-							<%
-								//if(bodyValue !== null && bodyValue!== '' && bodyValue!== undefined){
-									//bodyValue = bodyValue.replace('+',' ');
-								//}
-
-							 %>
 							<%= SC.macros.bodyMeasureField(field, bodyValue, fieldset.name, baseAllowance, allowance,selectedItemType) %>
 						<% }) %>
 					<% } else { %>
 						<div class="row-fluid">
-							<div class="span3 offset2"><%= fieldset["max-label"] %></div>
-							<div class="span3"><%= fieldset["min-label"] %></div>
+							<div class="span2 offset3"><%= fieldset["max-label"] %></div>
+							<div class="span2 offset5p"><%= fieldset["min-label"] %></div>
+							<% if(fieldset.name == 'length' || fieldset.name == 'horizontals') { %>
+							<div class="span-w-10 offset5p"><%= _('Block').translate() %></div>
+							<div class="span-w-10"><%= _('Finished').translate() %></div>
+							<% } %>
 						</div>
 						<% _.each(fieldset.fields, function(field){
 							var blockValueMin = _.where(values, {name: field.name + "-min"})[0]
 							,	blockValueMax = _.where(values, {name: field.name + "-max"})[0]
 							,	value = [blockValueMin, blockValueMax];
 						%>
-							<%= SC.macros.blockMeasureField(field, value, fields.increment) %>
+							<%= SC.macros.blockMeasureField(field, value, fields.increment,fieldset) %>
 						<% }) %>
 					<% } %>
 				</div>
+				<% if(fieldset.name == "body-measurement" && (selectedItemType == 'Jacket' || selectedItemType == 'Waistcoat' ||
+jQuery('[id*="custrecord_fp_product_type"]').val() == 'Jacket' || jQuery('[id*="custrecord_fp_product_type"]').val() == 'Waistcoat')){ %>
+
+				<p id="optionalmessage">** optional measurement</p>
+				<% }%>
 			<% } %>
 		<% }) %>
 

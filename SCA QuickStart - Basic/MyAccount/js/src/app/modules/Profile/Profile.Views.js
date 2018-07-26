@@ -21,7 +21,18 @@ define('Profile.Views', function ()
 	Views.TermsAndConditions = Backbone.View.extend({
 			template: 'termsandconditions'
 		,	title: _('Terms and Conditions').translate()
-		,	attributes: {'class': 'Terms and Conditions'}
+		,	attributes: {'class': 'TermsandConditions'}
+		, events: {
+
+		}
+		, initialize: function(options){
+			this.application = options.application;
+		}
+	});
+	Views.ContactUs = Backbone.View.extend({
+			template: 'contact'
+		,	title: _('Contact Us').translate()
+		,	attributes: {'class': 'ContactUs'}
 		, events: {
 
 		}

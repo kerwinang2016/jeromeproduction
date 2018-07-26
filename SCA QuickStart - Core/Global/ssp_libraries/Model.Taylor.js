@@ -13,7 +13,7 @@ Application.defineModel('Taylor', {
 		if (!logoDetails || true) {
 			var apiRequest = nlapiRequestURL(serviceURL, null, null, null, 'GET');
 			objRequestBody = apiRequest.getBody();
-			
+
 			cache.put('brandLogo-' + custID, JSON.stringify(objRequestBody), cacheTimeOut);
 		} else {
 			objRequestBody = JSON.parse(logoDetails);

@@ -23,7 +23,7 @@
 	//Custom subtotal computation
 	cart.get("lines").each(function(line){
 		var costOption = _.where(line.get("options"), {id: "CUSTCOL_TAILOR_CUST_PRICING"});
-		if(costOption){
+		if(costOption && costOption[0]){
 			subtotal = subtotal + parseFloat(costOption[0].value);
 		}
 	});

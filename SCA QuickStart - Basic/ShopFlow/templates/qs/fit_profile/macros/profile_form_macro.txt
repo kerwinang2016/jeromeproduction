@@ -1,11 +1,16 @@
-<% registerMacro('profileForm', function (model) { 
+<% registerMacro('profileForm', function (model,paramEvent) {
+console.log('model')
+console.log(model)
 	var profile = model.profile_collection && model.get("current_profile") ? model.profile_collection.where({internalid: model.get("current_profile")})[0] : null
 	,	parent = model.get("current_client");
+	var eventValue = (!_.isNullOrEmpty(paramEvent) && paramEvent == 'add') ? 'add' : 'viewedit';
+	var isAddEvent = (eventValue == 'add') ? true : false;
+	var isViewEdit = (eventValue == 'viewedit') ? true : false;
 %>
 
 <form id="profile-form">
 	<fieldset>
-		
+
 		<input type="hidden" value="<%= parent %>" name="custrecord_fp_client" data-rectype="field">
 		<div class="control-group" data-input="name">
 			<label class="control-label" for="name">
@@ -32,7 +37,7 @@
 			</div>
 
 			<div id="measure-type">
-				<% if(profile){ 
+				<% if(profile){
 					var selectedItemType = _.where(model.measurement_config, {item_type: profile.get("custrecord_fp_product_type")})[0]
 					,	measurementType = _.pluck(selectedItemType.measurement, "type");
 				%>
@@ -41,7 +46,7 @@
 			</div>
 		</div>
 		<div id="measure-form">
-			<% if(profile){ 
+			<% if(profile){
 				var selectedItemTypeMeasure = profile.get("custrecord_fp_product_type")
 				,	measurementTypeMeasure = profile.get("custrecord_fp_measure_type")
 				,	fieldsForm = null;
@@ -49,15 +54,14 @@
 				if(measurementTypeMeasure && selectedItemTypeMeasure){
 					fieldsForm = _.where(model.measurement_config, {item_type: selectedItemTypeMeasure})[0];
 					fieldsForm = _.where(fieldsForm.measurement, {type: measurementTypeMeasure})[0];
-					
+
 					model.selected_measurement = fieldsForm;
-					console.log('ShowFlow>profile_form_macto.txt>',profile);			
 			%>
-				 <%= SC.macros.measureForm(fieldsForm, profile ? JSON.parse(profile.get("custrecord_fp_measure_value")) : null,profile?profile.get("custrecord_fp_product_type"):null) %> 
-			<% 
+				 <%= SC.macros.measureForm(fieldsForm, profile ? JSON.parse(profile.get("custrecord_fp_measure_value")) : null,profile?profile.get("custrecord_fp_product_type"):null,eventValue) %>
+			<%
 				}
-			} 
-			%>			
+			}
+			%>
 		</div>
 		<div data-type="alert-placeholder"></div>
 	</fieldset>

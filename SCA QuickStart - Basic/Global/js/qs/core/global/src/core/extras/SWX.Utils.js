@@ -244,7 +244,7 @@
 		var hasArrObjClientList = (arrObjClientListTotal != 0) ? true : false;
 
 		var hasObjFilters = (!isNullOrEmptyObject(objFilters)) ? true : false;
-
+		var checkFullName = false;
 		if (hasObjFilters)
 		{
 			filterName = (isObjectExist(objFilters['name'])) ? $.trim(objFilters['name']) : '';
@@ -268,7 +268,7 @@
 				var arrFilterName = (hasFilterName) ? filterName.split(' ') : [];
 				var arrFilterNameTotal = (!isNullOrEmpty(arrFilterName)) ? arrFilterName.length : 0;
 				var hasArrFilterName = (arrFilterNameTotal != 0) ? true : false;
-
+				if(arrFilterNameTotal >1) checkFullName = true;
 				for (var dx = 0; dx < arrObjClientListTotal; dx++)
 				{
 					var isAlreadyAdded = false;
@@ -306,18 +306,27 @@
 
 							for (var xj = 0; xj < arrFilterNameTotal; xj++)
 							{
-								var stFilterName = arrFilterName[xj];
+								if(!checkFullName){
+									var stFilterName = arrFilterName[xj];
+									if (!isAlreadyAdded && stFilterName == refFirstNameValue)
+									{
+										retArrObj.push(arrObjClientList[dx]);
+										isAlreadyAdded = true;
+									}
 
-								if (!isAlreadyAdded && stFilterName == refFirstNameValue)
-								{
-									retArrObj.push(arrObjClientList[dx]);
-									isAlreadyAdded = true;
+									if (!isAlreadyAdded && stFilterName == refLastNameValue)
+									{
+										retArrObj.push(arrObjClientList[dx]);
+										isAlreadyAdded = true;
+									}
 								}
-
-								if (!isAlreadyAdded && stFilterName == refLastNameValue)
-								{
-									retArrObj.push(arrObjClientList[dx]);
-									isAlreadyAdded = true;
+								else{
+									var completename = refFirstNameValue + ' ' + refLastNameValue
+									if (!isAlreadyAdded && filterName == completename )
+									{
+										retArrObj.push(arrObjClientList[dx]);
+										isAlreadyAdded = true;
+									}
 								}
 							}
 						}

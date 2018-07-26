@@ -28,7 +28,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             , 'change [name="custcol_fabric_quantity"]': 'roundOffFabricQuantity'
             , 'keypress [name="custcol_fabric_quantity"]': 'ignoreEnter'
             , 'keypress [name="quantity"]': 'ignoreEnter'
-            , 'click #design-option [data-toggle="collapse"]': 'scrolltodesignoption'
+            //, 'click #design-option [data-toggle="collapse"]': 'scrolltodesignoption'
             , 'click [data-type="add-to-cart"]': 'addToCart'
 
             , 'shown .collapse': 'storeColapsiblesState'
@@ -47,21 +47,37 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
 
             //Fit profile change
             , 'change #fitprofile-details select.profiles-options': 'fitProfileChange'
+
             //Quantity change
             , 'change .input-mini.quantity': 'quantityChange'
             //Fit profile message change
             , 'change #fitprofile-message': 'fitProfileMessageChange'
 
         }
-
         , initialize: function (options) {
-
+            var self = this;
             jQuery.get(_.getAbsoluteUrl('js/itemRangeConfig.json')).done(function (data) {
                 window.cmConfig = data;
+            });
+            jQuery.get(_.getAbsoluteUrl('js/extraQuantity.json')).done(function (data) {
+                window.extraQuantity = JSON.parse(data);
             });
             jQuery.get(_.getAbsoluteUrl('js/itemRangeConfigInches.json')).done(function (data) {
                 window.inchConfig = data;
             });
+
+      			jQuery.get(_.getAbsoluteUrl('services/measurementdefaults.ss')).done(function (data) {
+      				self.measurementdefaults = data;
+      			});
+      			jQuery.get(_.getAbsoluteUrl('services/influences.ss')).done(function (data) {
+      				self.influences = data;
+      			});
+            jQuery.get(_.getAbsoluteUrl('services/bodyBlockMeasurements.ss')).done(function (data) {
+      				window.bodyBlockMeasurements = data;
+      			});
+            jQuery.get(_.getAbsoluteUrl('services/blockQuantity.ss')).done(function (data) {
+      				window.blockQuantity = data;
+      			});
             this.application = options.application;
             this.counted_clicks = {};
             SC.sessioncheck();
@@ -85,6 +101,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             jQuery(document).ready(function () {
                 jQuery("[data-type='alert-placeholder']").empty();
             });
+            this.itemfinalblockvalue = "";
         }
         , getClientId: function (fragment) {
             var fragmentArray = fragment.split("?");
@@ -230,11 +247,8 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 var modalTitleErrConflictCode = 'Selected Options Error';
                 var modalContentErrConflictCode = _.getHtmlErrConflictCodes(arrErrConflictCodes);
                 _.displayModalWindow(modalTitleErrConflictCode, modalContentErrConflictCode, true)
-
                 return false;
             }
-
-
             if (this.model.isReadyForCart() && this.validateFitProfile()) {
                 var self = this
                     , cart = this.application.getCart()
@@ -277,6 +291,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                             var fitValue = window.currentFitProfile.profile_collection.get(selectedProfile).get('custrecord_fp_measure_value');
 
                             var fitProfileValue = JSON.parse(fitValue);
+                            var fpvIN = JSON.parse(JSON.stringify(fitProfileValue));
                             if (fitProfileValue[0].value == 'Inches') {
                                 _.each(fitProfileValue, function (value, key, obj) {
 
@@ -288,11 +303,21 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                                         obj[key].value = (obj[key].value * 2.54).toFixed(2);
                                     }
                                 });
-
                             }
+                            if (fpvIN[0].value == 'CM') {
+                                _.each(fpvIN, function (value, key, obj) {
+
+                                    if (obj[key].name === 'units') {
+                                        obj[key].value = 'Inches';
+                                    }
+                                    //Try parse if value is number
+                                    if (!isNaN(obj[key].value)) {
+                                        obj[key].value = (obj[key].value/2.54).toFixed(2);
+                                    }
+                                });
+                            }
+                            self.model.setOption(fitColumn+'_in', JSON.stringify(fpvIN));
                             self.model.setOption(fitColumn, JSON.stringify(fitProfileValue));
-
-
                         }
                     });
 
@@ -304,6 +329,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     self.model.setOption('custcol_fitprofile_message', jQuery('#fitprofile-message').val());
                     self.model.setOption('custcol_tailor_cust_pricing', self.$('span[itemprop="price"]').attr("data-rate") ? self.$('span[itemprop="price"]').attr("data-rate").replace(",", "") : "0.00");
                     self.model.setOption('custcol_tailor_client', self.client);
+
                     //self.model.setOption('custcol_itm_category_url', _.where(self.model.get("facets"), {id: "category"})[0].values[0].values[0].values[0].id.replace('Home/', ''));
                     self.model.setOption('custcol_itm_category_url', _.where(categories, { url: "Item Types" })[0].values[0].id.replace('Home/', ''));
                     var fitProfileSummary = []
@@ -315,17 +341,19 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         var $el = jQuery(this);
                         if ($el.find(":selected").text() != "Select a profile") {
                             measureList = currentFitProfile.profile_collection.models;
+                            mid = "";
                             _.each(measureList, function (lineItem) {
-                                if (lineItem.get('name') == $el.find(":selected").text()) {
+                                if (lineItem.get('internalid') == $el.find(":selected").val()) {
                                     measureType = lineItem.get("custrecord_fp_measure_type");
+                                    mid = lineItem.get('internalid')
                                 }
                             });
-
-
                             fitProfileSummary.push({
                                 'name': $el.attr('data-type'),
                                 'value': $el.find(":selected").text(),
-                                'type': measureType
+                                'type': measureType,
+                                'id': mid
+
                             });
                         }
                     });
@@ -353,6 +381,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 self.holdfabric = 'F';
                 self.holdproduction = 'F';
                 self.model.setOption('custcol_avt_date_needed', self.dateneeded);
+                self.model.setOption('custcol_fabric_extra',jQuery('#fabric_extra option:selected').text());
                 //self.model.setOption('custcolcustcol_item_check','T');
               self.model.setOption('custcolcustcol_item_check', jQuery("#chkItem").is(':checked')?'T':'F');
 
@@ -429,13 +458,13 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     }
                     break;
                 case "Overcoat":
-                    if (parseFloat(jQuery('[name="custcol_fabric_quantity"]').val()) < 2.4) {
+                    if (parseFloat(jQuery('[name="custcol_fabric_quantity"]').val()) < 2.21) {
                         self.showError(_('Quantity should be greater than 2.4 for Overcoat').translate());
                         status = false;
                     }
                     break;
                 case "Shirt":
-                    if (parseFloat(jQuery('[name="custcol_fabric_quantity"]').val()) < 2) {
+                    if (parseFloat(jQuery('[name="custcol_fabric_quantity"]').val()) < 1.6) {
                         self.showError(_('Quantity should be greater than 2 for Shirt').translate());
                         status = false;
                     }
@@ -570,7 +599,12 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
         , prepView: function () {
             this.title = this.model.get('_pageTitle');
             this.page_header = this.model.get('_pageHeader');
-            var vendorName = _.where(this.model.get("facets"), { id: "custitem_vendor_name" })[0].values[0].label;
+            var wherevendor = _.where(this.model.get("facets"), { id: "custitem_vendor_name" }),
+              vendorName;
+            if(wherevendor){
+              if(wherevendor[0].values.length>0)
+                vendorName = wherevendor[0].values[0].label;
+            }
 
 
             this.computeDetailsArea();
@@ -694,7 +728,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             // REVIEW: the following code might change, showContent should recieve an options parameter
             this.application.getLayout().showContent(this, options && options.dontScroll).done(function (view) {
 
-
                 jQuery("[data-type='alert-placeholder']").empty()
 
                 var selectedItem = null;
@@ -705,7 +738,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         selectedItem = currentItem;
                     }
                 }
-
 
                 // set options to options placeholder
                 var optionsHolder = {};
@@ -727,6 +759,9 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         else if( options[x].id == 'CUSTCOLCUSTCOL_ITEM_CHECK'){
                           jQuery('#chkItem').prop('checked',options[x].value=='T'?true:false);
                         }
+                        else if( options[x].id == 'CUSTCOL_FABRIC_EXTRA'){
+                          optionsHolder['CUSTCOL_FABRIC_EXTRA'] = options[x];//jQuery("#fabric_extra option[name=" + options[x].value +"]").prop("selected",true) ;
+                        }
                         else if( options[x].id == 'CUSTCOL_CUSTOM_FABRIC_DETAILS'){
                           if(options[x].value){
                             var fabdetails = JSON.parse(options[x].value);
@@ -742,7 +777,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     , model: new FitProfileModel(self.application.getUser().get("internalid"))
                     , types: self.model.get("custitem_clothing_type").split(",")
                 });
-
                 profileView.model.on("afterInitialize", function () {
                     profileView.model.set('current_client', self.client);
 
@@ -763,8 +797,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     // set fit profile values from cart if item is already in cart
                     if (SC._applications.Shopping.getLayout().currentView && SC._applications.Shopping.getLayout().currentView.productList) {
                         if (selectedItem && (self.model.get("custitem_clothing_type") !== '&nbsp;' && self.model.get('itemtype') !== 'InvtPart')) {
-
-
                             // set fit profiles
                             var fitProfileItems = JSON.parse(optionsHolder['CUSTCOL_FITPROFILE_SUMMARY'].value);
                             for (var x = 0; x < fitProfileItems.length; x++) {
@@ -784,7 +816,9 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                             if (optionsHolder['CUSTCOL_DESIGNOPTION_MESSAGE']) {
                                 jQuery("textarea#designoption-message").html(optionsHolder['CUSTCOL_DESIGNOPTION_MESSAGE'].value);
                             }
-
+                            if(optionsHolder['CUSTCOL_FABRIC_EXTRA']){
+                              jQuery("#fabric_extra option[name='" + optionsHolder['CUSTCOL_FABRIC_EXTRA'].value +"']").prop("selected",true) ;
+                            }
                         } else { }
                     } else {
                         // set fit profile based on window.tempFitProfile if it has value stored
@@ -841,7 +875,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     window.tempFitProfileMessage = jQuery("textarea#fitprofile-message").html();
                     window.tempOptionsNotes = jQuery("textarea#designoption-message").html();
                 }, 1000);
-
             });
             this.application.on('profileRefresh', function () {
               if(self.cid == SC._applications.Shopping.getLayout().currentView.cid){
@@ -850,6 +883,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     , model: new FitProfileModel(self.application.getUser().get("internalid"))
                     , types: self.model.get("custitem_clothing_type").split(",")
                 });
+
 
                 profileView.model.on("afterInitialize", function () {
                     profileView.model.set('current_client', self.client);
@@ -860,21 +894,76 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                     self.updateFitProfileDetails(profileView.$el);
                     //Hack on setting the profile
                     if (window.tempFitProfile) {
+                        //What is the item??
+                        var item = self.model.get("custitem_clothing_type").split(",");
+                        var qty = 0;
                         for (var i = 0; i < window.tempFitProfile.length; i++) {
+
                             var profileID = window.tempFitProfile[i].value;
                             jQuery('#profiles-options-' + window.tempFitProfile[i].name).val(window.tempFitProfile[i].value);
-                            if (window.tempFitProfile[i].value)
+                            if (window.tempFitProfile[i].value){
                                 jQuery("#profile-actions-" + window.tempFitProfile[i].name).html("<a data-backdrop='static' data-keyboard='false' data-toggle='show-in-modal' href='/fitprofile/new'>Add</a> | <a data-backdrop='static' data-keyboard='false' data-toggle='show-in-modal' href='/fitprofile/" + profileID + "'>Edit</a> | <a data-action='remove-rec' data-type='profile' data-id='" + profileID + "'>Remove</a>");
-                            else
+                                //Update Quantity when Profile Refreshes, during add edit and delete....What if the item was already on cart
+                                if(window.tempFitProfile[i].block){
+                                  if(item.length == 3){
+                                    var bq = _.find(window.blockQuantity,function(q){
+                                      return q.custrecord_bqm_producttext == '3-Piece Suit' && q.custrecord_bqm_block == window.tempFitProfile[i].block;
+                                    })
+                                    if(bq){
+                                      if(qty < parseFloat(bq.custrecord_bqm_quantity))
+                                        qty = parseFloat(bq.custrecord_bqm_quantity);
+                                    }
+                                  }
+                                  else if(item.length == 2){
+                                    var bq = _.find(window.blockQuantity,function(q){
+                                      return q.custrecord_bqm_producttext == '2-Piece Suit' && q.custrecord_bqm_block == window.tempFitProfile[i].block;
+                                    })
+                                    if(bq){
+                                      if(qty < parseFloat(bq.custrecord_bqm_quantity))
+                                        qty = parseFloat(bq.custrecord_bqm_quantity);
+                                    }
+                                  }else{
+                                    var bq = _.find(window.blockQuantity,function(q){
+                                      return q.custrecord_bqm_producttext == item[0] && q.custrecord_bqm_block == window.tempFitProfile[i].block;
+                                    })
+                                    if(bq){
+                                      if(qty < parseFloat(bq.custrecord_bqm_quantity))
+                                        qty = parseFloat(bq.custrecord_bqm_quantity);
+                                    }
+                                  }
+                                }
+                            }
+                            else{
                                 jQuery("#profile-actions-" + window.tempFitProfile[i].name).html("<a data-backdrop='static' data-keyboard='false' data-toggle='show-in-modal' href='/fitprofile/new'>Add</a>");
+                            }
                         }
+                        var extra = 0;
+                        if(jQuery('#fabric_extra').val() != "")
+                          extra = parseFloat(jQuery('#fabric_extra').val())
+                        for (var i = 0; i < window.tempFitProfile.length; i++) {
+                          var ptype = window.tempFitProfile[i].name;
+                          var designQuantityCodes = _.find(window.extraQuantity[0].values,function(temp){
+                            return temp.code == ptype;
+                          });
+                          if(designQuantityCodes){
+                          _.each(jQuery('[data-type="fav-option-customization"]'),function(temp){
+                            var val = _.find(designQuantityCodes.design,function(temp2){
+                              return temp2.code == temp.value
+                            });
+                            if(val && val.value != "")
+                              extra+= parseFloat(val.value);
+
+                          })
+                          }
+                        }
+                        jQuery('[name="custcol_fabric_quantity"]').val((qty + extra).toFixed(2));
                     }
                 });
+
               }
             });
         }
         , updateFitProfileDetails: function ($el) {
-
 
             // retain old values before updating HTML
             var oldValues = [];
@@ -991,18 +1080,112 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 })
             });
             window.tempOptions = values;
+            this.application.trigger('profileRefresh');
         }
         , designOptionMessageChange: function (e) {
             window.tempOptionsNotes = jQuery("#designoption-message").val();
         }
-        , fitProfileChange: function (e) {
-            window.tempFitProfile = new Array();
+        , lookupBlockValue: function(id, ptype){
 
+          if(!window.currentFitProfile.profile_collection) return 0;
+          var pModel = window.currentFitProfile.profile_collection.get(id);
+    			if(pModel.get('custrecord_fp_measure_type') == 'Block'){
+            var bvalue;
+            if(pModel.get('custrecord_fp_block_value'))
+              bvalue = pModel.get('custrecord_fp_block_value')
+            else {
+              var mValue = JSON.parse(pModel.get('custrecord_fp_measure_value'));
+              var mObj = mValue.find(function (e){return e.name == 'block';})
+              bvalue = mObj.value;
+            }
+    				return bvalue;
+    			}else{
+    				//Should be a body
+    				//3:Jacket, 4:Trouser, 6:Waistcoat, 7:Shirt, 8:Overcoat
+
+            var result;
+    				switch(ptype){
+    					case 'Jacket':
+    					case 'Shirt':
+    					case 'Overcoat':
+    						var partvalue = 0, partmeasure = 0;
+                var mValue = JSON.parse(pModel.get('custrecord_fp_measure_value'));
+                var mUnits = mValue.find(function (e){return e.name == 'units';})
+                var a = _.filter(mValue,function(m){
+      						return m.name == "Waist" || m.name == "allowance-Waist" || m.name == "waist" || m.name == "allowance-waist";
+      					});
+                for(var i=0;i<a.length;i++){
+      						partvalue += parseFloat(a[i].value);
+      					}
+
+    						if(partvalue)
+    						partmeasure = mUnits.value == 'CM'?partvalue:parseFloat(partvalue)*2.54;
+                partmeasure = parseFloat(partmeasure)/2;
+    						var filtered = _.filter(window.bodyBlockMeasurements,function(data){
+    						    return parseFloat(data.custrecord_bbm_bodymeasurement) >= parseFloat(partmeasure) && data.custrecord_bbm_producttypetext == ptype;
+    						})
+                if(filtered && filtered.length>0)
+    						result = filtered.reduce(function(prev, curr){
+    				        return parseFloat(prev['custrecord_bbm_bodymeasurement']) < parseFloat(curr['custrecord_bbm_bodymeasurement']) ? prev : curr;
+    				    });
+    						break;
+    					case 'Trouser':
+                var partvalue = 0, partmeasure = 0;
+                var mValue = JSON.parse(pModel.get('custrecord_fp_measure_value'));
+                var mUnits = mValue.find(function (e){return e.name == 'units';})
+                var a = _.filter(mValue,function(m){
+                  return m.name == "seat" || m.name == "allowance-seat";
+                });
+                for(var i=0;i<a.length;i++){
+                  partvalue += parseFloat(a[i].value);
+                }
+                if(partvalue)
+                partmeasure = mUnits.value == 'CM'?partvalue:parseFloat(partvalue)*2.54;
+                partmeasure = parseFloat(partmeasure)/2;
+    						var filtered = _.filter(window.bodyBlockMeasurements,function(data){
+    						return parseFloat(data.custrecord_bbm_bodymeasurement) >= parseFloat(partmeasure) && data.custrecord_bbm_producttypetext == ptype;
+    						})
+                if(filtered && filtered.length>0)
+    						result = filtered.reduce(function(prev, curr){
+    								return parseFloat(prev['custrecord_bbm_bodymeasurement']) < parseFloat(curr['custrecord_bbm_bodymeasurement']) ? prev : curr;
+    						});
+    						break;
+    					default:
+    				}
+    				return result?result.custrecord_bbm_block:0;
+    			}
+    		}
+        , fitProfileChange: function (e) {
+          var productTypeValue = jQuery(e.target).data().type;
+
+          if (!window.tempFitProfile) {
+            window.tempFitProfile = new Array();
             for (var i = jQuery('#fitprofile-details select.profiles-options').length - 1; i >= 0; i--) {
                 var elem = jQuery('#fitprofile-details select.profiles-options')[i];
                 var type = jQuery(elem).attr('data-type');
+                var bvalue;
+                if(productTypeValue == type && jQuery(elem).val()){
+                  bvalue = this.lookupBlockValue(jQuery(e.target).val(),productTypeValue);
+                  window.tempFitProfile.push({ name: type, value: jQuery(elem).val(), block:bvalue });
+                }
+                else
                 window.tempFitProfile.push({ name: type, value: jQuery(elem).val() });
+                //Update quantity when profile is changed
             };
+          }
+          else{
+            for (var i = 0; i < window.tempFitProfile.length; i++) {
+              if (window.tempFitProfile[i].name == productTypeValue){
+                var bvalue;
+                window.tempFitProfile[i].value = jQuery(e.target).val();
+                if(jQuery(e.target).val()){
+                  bvalue = this.lookupBlockValue(jQuery(e.target).val(),productTypeValue);
+                  window.tempFitProfile[i].block = bvalue;
+                }
+              }
+            }
+          }
+          this.application.trigger('profileRefresh');
         }
         , quantityChange: function (e) {
             window.tempQuantity = jQuery(e.target).val();

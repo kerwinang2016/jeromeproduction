@@ -28,12 +28,11 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 		,	'slide div[data-toggle="slider"]': 'updateRangeValues'
 		,	'stop div[data-toggle="slider"]': 'updateRangeSelection'
 		,	'submit [data-toggle="add-to-cart"]': 'addToCart'
-		, 'click [data-filter="facet"]': 'refreshView'
+		, 'click a[data-filter="facet"]': 'refreshView'
 		}
 
 	,	initialize: function (options)
 		{
-
 			this.statuses = statuses;
 			this.translator = options.translator;
 			this.application = options.application;
@@ -52,14 +51,52 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 						break;
 					}
 				}
-
 				this.client = "?client=" + clientId;
+
 			}
+			this.faceturl = '';
 		}
 	, refreshView: function(e){
 		e.preventDefault();
-		this.model.faceturl = "";
-		console.log(this);
+		var self = this;
+		this.faceturl = '';
+		var closestli = jQuery(e.target).closest('li');
+		var closesti = jQuery(e.target).find('i');
+		if(closestli.hasClass('active')){
+			closestli.removeClass('active');
+		}
+		else{
+			closestli.addClass('active');
+		}
+		var facetMaster = [];//{name:custitemvendorname,facet:[a,b,c]}
+		var facets = jQuery('[data-filter="facet"]');
+		_.each(facets,function(facet){
+			if(jQuery(facet).closest('li').hasClass('active')){
+				var filteredfm = _.find(facetMaster,function(fm){
+					return fm.name == jQuery(facet).data().facet;
+				})
+				console.log(filteredfm);
+				if(filteredfm){
+					if(filteredfm.facet.indexOf(jQuery(facet).data().url) == -1){
+						filteredfm.facet.push(jQuery(facet).data().url)
+					}
+				}
+				else{
+					facetMaster.push({
+						name:jQuery(facet).data().facet,
+						facet:[jQuery(facet).data().url]
+					});
+				}
+			}
+		})
+		_.each(facetMaster,function(fm){
+			self.faceturl = self.faceturl +'&'+fm.name+'='+fm.facet.toString();
+		})
+		this.model.fetch().done(function(){
+			self.showContent();
+		});
+
+
 	}
 	, getClientId: function(fragment)
 		{
@@ -330,7 +367,6 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 			var keywords = this.translator.getOptionValue('keywords')
 			,	resultCount = this.model.get('total')
 			,	self = this;
-			console.log(this.model);
 			if (keywords)
 			{
 				keywords = decodeURIComponent(keywords);

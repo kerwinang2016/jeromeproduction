@@ -18,7 +18,7 @@ define('Facets.Model', ['ItemDetails.Collection', 'Session'], function (ItemDeta
 					{}
 				,	this.searchApiMasterOptions
 				,	Session.getSearchApiParams()
-			)\]
+			)
 			);
 			var tailor = SC.ENVIRONMENT.PROFILE.parentname?SC.ENVIRONMENT.PROFILE.parentname:SC.ENVIRONMENT.PROFILE.name;
 			return url + '&custitem_applicable_tailor=' + encodeURIComponent(tailor)+this.faceturl;

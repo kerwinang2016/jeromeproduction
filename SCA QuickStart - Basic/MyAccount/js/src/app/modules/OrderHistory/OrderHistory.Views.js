@@ -352,6 +352,41 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 			, 'click button[rel=search]': 'search'
 			, 'click button[id="sortred"]': 'sortRed'
 			, 'blur [name="oh_dateneeded"]': 'updateDateNeeded'
+			,	'change [data-name="flag"]': 'updateFlag'
+			, 'click #modalContainerSave' : 'updateFlagDetails'
+			, 'click [data-dismiss="modal"]': 'closemodal'
+		}
+		, closemodal: function(){
+				jQuery('#modalContainer').modal('hide')
+		}
+		, updateFlag: function(e){
+			console.log(this.collection)
+				var id = jQuery(e.target).data().id;
+				if(e.target.checked){
+					var texthtml = "<input type='text' data-name='flagdetails' data-id='"+id+"' style='width:100%;'>";
+					jQuery('.modal-body').html(texthtml)
+					jQuery('#modalContainer').modal('show')
+				}
+				else{
+					this.collection.each(function (model) {
+							if (model.get('solinekey') == id) {
+								model.set('custcol_flag_comment', '');
+								model.set('custcol_flag','F')
+								model.save();
+							}
+						});
+				}
+		}
+		, updateFlagDetails: function(e){
+			var id = jQuery('[data-name="flagdetails"]').data().id;
+			this.collection.each(function (model) {
+					if (model.get('solinekey') == id) {
+						model.set('custcol_flag_comment',  jQuery('[data-name="flagdetails"]').val());
+						model.set('custcol_flag','T')
+						model.save();
+					}
+				});
+				jQuery('#modalContainer').modal('hide')
 		}
 		// ,	initialize: function (options)
 		// 	{
@@ -363,17 +398,6 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 		//
 		// }
 		, sortRed: function (e) {
-			// var options = {};
-			// options.page = this.options.page || 1;
-			// options.search = this.options.search || "";
-			// options.sort = true;
-			// this.options.collection
-				// .fetch({
-					// killerId: this.options.application.killerId
-					// , data: options
-					// , reset: true
-				// });
-
 			e.preventDefault();
 			var url = "ordershistory"
 
@@ -397,7 +421,7 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 				var today = new Date(valueofdate);
 				this.collection.each(function (model) {
 					if (model.get('solinekey') == e.target.id) {
-						model.set('dateneeded', today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear());
+						model.set('custcol_avt_date_needed', today.getDate() + "/" + (today.getMonth() + 1) + "/" + today.getFullYear());
 						model.save();
 					}
 				});
@@ -406,10 +430,12 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 			//var placed-order-model = this.collection.find(function(model) { return model.get('custcol_avt_saleorder_line_key') === 'Lee'; });
 		}
 		, showContent: function () {
+
 			this.options.application.getLayout().showContent(this, 'ordershistory', [{
 				text: this.title
 				, href: '/ordershistory'
 			}]);
+			jQuery('[data-toggle="tooltip"]').tooltip();
 		}
 
 		, showTrakingNumbers: showTrakingNumbers

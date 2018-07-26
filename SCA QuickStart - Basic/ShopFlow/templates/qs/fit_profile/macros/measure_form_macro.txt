@@ -1,5 +1,10 @@
-<% registerMacro('measureForm', function (fields, values,selectedItemType) { %>
+<% registerMacro('measureForm', function (fields, values,selectedItemType, paramEvent) { %>
+<%
+	var eventValue = (!_.isNullOrEmpty(paramEvent) && paramEvent == 'add') ? 'add' : 'viewedit';
+	var isAddEvent = (eventValue == 'add') ? true : false;
+	var isViewEdit = (eventValue == 'viewedit') ? true : false;
 
+%>
 	<% if(fields && fields.fieldset && fields.fieldset.length){ %>
 		<h4 class="section-header"><%= _('Measurement Details').translate() %></h4>
 
@@ -43,7 +48,7 @@
 					<hr />
 					<% if(fields.type == 'Body'){ %>
 						<% if(fieldset.name == "body-measurement"){ %>
-							<div class="row-fluid">								
+							<div class="row-fluid">
 								<div class="span3-profile offset2 measurement"><%= _('Measurement').translate() %></div>
 								<div class="span3-profile measurement"><%= _('Allowance').translate() %></div>
 								<div class="span3-profile measurement"><%= _('Finished').translate() %></div>
@@ -94,24 +99,37 @@
 						<% }) %>
 					<% } else { %>
 						<div class="row-fluid">
-							<div class="span3 offset2"><%= fieldset["max-label"] %></div>
-							<div class="span3"><%= fieldset["min-label"] %></div>
+							<div class="span2 offset3"><%= fieldset["max-label"] %></div>
+							<div class="span2 offset5p"><%= fieldset["min-label"] %></div>
+							<% if(fieldset.name == 'length' || fieldset.name == 'horizontals') { %>
+							<div class="span-w-10 offset5p"><%= _('Block').translate() %></div>
+							<div class="span-w-10"><%= _('Finished').translate() %></div>
+							<% } %>
 						</div>
 						<% _.each(fieldset.fields, function(field){
 							var blockValueMin = _.where(values, {name: field.name + "-min"})[0]
 							,	blockValueMax = _.where(values, {name: field.name + "-max"})[0]
 							,	value = [blockValueMin, blockValueMax];
 						%>
-							<%= SC.macros.blockMeasureField(field, value, fields.increment) %>
+							<%= SC.macros.blockMeasureField(field, value, fields.increment,fieldset) %>
 						<% }) %>
 					<% } %>
 				</div>
+				<% if(fieldset.name == "body-measurement" && (selectedItemType == 'Jacket' || selectedItemType == 'Waistcoat' ||
+jQuery('[id*="custrecord_fp_product_type"]').val() == 'Jacket' || jQuery('[id*="custrecord_fp_product_type"]').val() == 'Waistcoat')){ %>
+
+				<p id="optionalmessage">** optional measurement</p>
+				<% }%>
 			<% } %>
 		<% }) %>
 
 		<div class="form-actions">
+			<% if (isViewEdit) { %>
+			<button class="btn" id='swx-fitprofile-copy'> Copy</button>
+			<% } %>
 			<button class="btn btn-primary" type="submit">Submit</button>
 			<button data-action="reset" class="btn hide" type="reset">Cancel</button>
+
 		</div>
 
 	<% } %>

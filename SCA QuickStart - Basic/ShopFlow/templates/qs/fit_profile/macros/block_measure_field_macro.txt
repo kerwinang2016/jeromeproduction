@@ -1,4 +1,4 @@
-<% registerMacro('blockMeasureField', function (field, value, increment) {
+<% registerMacro('blockMeasureField', function (field, value, increment,fieldset) {
 	var type = field.type
 	,	label = field.label
 	,	name = field.name
@@ -7,7 +7,7 @@
 	if(type == "select"){
 
 		if(field.options && field.options.length){
-			inputHtml = '<div class="span3"><select class="input input-small" id="body-' + name + '" name="' + name + '">';
+			inputHtml = '<div class="span2"><select class="input input-small" data-field="'+name+'" id="body-' + name + '" name="' + name + '">';
 			_.each(field.options, function(option){
 				var selected = value == option ? 'selected' : '';
 				inputHtml = inputHtml + '<option value="' + option + '" ' + selected + '>' + option + '</option>'
@@ -15,7 +15,7 @@
 			inputHtml = inputHtml + '</select></div>';
 		} else {
 			if(!_.isUndefined(field.max) && !_.isNull(field.max)){
-				inputHtml = inputHtml + '<div class="span3"><select class="input input-small block-measurement-fld" id="' + name + '-max" name="' + name + '-max">'
+				inputHtml = inputHtml + '<div class="span2"><select class="input input-small block-measurement-fld" data-field="'+name+'" id="' + name + '-max" name="' + name + '-max">'
 				for(var i = 0; i <= field.max; i = i + increment){
 					var selected = !_.isUndefined(value[1]) && parseFloat(value[1].value) == i ? 'selected' : '';
 					inputHtml = inputHtml + '<option value="' + i + '" ' + selected + '>' + i + '</option>'
@@ -23,21 +23,25 @@
 				inputHtml = inputHtml + '</select></div>'
 			}
 			if(!_.isUndefined(field.min) && !_.isNull(field.min)){
-				inputHtml = inputHtml + '<div class="span3"><select class="input input-small block-measurement-fld" id="' + name + '-min" name="' + name + '-min">'
+				inputHtml = inputHtml + '<div class="span2 offset5p"><select class="input input-small block-measurement-fld" data-field="'+name+'" id="' + name + '-min" name="' + name + '-min">'
 				for(var i = 0; i >= field.min; i = i - increment){
 					var selected = !_.isUndefined(value[0]) && parseFloat(value[0].value) == i ? 'selected' : '';
 					inputHtml = inputHtml + '<option value="' + i + '" ' + selected + '>' + i + '</option>'
 				}
 				inputHtml = inputHtml + '</select></div>'
 			}
+			if(fieldset.name == 'length' || fieldset.name == 'horizontals') {
+			inputHtml = inputHtml + '<span class="span-w-10 offset5p" data-container="'+name+'-block"></span>'
+			inputHtml = inputHtml + '<span class="span-w-10" data-container="'+name+'-finished"></span>'
+			}
 		}
 
 	} else {
-		inputHtml = '<input class="input input-small" type="text" id="' + name + '" name="' + name + '" />'
+		inputHtml = '<input class="input input-small" type="text" data-field="'+name+'" id="' + name + '" name="' + name + '" />'
 	}
 %>
 <div class="row-fluid">
-	<div class="span2"><%= label %></div>
+	<div class="span3"><%= label %></div>
 	<%= inputHtml %>
 </div>
 <% }) %>

@@ -200,12 +200,14 @@ Application.defineModel('Profile', {
 
 		profile.internalid = nlapiGetUser() + '';
     if(session.isLoggedIn2()){
-    var url = myaccountsuiteleturl;
+      var url = myaccountsuiteleturl;
 				var response = {};
 				var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
         var body = JSON.parse(res.getBody());
+        if(body != ""){
 				profile.parent = body[0];
         profile.parentname = body[1];
+        }
     }
 		return profile;
 	}
@@ -609,7 +611,7 @@ Application.defineModel('LiveOrder', {
 
       }
 		});
-
+    nlapiLogExecution('debug','ADD ITEMS', JSON.stringify(items))
 		var lines_ids = order.addItems(items)
 		,	latest_addition = _.last(lines_ids).orderitemid
 		// Stores the current order
