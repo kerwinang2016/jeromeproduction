@@ -1,0 +1,20 @@
+<h3 class="no-margin-top"><%= view.page_header %></h3>
+<% var stocklist = view.model.get('stocklist'); %>
+<table class="table">
+  <th>Vendor</th>
+  <th>Stock List Link</th>
+<% for(var i=0; i< stocklist.length; i++) { %>
+  <tr>
+    <td>
+      <%= stocklist[i].vendor %>
+    </td>
+    <td>
+      <% if(stocklist[i].stocklink && stocklist[i].stocklink != 'N/A'){ %>
+        <a target="_blank" href="<%= stocklist[i].stocklink %>"><%= stocklist[i].stocklink %></a>
+      <% }else if(stocklist[i].file){ %>
+        <a href="https://<%= window.location.host%>/app/site/hosting/scriptlet.nl?script=213&deploy=1&compid=3857857&h=272f4e9a8e3a11190698&action=downloadstocklist&id=<%= stocklist[i].file %>"><%= stocklist[i].text %></a>
+      <% } %>
+    </td>
+  </tr>
+<% } %>
+</table>

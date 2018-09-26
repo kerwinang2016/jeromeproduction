@@ -1,0 +1,201 @@
+
+<h1 class="no-margin-top"><%= view.title %></h1>
+
+<div id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#conditionsofuse" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="conditionsofuse" role="tab" id="headingOne">
+          Conditions of Use
+        </a>
+      </h3>
+    </div>
+    <div id="conditionsofuse" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingOne">
+      <div class="card-block">
+        Jerome provides its service for you subject to the following conditions. When you are visiting or place orders at Jerome, your acceptance of these conditions are required. In addition, if you use any current or future Jerome service or visit or purchase from any business affiliated with Jerome, you also will be subjected to the guidelines and conditions applicable to such service or business.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#privacypolicy" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="privacypolicy"  role="tab" id="headingTwo">
+          Privacy Policy
+        </a>
+      </h3>
+    </div>
+    <div id="privacypolicy" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="card-block">
+        Jerome is committed to ensuring your privacy. We do not collect any of your personal information when you visit store.jeromeclothiers.com, including name, mailing address or email address unless you provide it to us and ask us to contact you directly or, if you place an order with us in which case we use this information to process your order and/or to contact you regarding your order. We respect your privacy. We do not sell and exchange personal information you provide to us to any third party. We will not share or make available your personal information with any unaffiliated third party without your consent.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#onlinesecurity" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="onlinesecurity" role="tab" id="headingThree">
+          Online Security
+        </a>
+      </h3>
+    </div>
+    <div id="onlinesecurity" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingThree">
+      <div class="card-block">
+        Store.jeromeclothiers.com uses Secure Socket Layering (SSL) technology to protect all online transactions. Sensitive payment information such as credit or debit card details is never stored on the internet with our system. Once you type the information, it is transmitted instantly, encrypted (scrambled), and directly to a payment gateway that complies with the Payment Card Industry Data Security Standards. We protect our web site under technical arrangements against loss, damage, access, change or spreading of your data by unauthorized persons. The access to your customer account is only possible after entering your personal password. Our customers are asked to handle their login data with care and close the browser window after communicating with us, especially when sharing the computer with others.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class=" accordion-toggle collapsed" data-target="#customeraccount" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="customeraccount" role="tab" id="headingFour">
+          Customer’s Account
+        </a>
+      </h3>
+    </div>
+    <div id="customeraccount" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingFour">
+      <div class="card-block">
+        Customers are responsible for maintaining the confidentiality of their account and password for restricting access to their computer, and agree to accept responsibility for all activities that occur under customers account or password. For those who are under 18, their use of our sites must be with the involvement of a parent or guardian. Jerome reserves the right to refuse service, terminate accounts, or cancel orders at their sole discretion.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#electroniccommunication" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="electroniccommunication" role="tab" id="headingFive">
+          Electronic Communications
+        </a>
+      </h3>
+    </div>
+    <div id="electroniccommunication" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingFive">
+      <div class="card-block">
+        When you visit store.jeromeclothiers.com or send e-mails to us, you are communicating with us electronically. You consent to receive communications from us electronically. We will communicate with you by e-mail or by posting notices on this site. You agree that all agreements, notices, disclosures and other communications that we provide to you electronically satisfy any legal requirement that such communications be in writing.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#trademarks" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="trademarks" role="tab" id="headingSix">
+          Content / Trademarks
+        </a>
+      </h3>
+    </div>
+    <div id="trademarks" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingSix">
+      <div class="card-block">
+        All text, graphics, user interfaces, visual interfaces, photographs, trademarks, logos, and computer code (collectively, “Content”), including but not limited to the design, structure, selection, coordination, expression and arrangement of such Content, contained on the Site is owned, controlled or licensed by or to Jerome, and is protected by trade dress, copyright, patent and trademark laws, and various other intellectual property rights and unfair competition laws. Except as expressly provided in these Terms of Use, no part of the Site and no Content may be copied, reproduced, republished, uploaded, posted, publicly displayed, encoded, translated, transmitted or distributed in any way (including “mirroring”) to any other computer, server, Web site or other medium for publication or distribution or for any commercial enterprise, without Jerome’s express prior written consent.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#copyright" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="copyright" role="tab" id="headingSeven">
+          Copyright
+        </a>
+      </h3>
+    </div>
+    <div id="copyright" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingSeven">
+      <div class="card-block">
+        All content included on this site, such as text, graphics, logos, button icons, images, audio clips, digital downloads, data compilations, and the software used on this site are the property of Jerome or its suppliers, and/or the use thereof has been consented to.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#complaints" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="complaints" role="tab" id="headingEight">
+          Copyright Complaints
+        </a>
+      </h3>
+    </div>
+    <div id="complaints" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingEight">
+      <div class="card-block">
+        Jerome respects the intellectual property of others. If you believe that your work has been copied in a way that constitutes copyright infringement, please contact us.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#order" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="order" role="tab" id="headingNine">
+          Order Acceptance
+        </a>
+      </h3>
+    </div>
+    <div id="order" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingNine">
+      <div class="card-block">
+        Jerome may request verification of information prior to processing an order. Verification may be requested, but not limited to, company purchase orders and large ticket orders. Jerome reserves the right to refuse and cancel any order. The receipt of an electronic or other form of order confirmation does not signify our acceptance of your order, nor does it constitute confirmation of the order or our offer to sell.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#sitepolicies" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="sitepolicies" role="tab" id="headingTen">
+          Site Policies and Modification
+        </a>
+      </h3>
+    </div>
+    <div id="sitepolicies" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingTen">
+      <div class="card-block">
+        Jerome attempts to provide the most recent, accurate, complete and reliable information on its website. Any errors are unintentional and we apologize if erroneous information is reflected in the color, price, availability, or in any way affects your individual order. Jerome reserves the right to make changes to its site, policies, and these Terms of Use at any time. If any of these conditions shall be deemed invalid, void, or for any reason unenforceable, that condition shall be deemed severable and shall not affect the validity and enforceability of any remaining condition.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#applicablelaw" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="applicablelaw" role="tab" id="headingEleven">
+          Applicable Law
+        </a>
+      </h3>
+    </div>
+    <div id="applicablelaw" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingEleven">
+      <div class="card-block">
+        To visit and use our sites and service, you agree that the laws of Australia and the state of Victoria, without regard to principles of conflict of laws, will govern these Conditions of Use and any dispute of any sort that might arise between you and Jerome.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#disclaimer" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="disclaimer" role="tab" id="headingTwelve">
+          Disclaimer
+        </a>
+      </h3>
+    </div>
+    <div id="disclaimer" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingTwelve">
+      <div class="card-block">
+        Please note that payments made to Jerome by credit card will appear on your credit card statement as “Jerome Clothiers Pty Ltd”.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#returns" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="returns" role="tab" id="headingThirteen">
+          Returns
+        </a>
+      </h3>
+    </div>
+    <div id="returns" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingThirteen">
+      <div class="card-block">
+        Any item that you receive from Jerome that is damaged, that differs materially in design from that specified in the order, or is outside of the allowable tolerances for measurements (+/- 1cm), will be remade by Jerome free of charge. Where remaking the item is not appropriate in the circumstances, then Jerome will provide a full refund of all materials and manufacturing costs associated with the item.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <h3 class="mb-0">
+        <a class="accordion-toggle collapsed" data-target="#delivery" data-toggle="collapse" data-parent="#accordion" aria-expanded="false" aria-controls="delivery" role="tab" id="headingFourteen">
+          Dispatch and Delivery
+        </a>
+      </h3>
+    </div>
+    <div id="delivery" class="accordion-body collapse show" role="tabpanel" aria-labelledby="headingFourteen">
+      <div class="card-block">
+        All items will be dispatched from our manufacturing partner within four weeks from receipt of the fabric. Jerome will not be responsible for the delivery of any fabrics to our manufacturing partner. This liability rests with the fabric supplier(s). Jerome will take responsibility for the delivery of the finished items from the manufacturing partner to you (the customer), where you choose to use our freight account.
+      </div>
+    </div>
+  </div>
+</div>
