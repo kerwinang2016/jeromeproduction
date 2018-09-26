@@ -20,8 +20,13 @@ define('Facets.Model', ['ItemDetails.Collection', 'Session'], function (ItemDeta
 				,	Session.getSearchApiParams()
 			)
 			);
-			var tailor = SC.ENVIRONMENT.PROFILE.parentname?SC.ENVIRONMENT.PROFILE.parentname:SC.ENVIRONMENT.PROFILE.name;
-			return url + '&custitem_applicable_tailor=' + encodeURIComponent(tailor)+this.faceturl;
+			var tailor;
+			// if(SC.ENVIRONMENT.PROFILE){
+				// tailor = SC.ENVIRONMENT.PROFILE.parentname?SC.ENVIRONMENT.PROFILE.parentname:SC.ENVIRONMENT.PROFILE.name;
+				// return url + '&custitem_applicable_tailor=' + encodeURIComponent(tailor)+this.faceturl;
+			// }
+			// else
+				return url + this.faceturl;
 		}
 
 	,	initialize: function ()

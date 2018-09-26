@@ -221,6 +221,7 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 			var fitProfiles = JSON.parse(_.findWhere(selected_line.get('options'), { id: 'custcol_fitprofile_summary' }).value);
 
 			var fitProfileCollection = [];
+			var haserror = false;
 			var param = new Object();
 			param.type = "get_profile";
 			param.data = JSON.stringify({ filters: ["custrecord_fp_client||anyof|list|" + clientId], columns: ["internalid", "name", "created", "lastmodified", "custrecord_fp_product_type", "custrecord_fp_measure_type", "custrecord_fp_measure_value"] });
@@ -233,9 +234,15 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 					});
 
 					_.each(fitProfileCollection, function (el) {
+						try{
 						var fitColumn = "custcol_fitprofile_" + el.custrecord_fp_product_type.toLowerCase();
 						var fitValue = el.custrecord_fp_measure_value;
 						item_to_cart.setOption(fitColumn, fitValue,true);
+					}catch(e){
+						var $msg_el = jQuery(SC.macros.message('Cannot reorder item due to data error', 'error', true));
+						self.$('[data-type=alert-placeholder]').append($msg_el);
+						haserror = true;
+					}
 					});
 
 					//item_to_cart.setOptionsArray(orderOptions, true);
@@ -247,7 +254,7 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 					item_to_cart.setOption('custcol_avt_date_needed', '1/1/1900');
 					item_to_cart.setOption('custcol_avt_wbs_copy_key', item_to_cart.get('internalid').toString() + '_' + new Date().getTime());
 
-
+					if(haserror) return;
 					application.getCart().addItem(item_to_cart, {
 						success: function () {
 							jQuery('p.success-message').remove();
@@ -360,7 +367,6 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 				jQuery('#modalContainer').modal('hide')
 		}
 		, updateFlag: function(e){
-			console.log(this.collection)
 				var id = jQuery(e.target).data().id;
 				if(e.target.checked){
 					var texthtml = "<input type='text' data-name='flagdetails' data-id='"+id+"' style='width:100%;'>";

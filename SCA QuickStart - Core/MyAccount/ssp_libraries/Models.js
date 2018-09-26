@@ -474,6 +474,8 @@ Application.defineModel('PlacedOrder', {
 			columns.push(new nlobjSearchColumn('custcol_avt_saleorder_line_key'))
 			columns.push(new nlobjSearchColumn('custcol_avt_cmt_tracking'))
 			columns.push(new nlobjSearchColumn('custcol_fabric_delivery_days'))
+			columns.push(new nlobjSearchColumn('custcol_custom_fabric_details'))
+
 			var flagcol = new nlobjSearchColumn('custcol_flag');
 			columns.push(flagcol)
 			columns.push(new nlobjSearchColumn('custcol_flag_comment'))
@@ -507,7 +509,6 @@ Application.defineModel('PlacedOrder', {
 			});
 			// result.totalRecordsFound = result.totalRecordsFound;
 			// result.records = result.records;
-			nlapiLogExecution('debug','Results Records Length', result.records.length);
 			result.records = _.map(result.records || [], function (record) {
 			var dateneeded = record.getValue('custcol_avt_date_needed');//this
 			var expdeliverydate = record.getValue('custcol_expected_delivery_date');
@@ -521,6 +522,21 @@ Application.defineModel('PlacedOrder', {
 			var custcol_tailor_delivery_days = record.getValue('custcol_tailor_delivery_days');
 			var today = new Date();
 			var cmtstatustext = "";
+			var customitemtext = record.getText('item');
+			var custcol_custom_fabric_details = record.getValue('custcol_custom_fabric_details');
+			if(record.getValue('item') == '28034' ||
+					record.getValue('item') == '28035' ||
+					record.getValue('item') == '28030' ||
+					record.getValue('item') == '28033' ||
+					record.getValue('item') == '28036' ||
+					record.getValue('item') == '28031' ||
+					record.getValue('item') == '28032'){
+						if(custcol_custom_fabric_details)
+						var custcol_custom_fabric_details_json = JSON.parse(custcol_custom_fabric_details);
+						if(custcol_custom_fabric_details_json)
+						customitemtext = customitemtext.replace('CMT Item',custcol_custom_fabric_details_json.collection+'-'+custcol_custom_fabric_details_json.code);
+
+			}
 			today.setHours(0);
 			today.setMinutes(0);
 			today.setSeconds(0);
@@ -636,7 +652,7 @@ Application.defineModel('PlacedOrder', {
 				, type: record.getRecordType()
 				, client_name: record.getValue('custbody_customer_name')
 				, so_id: record.getValue('custcol_so_id')
-				, item: record.getText('item')
+				, item: customitemtext
 				//,	fabricstatus: record.getText('custcol_avt_fabric_status')
 				//,	cmtstatus: record.getText('custcol_avt_cmt_status')
 				, custcol_flag: custcol_flag
@@ -651,7 +667,6 @@ Application.defineModel('PlacedOrder', {
 		var results_per_page = SC.Configuration.results_per_page;
 
 		if(sort == 'true'){
-			nlapiLogExecution('debug','sort',sort);
 			result.records.sort(function(a,b){
 				return (a.tranline_status === b.tranline_status )? 0 : a.tranline_status? -1 : 1;
 			});
@@ -662,8 +677,6 @@ Application.defineModel('PlacedOrder', {
 				return (a.custcol_flag === b.custcol_flag)? 0 : a.custcol_flag == 'F'? 1 : -1
 			});
 		}
-		nlapiLogExecution('debug','Range Start', range_start);
-		nlapiLogExecution('debug','Range End', range_end);
 		var range_start = (page * results_per_page) - results_per_page
 		,	range_end = page * results_per_page;
 		result.records = result.records.slice(range_start, range_end);
@@ -732,7 +745,7 @@ Application.defineModel('PlacedOrder', {
 		// result.fulfillments = _.values(result.fulfillments);
 		// result.receipts = _.values(result.receipts);
 
-		return result;
+		// return result;
 	}
 
 
@@ -4146,7 +4159,6 @@ Application.defineModel('LivePayment', {
 
 	, submit: function (data) {
 		'use strict';
-		nlapiLogExecution('debug','paymentdata',JSON.stringify(data));
 		var url = myaccountsuiteleturl;
 		var res = nlapiRequestURL(url+"&action=createpayment&user="+nlapiGetUser(), JSON.stringify(data));
 		var payment_record_id = JSON.parse(res.getBody());
@@ -4166,9 +4178,9 @@ Application.defineModel('LivePayment', {
 			new_payment_record.confirmation = data;
 		}
 
+
 		return new_payment_record;
 	}
-
 });
 
 

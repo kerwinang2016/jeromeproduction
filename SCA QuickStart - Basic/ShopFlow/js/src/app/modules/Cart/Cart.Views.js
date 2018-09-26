@@ -1,7 +1,7 @@
 // Cart.Views.js
 // -------------
 // Cart and Cart Confirmation views
-define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model','Session','ProductList.Model'], function (ErrorManagement, FitProfileModel, ItemDetailsModel,Session,ProductListModel)
+define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model','Session','ProductList.Model', 'Client.Collection'], function (ErrorManagement, FitProfileModel, ItemDetailsModel,Session,ProductListModel, ClientCollection)
 {
 	'use strict';
 
@@ -195,11 +195,29 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 	,	initialize: function (options)
 		{
 			this.application = options.application;
-			this.profileInstance = new FitProfileModel(SC._applications.Shopping.getUser().get("internalid")); // April CSD Issue #046
+			// this.profileInstance = new FitProfileModel(SC._applications.Shopping.getUser().get("internalid")); // April CSD Issue #046
 
 			this.options = options;
 			this.sflMode = options.sflMode;
 			this.addToCartCallback = options.addToCartCallback;
+			this.client_collection = new ClientCollection();
+			var param = new Object();
+			var self = this;
+			param.type = "get_client";
+			var tailor = SC.Application('Shopping').getUser().get('parent')!=null? SC.Application('Shopping').getUser().get('parent'):SC.Application('Shopping').getUser().id;
+			param.data = JSON.stringify({filters: ["custrecord_tc_tailor||anyof|list|" + tailor], columns: ["internalid", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone"]});
+			jQuery.ajax({
+					url:_.getAbsoluteUrl('services/fitprofile.ss'),
+					async:false,
+					data:param,
+					success: function (result) {
+							self.client_collection.add(result);
+	            // if (result.isOk == false) alert(result.message);
+	        }
+				});
+
+
+			// });
 			//this.product_list_details_view.showarchiveditems = false;
 
 			//this.model.set('swx_filter_save_for_later_client', '');
@@ -213,13 +231,28 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 		{
 			var self = this;
 
-			this.client_collection = this.profileInstance.client_collection; // April CSD Issue #046
+			//this.client_collection = this.profileInstance.client_collection; // April CSD Issue #046
 
 
 			var dateRef = new Date();
 			var urlDesignOptions = _.getAbsoluteUrl('js/DesignOptions_Config.json') + '?t=' + dateRef.getTime();
 
 			//jQuery.get(_.getAbsoluteUrl('js/DesignOptions_Config.json')).done(function(data){
+			//
+			// jQuery.ajax({
+			// 		url:urlDesignOptions,
+			// 		async:false,
+			// 		success: function (result) {
+			// 				console.log(result)
+			// 				self.renderLineItemOptions(JSON.parse(result), self);
+	    //         // if (result.isOk == false) alert(result.message);
+			// 				self.downloadQuote();
+			// 				// self.application.getLayout().showContent(self, true).done(function (view)
+			// 				// 	{
+			// 				// 		self.renderRelatedAndCorrelatedItemsHelper(view);
+			// 				// 	});
+	    //     }
+			// 	});
 			jQuery.get(urlDesignOptions).done(function(data){
 				if (data){
 					self.renderLineItemOptions(JSON.parse(data), self);
@@ -952,8 +985,8 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				,	fitProfileTrouser = _.where(line.get("options"), {id: "CUSTCOL_FITPROFILE_TROUSER"})
 				,	fitProfileWaistcoat = _.where(line.get("options"), {id: "CUSTCOL_FITPROFILE_WAISTCOAT"})
 				,	fitProfileOvercoat = _.where(line.get("options"), {id: "CUSTCOL_FITPROFILE_OVERCOAT"})
-				,	fitProfileShirt = _.where(line.get("options"), {id: "CUSTCOL_FITPROFILE_SHIRT"});
-
+				,	fitProfileShirt = _.where(line.get("options"), {id: "CUSTCOL_FITPROFILE_SHIRT"})
+				,	customFabricDetails = _.where(line.get("options"), {id: "CUSTCOL_CUSTOM_FABRIC_DETAILS"});
 				cartLine.itemName = line.get('item').get('_name');
 				cartLine.internalid = line.get('item').get('internalid');
 
@@ -985,7 +1018,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				cartLine.fitProfileWaistcoat = self.getColumnValue(fitProfileWaistcoat);
 				cartLine.fitProfileOvercoat = self.getColumnValue(fitProfileOvercoat);
 				cartLine.fitProfileShirt = self.getColumnValue(fitProfileShirt);
-
+				cartLine.customFabricDetails = self.getColumnValue(customFabricDetails);
 				cartLine.displayOpNotes = self.getColumnValue(displayOpNotesColumn);
 
 				//cartLine.fitProfile = line.get('fitProfileOptions');

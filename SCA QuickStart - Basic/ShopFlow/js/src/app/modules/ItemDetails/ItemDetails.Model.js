@@ -115,10 +115,10 @@ define('ItemDetails.Model', ['ItemOptionsHelper', 'Session'], function (ItemOpti
 	,	getItemOptionsForCart: function ()
 		{
 			var result = {};
-
 			_.each(this.itemOptions, function (value, name)
 			{
-				result[name] = value.internalid;
+				if(value && value.internalid)
+					result[name] = value.internalid;
 			});
 
 			return result;
@@ -179,19 +179,21 @@ define('ItemDetails.Model', ['ItemOptionsHelper', 'Session'], function (ItemOpti
 			,	details_object = this.get('_priceDetails') || {}
 			,	matrix_children = this.getSelectedMatrixChilds()
 			,	result =  new Object;
-			
+
 			if(SC.ENVIRONMENT.PROFILE.customPriceLevel != ""){
-				var url = _.addParamsToUrl(
-					'/api/items'
-				,	{
-					'fieldset':'tailorpricelevel'
-				,	'id': this.get("internalid")
-				}
-				);
+				var url = '/app/site/hosting/scriptlet.nl?script=213&deploy=1&compid=3857857&h=272f4e9a8e3a11190698&action=getprice'
+				// var url = _.addParamsToUrl(
+				// 	'/api/items'
+				// ,	{
+				// 	'fieldset':'tailorpricelevel'
+				// ,	'id': this.get("internalid")
+				// }
+				// );
+				url+= '&item='+this.get("internalid")+'&pricelevel='+SC.ENVIRONMENT.PROFILE.customPriceLevel+'&currency='+SC.ENVIRONMENT.currentCurrency.internalid;
 				if(url){
 					jQuery.get(url).done(function(data){
-						var customPrice = data.items[0]['pricelevel' + SC.ENVIRONMENT.PROFILE.customPriceLevel];
-
+						// var customPrice = data.items[0]['pricelevel' + SC.ENVIRONMENT.PROFILE.customPriceLevel];
+						var customPrice = data.price;
 						if(SC._applications.Shopping.getLayout().currentView.attributes){
 						if(SC._applications.Shopping.getLayout().currentView.attributes.id == "facet-browse"){
 							if(customPrice){

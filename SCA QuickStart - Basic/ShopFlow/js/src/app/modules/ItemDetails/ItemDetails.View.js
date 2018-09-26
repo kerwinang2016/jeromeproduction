@@ -262,7 +262,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                   vendor:jQuery('#fabric-cmt-vendor').val()
                 }
                 self.model.setOption('custcol_custom_fabric_details', JSON.stringify(fabricdetails));
-
+                self.model.setOption('custcol_vendorpicked', fabricdetails.vendor);
                 var categories = _.where(self.model.get("facets"), { id: "category" })[0].values[0].values;
                 //remove the line item that's being edited
                 if (self.productList && self.productList.indexOf('item') > -1) {
@@ -601,7 +601,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             this.page_header = this.model.get('_pageHeader');
             var wherevendor = _.where(this.model.get("facets"), { id: "custitem_vendor_name" }),
               vendorName;
-            if(wherevendor){
+            if(wherevendor && wherevendor.length>0){
               if(wherevendor[0].values.length>0)
                 vendorName = wherevendor[0].values[0].label;
             }

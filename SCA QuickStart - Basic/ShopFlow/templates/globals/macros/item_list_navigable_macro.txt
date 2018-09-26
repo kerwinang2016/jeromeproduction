@@ -13,8 +13,7 @@
 	,	stock_info = item.getStockInfo()
 	,	thumbnail = item.get('_thumbnail')
 	,	link_attributes = _.getItemLinkAttributes(item)
-	, fitprofile = line.get('fitProfileOptions')
-
+	, fitprofile = line.get('fitProfileOptions');
 	var formtype = "Jacket"
 	if(fitprofile.length == 3)
 		formtype = '3-Piece-Suit';
@@ -27,6 +26,14 @@
 
 	var isDisplayDateNeededHoldFabricHoldProduction = true;
 	var isDisplayButtCopy = true;
+	var fabricdetails = _.where(item.get("options"), {id:"CUSTCOL_CUSTOM_FABRIC_DETAILS"})
+	if(fabricdetails[0]){
+		var fabricjson = JSON.parse(fabricdetails[0].value);
+		if(fabricjson.code && fabricjson.collection){
+			var itemsku = item.get('_sku');
+			item.set('_sku', itemsku.replace('CMT Item', fabricjson.collection +'-'+fabricjson.code));
+		}
+	}
 %>
 
 <article id="<%- line_id %>" class="item-list-navigable <%= line_id %>" data-id=<%= item.get('internalid') %>>
@@ -75,16 +82,21 @@
 
 				<div class="sku">
 					<%
-						var clientID = _.where(line.get("options"), {id: "CUSTCOL_TAILOR_CLIENT"})[0].value;
-						var client_collection = view.client_collection;
-						var client_name = "";
 
-						if(client_collection.length > 0) {
-							_.each(client_collection.models, function(model){
-								if(model.get("internalid") === clientID){
-									client_name = model.get("custrecord_tc_first_name") + " " + model.get("custrecord_tc_last_name");
+						var clientID = _.find(line.get("options"), function(o){
+							return o.id == "CUSTCOL_TAILOR_CLIENT"});
+							if(clientID){
+
+								var client_collection = view.client_collection;
+								var client_name = "";
+								if(client_collection.length > 0) {
+									var found = _.find(client_collection.models,function(o){
+										return o.get('internalid') == clientID.value;
+									});
+									if(found){
+										client_name = found.get("custrecord_tc_first_name") + " " + found.get("custrecord_tc_last_name");
+									}
 								}
-							});
 						}
 					%>
 					<%= _('Client Name: $(0)').translate(client_name)%>

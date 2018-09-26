@@ -1192,7 +1192,7 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'ClientOrderHistory
 
 								measurementValues.push(measureData);}
 							}
-						}
+
 						else{
 							var fieldname = field;
 							if(field.indexOf('allowance') != -1){

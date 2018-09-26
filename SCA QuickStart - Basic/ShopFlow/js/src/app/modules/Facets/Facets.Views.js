@@ -52,7 +52,6 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 					}
 				}
 				this.client = "?client=" + clientId;
-
 			}
 			this.faceturl = '';
 		}
@@ -75,7 +74,6 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 				var filteredfm = _.find(facetMaster,function(fm){
 					return fm.name == jQuery(facet).data().facet;
 				})
-				console.log(filteredfm);
 				if(filteredfm){
 					if(filteredfm.facet.indexOf(jQuery(facet).data().url) == -1){
 						filteredfm.facet.push(jQuery(facet).data().url)
@@ -363,6 +361,16 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 		// Works with the title to find the proper wording and calls the layout.showContent
 	,	showContent: function ()
 		{
+			console.log('facetview');
+			console.log(this);
+			var facetitems = this.model.get('items').models;
+			if(facetitems){
+				if(SC.ENVIRONMENT.PROFILE.parent && (SC.ENVIRONMENT.PROFILE.parent == '5' || SC.ENVIRONMENT.PROFILE.parent == '75')){
+					this.model.get('items').models = _.filter(facetitems, function(z){return z.get('vendorname') != 'Dormeuil USA';})
+				}else{
+					this.model.get('items').models = _.filter(facetitems, function(z){return z.get('vendorname') != 'Dormeuil';})
+				}
+			}
 			// If its a free text search it will work with the title
 			var keywords = this.translator.getOptionValue('keywords')
 			,	resultCount = this.model.get('total')

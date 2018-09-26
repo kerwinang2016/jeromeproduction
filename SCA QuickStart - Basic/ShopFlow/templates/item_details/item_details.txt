@@ -4,6 +4,13 @@
 	var cart = application.getCart();
 	var cartLines = cart.get('lines');
 	var item = view.model.get('custitem_clothing_type').split(', ');
+	console.log('itemdetails')
+	console.log(model);
+	var itemoptions_detail = model.get('_optionsDetails');
+	var vendorpick = _.find(itemoptions_detail.fields,function(f){return f.internalid == "custcol_vendorpicked";});
+	var vendorpicklist = [];
+	if(vendorpick)
+		vendorpicklist = vendorpick.values;
 %>
 	<div class="view-header container" itemscope itemtype="http://schema.org/WebPage">
 		<%= breadcrumb(model.get('_breadcrumb')) %>
@@ -124,7 +131,14 @@
 																<div id="fabric-cmt-options" class="accordion-body collapse">
 																	<div class="control-group">
 																			<label class="control-label" for="fabric-cmt-vendor" style="font-size: 13px;font-weight: normal;line-height: 18px;width:30%;">Fabric Vendor </label>
-																			<input type="text" value="" name="fabric-cmt-vendor" id="fabric-cmt-vendor" class="input-large" style="width:40%;" value="">
+																			<!--<input type="text" value="" name="fabric-cmt-vendor" id="fabric-cmt-vendor" class="input-large" style="width:40%;" value="">-->
+																			<select name="fabric-cmt-vendor" id="fabric-cmt-vendor" class="input-large" style="width:40%;">
+																			<% _.each(vendorpicklist,function(option){ %>
+																			<option
+																				value="<%= option.internalid %>"
+																				><%= option.label %></option>
+																			<% }); %>
+																			</select>
 																	</div>
 																	<div class="control-group">
 																		<label class="control-label" for="fabric-cmt-collection" style="font-size: 13px;font-weight: normal;line-height: 18px;width:30%;">Fabric Collection </label>

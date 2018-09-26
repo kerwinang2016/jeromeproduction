@@ -1,7 +1,4 @@
 <%
-	var fileLocationPath = '/SCA QuickStart - Basic/ShopFlow/templates/items_list/facet_browse.txt'
-	//console.log('/SCA QuickStart - Basic/ShopFlow/templates/items_list/facet_browse.txt')
-
 	var model = view.model
 	,	items = model.get('items')
 	,	facets = model.get('facets')
@@ -68,19 +65,23 @@
 <div class="gradient-content">
     <div class="container">
     	<div class="row-fluid" itemscope itemtype="http://schema.org/ItemList">
-			<div id="site-search-container" class="span3 offset9 site-search-container">
+			<h2>
+			<%- _('Fabric Selection').translate() %>
+			</h2>
+			<div id="site-search-container" class="site-search-container pull-left">
 				<%= SC.macros.siteSearch('keywords', view) %>
 			</div>
 		</div>
         <div class="row-fluid view-body" itemscope itemtype="http://schema.org/ItemList">
         <% if(!isOrderPage){ %>
-        <nav class="span3">
-			<%= facetedNavigation(view) %>
-		</nav>
-		<% } %>
+		      <nav class="span3">
+					<%= facetedNavigation(view) %>
+					</nav>
+				<% } %>
 	<section id="item-list-container" class="<%=span%> item-list-container">
 		<meta itemprop="name" content="<%- view.getTitle() %>">
 		<div id="banner-section-top" class="content-banner banner-section-top"></div>
+		<% if(view.subtitle){ %>
 		<header>
 			<!-- visible-phone -->
 			<p class="h1 visible-phone">
@@ -91,12 +92,6 @@
 			<% } %>
 			<!-- /visible-phone -->
 			<div class="facet-header <%= translator.facets.length ? 'no-facets-selected' : '' %>">
-
-				<!-- hidden-phone -->
-				<h1 class="hidden-phone">
-					<%= page_header %>
-				</h1>
-				<!-- /hidden-phone -->
 				<%= paginationResult %>
 				<% if (items.length && facets.length) { %>
 					<button class="btn btn-inverse pull-left narrow-by-btn" data-toggle="facet-navigation">
@@ -132,7 +127,9 @@
 			<div class="clearfix"></div>
 		</div>
 		<!-- /Item List -->
+
 		<div id="banner-section-bottom" class="content-banner banner-section-bottom"></div>
+		<% } %>
 	</section>
 </div>
     </div>

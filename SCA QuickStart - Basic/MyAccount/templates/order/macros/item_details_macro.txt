@@ -1,6 +1,15 @@
 <% //TODO: use the formatted values from the backend instead of formatCurrency (eg.: total_formatted)
 registerMacro('itemDetails', function (line) { %>
 <%
+	var item = line.item;
+	var fabricdetails = _.where(item.get("options"), {id:"custcol_custom_fabric_details"})
+	if(fabricdetails[0]){
+		var fabricjson = JSON.parse(fabricdetails[0].value);
+		if(fabricjson.code && fabricjson.collection){
+			var itemsku = item.get('_sku');
+			item.set('_sku', itemsku.replace('CMT Item', fabricjson.collection +'-'+fabricjson.code));
+		}
+	}
 	line.format_options = _.map(line.options, function ( option )
 	{
 		return option.id +'='+ option.value;
