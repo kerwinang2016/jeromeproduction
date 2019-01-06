@@ -63,22 +63,32 @@ define('ItemDetails.Router', [], function ()
 	,	productDetailsById: function (id, options)
 		{
 			var self= this;
-			if (options.indexOf("|") > -1) {
-					this.client = options.split("client=")[1].split("|")[0];
-			} else {
-					this.client = options.split("client=")[1].split("&")[0];
+
+			if(options){
+				if (options.indexOf("|") > -1) {
+					var optionvals = options.split("client=")[1].split("|");
+						this.client = optionvals[0];
+						this.pl = optionvals[1];
+						this.pli = optionvals[2];
+						this.producttype = optionvals[3];
+				} else {
+						this.client = options.split("client=")[1].split("&")[0];
+				}
 			}
 			var param = new Object();
 			var tailor = SC.Application('Shopping').getUser().get('parent')!=null? SC.Application('Shopping').getUser().get('parent'):SC.Application('Shopping').getUser().id;
 			param.type = "get_client";
 			param.data = JSON.stringify({filters: ["internalid||anyof|integer|" + this.client,'custrecord_tc_tailor||is|integer|'+tailor], columns: ["internalid", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone"]});
+
 			jQuery.get(_.getAbsoluteUrl('services/fitprofile.ss'), param).always(function(data){
 				if(data[0]){
 					// Now go grab the data and show it
-					if(options.indexOf("|") > -1){
-						self.productDetails({id: id}, '/product/'+id, null, options.split("?")[0]);
-					} else {
-						self.productDetails({id: id}, '/product/'+id, SC.Utils.parseUrlOptions(options));
+					if(options){
+						if(options.indexOf("|") > -1){
+							self.productDetails({id: id}, '/product/'+id,  SC.Utils.parseUrlOptions(options), options.split("?")[0]);
+						} else {
+							self.productDetails({id: id}, '/product/'+id, SC.Utils.parseUrlOptions(options));
+						}
 					}
 				}
 				else{
@@ -105,7 +115,6 @@ define('ItemDetails.Router', [], function ()
 				,	application: this.application
 				,	pList: plist
 				});
-
 			model.fetch({
 				data: api_query
 			,	killerId: this.application.killerId
@@ -128,7 +137,29 @@ define('ItemDetails.Router', [], function ()
 						{
 							model.set('quantity', model.get('_minimumQuantity'));
 						}
-
+						if(options && options['product']){
+							if(options['product'] == '2-Piece-Suit'){
+									model.set('custitem_clothing_type','Jacket, Trouser');
+									model.setOption('custcol_producttype',options['product']);
+							}else if(options['product'] == '3-Piece-Suit'){
+									model.set('custitem_clothing_type','Jacket, Trouser, Waistcoat');
+									model.setOption('custcol_producttype',options['product']);
+							}else{
+								model.set('custitem_clothing_type',options['product']);
+								model.setOption('custcol_producttype',options['product']);
+							}
+						}else{
+							if(plist.split('|')[3] == '2-Piece-Suit'){
+									model.set('custitem_clothing_type','Jacket, Trouser');
+									model.setOption('custcol_producttype',plist.split('|')[3]);
+							}else if(plist.split('|')[3] == '3-Piece-Suit'){
+									model.set('custitem_clothing_type','Jacket, Trouser, Waistcoat');
+									model.setOption('custcol_producttype',plist.split('|')[3]);
+							}else{
+								model.set('custitem_clothing_type',plist.split('|')[3]);
+								model.setOption('custcol_producttype',plist.split('|')[3]);
+							}
+						}
 						// we first prepare the view
 						view.prepView();
 						_.suiteRest('getVendorLink', model.get('internalid')).always(function (data) {

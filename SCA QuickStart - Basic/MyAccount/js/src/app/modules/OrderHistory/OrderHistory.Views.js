@@ -244,7 +244,6 @@ define('OrderHistory.Views', ['ItemDetails.Model', 'TrackingServices'], function
 						haserror = true;
 					}
 					});
-
 					//item_to_cart.setOptionsArray(orderOptions, true);
 					item_to_cart.setOptionsArray(selected_line.get('options'), true);
 

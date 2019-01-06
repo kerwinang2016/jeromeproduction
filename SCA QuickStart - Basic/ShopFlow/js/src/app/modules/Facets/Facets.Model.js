@@ -20,12 +20,6 @@ define('Facets.Model', ['ItemDetails.Collection', 'Session'], function (ItemDeta
 				,	Session.getSearchApiParams()
 			)
 			);
-			var tailor;
-			// if(SC.ENVIRONMENT.PROFILE){
-				// tailor = SC.ENVIRONMENT.PROFILE.parentname?SC.ENVIRONMENT.PROFILE.parentname:SC.ENVIRONMENT.PROFILE.name;
-				// return url + '&custitem_applicable_tailor=' + encodeURIComponent(tailor)+this.faceturl;
-			// }
-			// else
 				return url + this.faceturl;
 		}
 
@@ -51,7 +45,6 @@ define('Facets.Model', ['ItemDetails.Collection', 'Session'], function (ItemDeta
 			options = options || {};
 
 			options.cache = true;
-
 			return original_fetch.apply(this, arguments);
 		}
 

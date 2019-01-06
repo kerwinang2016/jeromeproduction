@@ -29,6 +29,7 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 		,	'stop div[data-toggle="slider"]': 'updateRangeSelection'
 		,	'submit [data-toggle="add-to-cart"]': 'addToCart'
 		, 'click a[data-filter="facet"]': 'refreshView'
+		,	'click a[class="facet-clear-all"]': 'resetView'
 		}
 
 	,	initialize: function (options)
@@ -53,12 +54,11 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 				}
 				this.client = "?client=" + clientId;
 			}
-			this.faceturl = '';
 		}
 	, refreshView: function(e){
 		e.preventDefault();
 		var self = this;
-		this.faceturl = '';
+		self.model.faceturl = '';
 		var closestli = jQuery(e.target).closest('li');
 		var closesti = jQuery(e.target).find('i');
 		if(closestli.hasClass('active')){
@@ -88,12 +88,21 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 			}
 		})
 		_.each(facetMaster,function(fm){
-			self.faceturl = self.faceturl +'&'+fm.name+'='+fm.facet.toString();
+			self.model.faceturl = self.model.faceturl +'&'+fm.name+'='+fm.facet.toString();
 		})
-		this.model.fetch().done(function(){
-			self.showContent();
-		});
 
+		this.model.fetch().done(function(){
+			// self.showContent();
+			var resultCount = self.model.get('total')
+			if (resultCount <= 0)
+			{
+				self.subtitle = _('We couldn\'t find any items that match');
+			}
+			self.totalPages = Math.ceil(resultCount / self.translator.getOptionValue('show'));
+			jQuery('#item-list-container').empty()
+			jQuery('#item-list-container').append(SC.macros.facetBrowseItemList(self));
+
+		});
 
 	}
 	, getClientId: function(fragment)
@@ -361,10 +370,9 @@ define('Facets.Views', ['Cart', 'Facets.Helper', 'Categories'], function (Cart, 
 		// Works with the title to find the proper wording and calls the layout.showContent
 	,	showContent: function ()
 		{
-			console.log('facetview');
-			console.log(this);
-			var facetitems = this.model.get('items').models;
-			if(facetitems){
+
+			if(this.model && this.model.get('items') && this.model.get('items').models){
+				var facetitems = this.model.get('items').models;
 				if(SC.ENVIRONMENT.PROFILE.parent && (SC.ENVIRONMENT.PROFILE.parent == '5' || SC.ENVIRONMENT.PROFILE.parent == '75')){
 					this.model.get('items').models = _.filter(facetitems, function(z){return z.get('vendorname') != 'Dormeuil USA';})
 				}else{

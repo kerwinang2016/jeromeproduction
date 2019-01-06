@@ -46,7 +46,6 @@ define('OrderWizard.Router', ['Wizard.Router', 'OrderWizard.Step', 'Order.Model'
 		{
 			var self = this;
 			var clientids =[];
-			console.log(this);
 			// if(this.currentStep == 'opc'){
 			// 	var cart = SC.Application('Checkout').getCart();
 			// 	cart.get('lines').each(function (line){

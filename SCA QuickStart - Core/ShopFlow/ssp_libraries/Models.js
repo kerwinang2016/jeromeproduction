@@ -611,7 +611,6 @@ Application.defineModel('LiveOrder', {
 
       }
 		});
-    nlapiLogExecution('debug','ADD ITEMS', JSON.stringify(items))
 		var lines_ids = order.addItems(items)
 		,	latest_addition = _.last(lines_ids).orderitemid
 		// Stores the current order
@@ -2052,7 +2051,7 @@ Application.defineModel('ProductList', {
 		var filters = [new nlobjSearchFilter('isinactive', null, 'is', 'F')
 			,	new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', tailor)]
 		,	template_ids = []
-		,	product_lists = this.searchHelper(filters, this.getColumns(), false, order, template_ids,parent)
+		,	product_lists = this.searchHelper(filters, this.getColumns(), true, order, template_ids,tailor)
 		,	self = this;
 
 		// Add possible missing predefined list templates
@@ -2331,7 +2330,7 @@ Application.defineModel('ProductListItem', {
 		data.priority && data.priority.id && productListItem.setFieldValue('custrecord_ns_pl_pli_priority', data.priority.id);
 		productListItem.setFieldValue('custrecord_ns_pl_pli_productlist', data.productList.id);
     if(!productListItem.getFieldValue('custrecord_ns_pl_pli_fitter'))
-    productListItem.setFieldValue('custrecord_ns_pl_pli_fitter',nlapiGetUser());
+      productListItem.setFieldValue('custrecord_ns_pl_pli_fitter',nlapiGetUser());
 		data.internalid = nlapiSubmitRecord(productListItem);
 
 		return data;
@@ -2393,7 +2392,8 @@ Application.defineModel('ProductListItem', {
 		{
 			return []; //it may happens when target list is a template and don't have a record yet.
 		}
-
+    nlapiLogExecution('debug','PLID ', product_list_id);
+    nlapiLogExecution('debug','Parent ', parent);
 		var filters = [
 			new nlobjSearchFilter('custrecord_ns_pl_pli_productlist', null, 'is', product_list_id)
 		,	new nlobjSearchFilter('isinactive', null, 'is', 'F')
@@ -2540,7 +2540,7 @@ Application.defineModel('ProductListItem', {
 		,	self = this;
 
 		var arrClientRecord = [];
-
+    nlapiLogExecution('debug','PLI RECORDS LENGTH', records.length)
 		_(records).each(function (productListItemSearchRecord)
 		{
 			var objPlOptions = JSON.parse(productListItemSearchRecord.getValue('custrecord_ns_pl_pli_options') || '{}');

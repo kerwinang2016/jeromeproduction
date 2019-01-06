@@ -56,6 +56,14 @@ registerMacro('itemDetails', function (line) { %>
 			<% } else { %>
 				<b><%= line.item.get('_name') %></b>
 			<% } %>
+			<p style="margin:0px;"><%
+				var producttype = _.find(line.item.get("options"), function(o){
+					return o.id == "custcol_producttype"});
+					if(producttype){
+					%>
+						<%= _('Product Type: $(0)').translate(producttype.value)%>
+					<% } %>
+				</p>
 			<% if (line.type === 'Discount') { %>
 				<p> <%= _('Discount').translate() %></p>
 			<% } else { %>
@@ -109,11 +117,11 @@ registerMacro('itemDetails', function (line) { %>
 	<tr class="re-order-item <%if(!line.amount){%>hide<%}%>">
 		<td colspan="5">
 		<% if(line.item.get("itemtype") != 'GiftCert') { %>
-			<button class="btn-link" data-re-order-item-link="<%= line.id %>" data-item-id="<%= line.item.get('_id') %>" data-item-quantity="<%= line.quantity %>" data-parent-id="<%=line.item.get('parent_internalid') %>" data-item-options="<%= line.format_options %>">
+			<button class="btn-link" data-re-order-item-link="<%= line.id %>" data-item-id="<%= line.item.get('_id') %>" data-item-quantity="<%= line.quantity %>" data-parent-id="<%=line.item.get('parent_internalid') %>" data-item-options='<%= line.format_options %>'>
 				<%= line.quantity > 1 ? _('Reorder these Items').translate() : _('Reorder this Item').translate() %>
 			</button>
 		<% } else { %>
-			<a data-giftcard-item-link="<%= line.item.get('_url') %>" data-giftcard-item-name="<%= line.item.get('_sku') %>" data-parent-id="<%=line.item.get('parent_internalid') %>" data-item-options="<%= line.format_options %>" href="#">
+			<a data-giftcard-item-link="<%= line.item.get('_url') %>" data-giftcard-item-name="<%= line.item.get('_sku') %>" data-parent-id="<%=line.item.get('parent_internalid') %>" data-item-options='<%= line.format_options %>' href="#">
 			</a>
 		<% } %>
 		</td>

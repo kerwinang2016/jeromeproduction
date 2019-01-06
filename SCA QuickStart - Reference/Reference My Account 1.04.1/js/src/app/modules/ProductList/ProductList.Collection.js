@@ -7,7 +7,7 @@ define('ProductList.Collection', ['ProductList.Model'], function (Model)
 
 	return Backbone.Collection.extend({
 
-		url: _.getAbsoluteUrl('services/product-list.ss')
+		url: _.getAbsoluteUrl('services/product-list.ss')		
 
 	,	model: Model
 

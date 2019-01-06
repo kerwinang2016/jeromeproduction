@@ -3,8 +3,7 @@
 		var arrObjOrder = paramArrObjOrder;
 		var arrObjOrderTotal = (!_.isNullOrEmpty(arrObjOrder)) ? arrObjOrder.length : 0;
 		var hasArrObjOrder = (arrObjOrderTotal != 0) ? true : false;
-		
-		console.log('arrObjOrderTotal: ' + arrObjOrderTotal)
+
 	%>
 		<% if (hasArrObjOrder) { %>
 

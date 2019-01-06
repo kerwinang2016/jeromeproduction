@@ -39,7 +39,6 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'ClientOrderHistory
 			//, 'keypress [id="swx-order-client-email"]':'keyPressSwxOrderClientSearch'
 			//, 'keypress [id="swx-order-client-phone"]':'keyPressSwxOrderClientSearch'
 		}
-
 		, updateFlag: function(e){
 				var id = jQuery(e.target).data().id;
 				if(e.target.checked){
@@ -635,7 +634,7 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'ClientOrderHistory
 			this.fitprofile = options.fitprofile;
 			var self = this;
 			jQuery.get(_.getAbsoluteUrl('js/presetsConfig.json')).done(function (data) {
-				window.presetsConfig = JSON.parse(data);
+				window.presetsConfig = data;
 			});
 			jQuery.get(_.getAbsoluteUrl('js/itemRangeConfig.json')).done(function (data) {
 				window.cmConfig = data;
@@ -654,7 +653,7 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'ClientOrderHistory
 			var configUrl = unit ==='CM'?'js/itemRangeConfig.json':'js/itemRangeConfigInches.json';
 
 			jQuery.get(_.getAbsoluteUrl(configUrl)).done(function (data) {
-				var selectedMeasurementConfig = _.findWhere(JSON.parse(data),{ type: productType });
+				var selectedMeasurementConfig = _.findWhere(data,{ type: productType });
 				_.each(selectedMeasurementConfig.config,function(el){
 					var fiedlName = el.name;
 					if(el.name === 'Sleeve L' || el.name ==='Sleeve R'){

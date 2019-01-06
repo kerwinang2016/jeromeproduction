@@ -18,17 +18,20 @@ function service (request)
 			,	search = request.getParameter('search')
 			,	clientName = ''
 			,	soid = ''
-			,	clientId = request.getParameter('clientName')
+			,	clientId = ''
 			//  Order model is defined on ssp library Models.js
 			,	PlacedOrder = Application.getModel('PlacedOrder'),
 			data = JSON.parse(request.getBody() || '{}')
 			, sort = request.getParameter('sort');
 			if(search){
-			if(search.indexOf('SO-') == 0)
-			soid = search.split('SO-')[1];
-			else
-			clientName = search;
+				if(search.indexOf('SO-') == 0)
+				soid = search.split('SO-')[1];
+				else
+				clientName = search;
+			}else{
+				clientId = request.getParameter('clientName')
 			}
+			var customerid = request.getParameter('customerid');
 			switch (method)
 			{
 				case 'GET':
@@ -37,7 +40,7 @@ function service (request)
 					//if (clientNameandSOID){
 					//	Application.sendContent(id ? PlacedOrder.get(id) : (PlacedOrder.list(page, clientName,soid,sort,clientId) || []));
 					//} else {
-						Application.sendContent(id ? PlacedOrder.get(id) : (PlacedOrder.list(page,clientName,soid,sort,clientId) || []));
+						Application.sendContent(id ? PlacedOrder.get(id,customerid) : (PlacedOrder.list(page,clientName,soid,sort,clientId,customerid) || []));
 					//}
 
 				break;
@@ -46,7 +49,7 @@ function service (request)
 					//	PlacedOrder.setDateNeeded(data);
 					//}
 					PlacedOrder.saveLine(data);
-					Application.sendContent(PlacedOrder.get(data.solinekey.split('_')[0]));
+					Application.sendContent(PlacedOrder.get(data.solinekey.split('_')[0],customerid));
 
 					break;
 				default:

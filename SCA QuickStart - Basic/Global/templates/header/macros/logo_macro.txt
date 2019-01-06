@@ -4,13 +4,10 @@
 	,	siteName = application.getConfig('siteSettings.displayname');
 
 	var filePath = '/SCA QuickStart - Basic/Global/templates/header/macros/logo_macro.txt';
-	//console.log('filePath: ' + '\n' + filePath)
 
 	var user = application.getUser();
 	var logoUrl = user.get('LogoUrl');
 	var bannerUrl = user.get('BannerUrl');
-
-	//console.log('logoUrl: ' + logoUrl)
 
 %>
 <div id="site-logo" class="site-logo content-banner">

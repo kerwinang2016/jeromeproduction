@@ -33,6 +33,9 @@ define('Facets.Router', ['Facets.Views', 'Facets.Helper', 'Facets.Model', 'Categ
 			{
 				return this.showCategoryPage(translator);
 			}
+
+				console.log('apiparam')
+				console.log(translator)
 			// Model
 			var model = new Model()
 			// and View
@@ -42,16 +45,30 @@ define('Facets.Router', ['Facets.Views', 'Facets.Helper', 'Facets.Model', 'Categ
 				,	application: this.application
 				,	model: model
 				});
-
-			model.fetch({
-				data: translator.getApiParams()
-			,	killerId: this.application.killerId
-			,	success: function ()
-				{
-					translator.setLabelsFromFacets(model.get('facets') || []);
-					view.showContent();
+				if(translator.getOptionValue('keywords')){
+					console.log('haskeywords')
+					model.fetch({
+						data: translator.getApiParams()
+					,	killerId: this.application.killerId
+					,	success: function ()
+						{
+							translator.setLabelsFromFacets(model.get('facets') || []);
+							view.showContent();
+						}
+					});
 				}
-			});
+				else{
+					console.log('no keywords')
+					model.fetch({
+						data: translator.getApiParams()
+					,	killerId: this.application.killerId
+					,	success: function ()
+						{
+							translator.setLabelsFromFacets(model.get('facets') || []);
+							view.showContent();
+						}
+					});
+				}
 		}
 
 		// router.¡sCategoryPage
@@ -68,11 +85,6 @@ define('Facets.Router', ['Facets.Views', 'Facets.Helper', 'Facets.Model', 'Categ
 	,	showCategoryPage: function(translator)
 		{
 			var self = this;
-			// var param = new Object();
-			// param.type = "get_client";
-			// param.data = JSON.stringify({filters: ["internalid||anyof|integer|" + this.client,'custrecord_tc_tailor||is|integer|'+SC.Application('Shopping').getUser().id], columns: ["internalid", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone"]});
-			// jQuery.get(_.getAbsoluteUrl('services/fitprofile.ss'), param).always(function(data){
-			// 	if(data[0]){
 					var view = new Views.BrowseCategories({
 						translator: translator
 					,	translatorConfig: self.translatorConfig
@@ -80,12 +92,6 @@ define('Facets.Router', ['Facets.Views', 'Facets.Helper', 'Facets.Model', 'Categ
 					});
 
 					view.showContent();
-			// 	}
-			// 	else{
-			// 		window.location.href= "http://store.jeromeclothiers.com";
-			// 	}
-			// });
-
 		}
 
 	});

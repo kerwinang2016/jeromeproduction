@@ -1,6 +1,6 @@
 // ProductListControl.Views.js
 // -----------------------
-// The Control view that let the user add an item to a list from the pdp or quickview. 
+// The Control view that let the user add an item to a list from the pdp or quickview.
 // It supports 1) the single list experience and 2) the move item functionality.
 define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collection', 'Session'], function (ProductListModel, ProductListItemCollection, Session)
 {
@@ -10,9 +10,9 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 
 	// The main control view
 	Views.Control = Backbone.View.extend({
-		
+
 		template: 'product_list_control'
-		
+
 	,	attributes: {'class': 'dropdown product-lists'}
 
 	,	events:
@@ -32,8 +32,8 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			{
 				this.mode = 'move';
 			}
-			
-			// need to hide the menu (data-type="productlist-control") when clicked outside, so we register here a click handler on the document.: 
+
+			// need to hide the menu (data-type="productlist-control") when clicked outside, so we register here a click handler on the document.:
 			jQuery(document).click(function(event)
 			{
 				if (jQuery(event.target).parents().index(jQuery(event.target).closest('[data-type^="productlist-control"]')) === -1 && jQuery(event.target).attr('class') && jQuery(event.target).attr('class').indexOf('productlist-control') === -1)
@@ -41,7 +41,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 					if(jQuery('[data-type="productlist-control"]').is(':visible'))
 					{
 						var $control = jQuery('[data-type="productlist-control"]');
-						
+
 						// return the control to its initial state
 						$control.find('form[data-type="add-new-list-form"]').hide();
 						$control.find('[data-type="show-add-new-list-form"]').show();
@@ -59,9 +59,9 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			this.is_visible =  this.$('[data-type="productlist-control"]').is(':visible');
 
 			var self = this;
-			
+
 			Backbone.View.prototype.render.apply(this);
-			
+
 			self.collection.each(function (model)
 			{
 				var view = new Views.ControlItem({
@@ -80,7 +80,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 				,	application : self.application
 				,	parentView: self
 				});
-			
+
 			self.$('[data-type="new-item-container"]').html(new_item_view.render().el);
 
 			// we don't want to disable the control button for guest users because we want to send them to login page on click
@@ -88,7 +88,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			{
 				self.$('[data-action="show-productlist-control"]').attr('disabled', 'true');
 			}
-			
+
 			// also we don't want to erase any previous confirmation messages
 			self.confirm_message && self.showConfirmationMessage(self.confirm_message);
 		}
@@ -117,13 +117,13 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			}
 		}
 
-		// if the user is not logged in we redirect it to login page and then back to the PDP. 
+		// if the user is not logged in we redirect it to login page and then back to the PDP.
 	,	validateLogin: function ()
 		{
 			if (this.application.getUser().get('isLoggedIn') === 'F')
 			{
 				var login = Session.get('touchpoints.login');
-				
+
 				login += '&origin=' + this.application.getConfig('currentTouchpoint');
 
 				if (this.$el.closest('.modal-product-detail').size() > 0) //we are in the quick view
@@ -135,18 +135,18 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 				{
 					login += '&origin_hash=' + Backbone.history.fragment;
 				}
-							
+
 				window.location.href = login;
-				
+
 				return false;
 			}
 
 			return true;
 		}
 
-		// validates the passed gift cert item and return false and render an error message if invalid. 
+		// validates the passed gift cert item and return false and render an error message if invalid.
 		// TODO: put this logic in a more abstract/utility class.
-	,	validateGiftCertificate: function (item) 
+	,	validateGiftCertificate: function (item)
 		{
 			if (item.itemOptions && item.itemOptions.GIFTCERTRECIPIENTEMAIL)
 			{
@@ -154,7 +154,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 				{
 					this.render(); //for unchecking the just checked checkbox
 					this.showError(_('Recipient email is invalid').translate());
-					
+
 					return false;
 				}
 			}
@@ -231,7 +231,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 				success: function ()
 				{
 					self.render();
-					
+
 					if (!dontShowMessage)
 					{
 						self.showConfirmationMessage(
@@ -269,7 +269,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			,	original_item = this.moveOptions.productListItem
 			,	original_item_clone = original_item.clone()
 			,	details_view = this.moveOptions.parentView;
-
+			var customerid = SC.Application('MyAccount').getUser().get('parent');
 			original_item_clone.set('productList', {
 				id: destination.get('internalid')
 			});
@@ -281,9 +281,9 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 				success: function (saved_model)
 				{
 					var app = details_view.application
-					,	product_lists_promise = app.getProductLists().fetch();
+					,	product_lists_promise = app.getProductLists().fetch({data:jQuery.param({customerid:customerid})});
 
-					product_lists_promise.done(function() 
+					product_lists_promise.done(function()
 					{
 						var from_list = self.application.getProductLists().findWhere({internalid: self.moveOptions.parentView.model.get('internalid') })
 						,	to_list = self.application.getProductLists().findWhere({internalid: destination.get('internalid')});
@@ -292,13 +292,13 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 
 						details_view.model.get('items').remove(original_item);
 						details_view.render();
-						
+
 						app.getLayout().updateMenuItemsUI();
 						app.getLayout().currentView.showConfirmationMessage(
 							_('Good! You successfully moved the item from this to $(0)').
 								translate('<a href="/productlist/' + destination.get('internalid') + '">' + destination.get('name') + '</a>')
 						);
-					});					
+					});
 				}
 			});
 		}
@@ -311,10 +311,10 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			{
 				to.set('items', new ProductListItemCollection());
 			}
-			
+
 			// add the item to the application collection
 			to.get('items').add(saved_model);
-			
+
 			from.get('items').remove(original_model);
 		}
 
@@ -332,12 +332,12 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 		}
 
 		// Determines if the control should be enabled or not. This default behavior is that any item can be added
-		// to a list no matter if it is purchasable. Also it will be enabled for guest users in which case it will 
-		// redirect the user to the login page. The only condition is that matrix item has to have the options selected. 
+		// to a list no matter if it is purchasable. Also it will be enabled for guest users in which case it will
+		// redirect the user to the login page. The only condition is that matrix item has to have the options selected.
 	,	isReadyForList: function ()
 		{
 			return this.mode === 'move' || this.product.isSelectionComplete();
-			// if you want to add only purchasable products to a product list then you can change the above with: 
+			// if you want to add only purchasable products to a product list then you can change the above with:
 			// return this.product.isReadyForCart();
 		}
 
@@ -356,7 +356,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			this.confirm_message = message;
 			var $confirmation_message = this.$('[data-confirm-message]')
 			,	$msg_el = jQuery(SC.macros.message(message, 'success', true));
-			
+
 			this.confirm_message = message;
 			$confirmation_message.show().empty().append($msg_el);
 
@@ -373,13 +373,13 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			this.$('[data-confirm-message]').hide();
 		}
 	});
-	
+
 	// ControlItem
 	// Sub View that represents an item and a checkbox in the control
 	Views.ControlItem = Backbone.View.extend({
 
 		tagName: 'li'
-		
+
 	,	template: 'product_list_control_item'
 
 	,	events: {
@@ -488,7 +488,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 			this.parentView = options.parentView;
 		}
 
-		// Handle save new product list form postback 
+		// Handle save new product list form postback
 	,	saveForm: function (event)
 		{
 			if (!this.parentView.validateGiftCertificate(this.parentView.product))
@@ -505,7 +505,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 				,	parent_view = self.parentView;
 
 				new_product_list.set('items', new ProductListItemCollection(new_product_list.get('items')));
-				
+
 				// add the product list item
 				if (parent_view.mode === 'move')
 				{
@@ -526,7 +526,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 		{
 			var $el = jQuery(this.el);
 			var new_list_form = $el.find('form[data-type="add-new-list-form"]');
-			
+
 			if (new_list_form)
 			{
 				new_list_form.show();
@@ -538,11 +538,11 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 	});
 
 	// ControlSingle
-	// Control view for single list mode. @extends Views.Control. 
+	// Control view for single list mode. @extends Views.Control.
 	Views.ControlSingle = Backbone.View.extend({
-		
+
 		template: 'product_list_control_single'
-		
+
 	,	attributes: {'class': 'product-lists-single'}
 
 	,	events: {
@@ -560,7 +560,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 	,	validateGiftCertificate: Views.Control.prototype.validateGiftCertificate
 
 	,	getItemOptions: Views.Control.prototype.getItemOptions
-	
+
 	,	validateLogin: Views.Control.prototype.validateLogin
 
 	,	getProductId: Views.Control.prototype.getProductId
@@ -598,7 +598,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 
 		// Before adding item to the list, checks for not created predefined list
 	,	addItemToSingleList: function(e)
-		{			
+		{
 			if (!this.validateLogin())
 			{
 				return;
@@ -627,7 +627,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 		{
 			if (!this.validateGiftCertificate(self.product))
 			{
-				return; 
+				return;
 			}
 
 			self.addItemToList(self.product, self.single_list);
@@ -641,7 +641,7 @@ define('ProductListControl.Views',['ProductList.Model','ProductListItem.Collecti
 		}
 
 	});
-	
+
 	return Views;
 
 });

@@ -19,7 +19,7 @@
 		<%
 			var objDesignOpt = designOptions;
 		%>
-		
+
 		<h2 class="section-header" style="margin-top: 30px"><%= _('Design Options').translate() %></h2><hr/>
 
 	    <div class="accordion" id="design-option">
@@ -27,7 +27,7 @@
 			<% for (var clothingType in designOptions){
 				var currentClothingType = designOptions[clothingType];
 
-				//console.log('currentClothingType: ' + '\n' + JSON.stringify(currentClothingType, 'key', '\t'))
+
 			%>
 				<div class="accordion-group">
 					<div class="accordion-heading">
@@ -41,7 +41,7 @@
 							for (var component in currentClothingType){
 							index1++;
 							var currentComponent = currentClothingType[component];
-							//console.log('currentComponent: ' + '\n' + JSON.stringify(currentComponent, 'key', '\t'))
+
 						%>
 								<div class="control-group-new" data-input="canvas_canvas_jacket" id="design-option-control-group-<%= clothingType %>-<%=index1%>">
 								<% if(collapse[clothingType].indexOf(component) !=-1){ %>
@@ -65,9 +65,6 @@
 									<%
 										for (var field in currentComponent){
 										var currentField = currentComponent[field];
-
-										//console.log('currentField: ' + '\n' + JSON.stringify(currentField, 'key', '\t'))
-
 									%>
 										<div style="padding-left:25px;">
 											<div style="width:200px;display:inline-block;" >
@@ -76,11 +73,12 @@
 											<%
 												var isSelectType = (currentField.type == "select") ? true : false;
 												var isTextType = (currentField.type == "text") ? true : false;
+												var isNumberType = (currentField.type == "number") ? true : false;
 											%>
 
 											<% if (isSelectType) { %>
 												<div class="controls" style="display:inline-block;">
-													<select id="<%= currentField.name %>" class="input-xlarge display-option-dropdown" name="<%= currentField.name %>" data-type="fav-option-customization">
+													<select fieldname="<%= field %>" id="<%= currentField.name %>" class="input-xlarge display-option-dropdown" name="<%= currentField.name %>" data-type="fav-option-customization">
 														<% var fieldCount = 0; %>
 														<% _.each(currentField.values, function (option) { %>
 															<option
@@ -94,19 +92,31 @@
 														<% }) %>
 														<% fieldCount++;%>
 													</select>
+
 													<div class="show-options-img" id="more-info_<%= currentField.name %>">
 														<% _.each(currentField.values, function (option, index) { %>
 															<% if (option.isFavourite == true || option.isFavourite == "true"){ %>
-																<%= SC.macros.displayMoreInfo(option.value + "|" + currentField.name)%>
+																<%= SC.macros.displayMoreInfo(option.value + "|" + currentField.label)%>
 															<% } %>
 														<% }) %>
 													</div>
 												</div>
 											<% 	}  %>
 
-											<% if (isTextType) { %>
+											<% if (isTextType) {%>
 												<div class="controls" style="margin-bottom: 15px;display:inline">
-													<input type="text" id="<%= currentField.name %>" class="input-xlarge" name="<%= currentField.name %>" value="<%= currentField.value %>" data-type="fav-option-customization">
+													<input type="text" fieldname="<%= field %>" id="<%= currentField.name %>" class="input-xlarge" name="<%= currentField.name %>" value="<%= currentField.value %>" data-type="fav-option-customization">
+												</div>
+												<div class="show-options-img" id="more-info_<%= currentField.name %>">
+															<%= SC.macros.displayMoreInfo(currentField.name+"|"+currentField.label)%>
+												</div>
+											<% 	}  %>
+											<% if (isNumberType) {%>
+												<div class="controls" style="margin-bottom: 15px;display:inline">
+													<input type="number" fieldname="<%= field %>" step="0.01" min="<%= clothingType == 'Jacket'?0.88:clothingType == 'Waistcoat'? 0.84:0 %>" id="<%= currentField.name %>" class="input-xlarge" name="<%= currentField.name %>" value="<%= currentField.value %>" data-type="fav-option-customization">
+												</div>
+												<div class="show-options-img" id="more-info_<%= currentField.name %>">
+															<%= SC.macros.displayMoreInfo(currentField.name+"|"+currentField.label)%>
 												</div>
 											<% 	}  %>
 											</div>

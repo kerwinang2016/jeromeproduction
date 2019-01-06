@@ -17,7 +17,8 @@ define('PlacedOrder.Collection', ['PlacedOrder.Model'], function (Model)
 		}
 	,	initialize: function (search)
 		{
-
+			var customerid = SC.Application('MyAccount').getUser().get('parent');
+			this.url += "?clientName=" + search + "&customerid=" +customerid;
 		}
 	});
 });

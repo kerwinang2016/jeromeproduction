@@ -2,12 +2,7 @@
 <% var Profile = application.getUser(); %>
 
 <%
-	//console.log('/SCA QuickStart - Basic/Global/templates/header/macros/header_profile_macro.txt');
-
 	var profileInternalId = Profile.get('internalid');
-
-	//console.log('profileInternalId: ' + profileInternalId)
-
 
 %>
 

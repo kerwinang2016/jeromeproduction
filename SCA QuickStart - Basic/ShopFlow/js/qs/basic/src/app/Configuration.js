@@ -15,7 +15,7 @@
         ,   {id: 'pricelevel5:desc', name: _('Price, High to Low ').translate()}
         ];
 
-        application.Configuration.facets = [   
+        application.Configuration.facets = [
 			{
 				id: 'category'
 			,	name: _('Category').translate()
@@ -27,17 +27,17 @@
 			,	titleToken: '$(0)'
 			,	titleSeparator: ', '
 			}
-		,
-            {
-            	 id: 'custitem_clothing_type'
-            ,    name: _('Item Type').translate()
-            ,    priority: '1'
-            ,    url: 'custitem_clothing_type'
-            ,	 behavior: 'multi'
-            ,    uncollapsible: true
-            ,    collapsed: false
-            ,    titleSeparator: ', '
-            }
+		// ,
+    //         {
+    //         	 id: 'custitem_clothing_type'
+    //         ,    name: _('Item Type').translate()
+    //         ,    priority: '1'
+    //         ,    url: 'custitem_clothing_type'
+    //         ,	 behavior: 'multi'
+    //         ,    uncollapsible: true
+    //         ,    collapsed: false
+    //         ,    titleSeparator: ', '
+    //         }
         ,   {
                  id: 'custitem_vendor_name'
             ,    name: _('Brand').translate()
@@ -68,7 +68,7 @@
             ,    collapsed: false
             ,    titleSeparator: ', '
             }
-        
+
         ,   {
                 id: 'onlinecustomerprice'
             ,   name: _('Price').translate()
@@ -84,7 +84,7 @@
                     return _.formatCurrency(value);
                 }
             }
-        ]       
+        ]
 
         application.addModule('FitProFile');
         application.addModule('ModalGallery');

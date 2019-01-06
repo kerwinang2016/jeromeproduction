@@ -82,7 +82,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 
 				var errorMessages = [];
 
-				if(orderItemCode!==itemCode){
+				if(orderItemCode!==itemCode && line.get('item').get('internalid') != '253776'){
 					hasError = true;
 					// errorMessages.push('Order Item Code is not the same with the SKU Item Code');
 
@@ -196,7 +196,6 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 		{
 			this.application = options.application;
 			// this.profileInstance = new FitProfileModel(SC._applications.Shopping.getUser().get("internalid")); // April CSD Issue #046
-
 			this.options = options;
 			this.sflMode = options.sflMode;
 			this.addToCartCallback = options.addToCartCallback;
@@ -212,15 +211,8 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 					data:param,
 					success: function (result) {
 							self.client_collection.add(result);
-	            // if (result.isOk == false) alert(result.message);
 	        }
 				});
-
-
-			// });
-			//this.product_list_details_view.showarchiveditems = false;
-
-			//this.model.set('swx_filter_save_for_later_client', '');
 		}
 
 		// showContent:
@@ -236,38 +228,36 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 
 			var dateRef = new Date();
 			var urlDesignOptions = _.getAbsoluteUrl('js/DesignOptions_Config.json') + '?t=' + dateRef.getTime();
-
 			//jQuery.get(_.getAbsoluteUrl('js/DesignOptions_Config.json')).done(function(data){
-			//
-			// jQuery.ajax({
-			// 		url:urlDesignOptions,
-			// 		async:false,
-			// 		success: function (result) {
-			// 				console.log(result)
-			// 				self.renderLineItemOptions(JSON.parse(result), self);
-	    //         // if (result.isOk == false) alert(result.message);
-			// 				self.downloadQuote();
-			// 				// self.application.getLayout().showContent(self, true).done(function (view)
-			// 				// 	{
-			// 				// 		self.renderRelatedAndCorrelatedItemsHelper(view);
-			// 				// 	});
-	    //     }
-			// 	});
-			jQuery.get(urlDesignOptions).done(function(data){
-				if (data){
-					self.renderLineItemOptions(JSON.parse(data), self);
-				}
+						//
+						// jQuery.ajax({
+						// 		url:urlDesignOptions,
+						// 		async:false,
+						// 		success: function (result) {
+						// 				console.log(result)
+						// 				self.renderLineItemOptions(JSON.parse(result), self);
+				    //         // if (result.isOk == false) alert(result.message);
+						// 				self.downloadQuote();
+						// 				// self.application.getLayout().showContent(self, true).done(function (view)
+						// 				// 	{
+						// 				// 		self.renderRelatedAndCorrelatedItemsHelper(view);
+						// 				// 	});
+				    //     }
+						// 	});
+						jQuery.get(urlDesignOptions).done(function(data){
+							if (data){
+								self.renderLineItemOptions(data, self);
+							}
 
-				// April CSD Issue #046
-				setTimeout(function(){
-					self.downloadQuote();
-					return self.application.getLayout().showContent(self, true).done(function (view)
-						{
-							self.renderRelatedAndCorrelatedItemsHelper(view);
+							// April CSD Issue #046
+							setTimeout(function(){
+								self.downloadQuote();
+								return self.application.getLayout().showContent(self, true).done(function (view)
+									{
+										self.renderRelatedAndCorrelatedItemsHelper(view);
+									});
+							}, 1000)
 						});
-				}, 1000)
-			});
-
 			var optionData = this.model.get("options");
 			optionData.custbody_avt_wbs_hold_date_needed_json = '';
 			this.model.set("options", optionData);
@@ -442,28 +432,40 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 							 var a = _.find(model.get('options'),function(op){return op.id == 'CUSTCOL_AVT_DATE_NEEDED'});
 							 a.value = dateneeded;
 							 a.displayvalue = dateneeded;
-							 model.save();
+							 model.save().done(function(){
+								 console.log('saved')
+							 });
+
 						});
+						console.log('timeout')
+						setTimeout(function(){
+							self.model.save().done(function(data){
+								self.showContent();
+							});
+						},3000);
 					}
 					else{
 						var a = _.find(this.model.get('lines').models,function(m){return m.id == item;});
 						var b = _.find(a.get('options'),function(op){return op.id == 'CUSTCOL_AVT_DATE_NEEDED'});
 						b.value = dateneeded;
 						b.displayvalue = dateneeded;
-						a.save();
+						a.save().done(function(){
+							self.model.save().done(function(data){
+								self.showContent();
+							});
+						});
 					}
 				}else{
 					var a = _.find(this.model.get('lines').models,function(m){return m.id == item;});
 					var b = _.find(a.get('options'),function(op){return op.id == 'CUSTCOL_AVT_DATE_NEEDED'});
 					b.value = dateneeded;
 					b.displayvalue = dateneeded;
-					a.save();
-				}
-				setTimeout(function(){
-					self.model.save().done(function(data){
-						self.showContent();
+					a.save().done(function(){
+						self.model.save().done(function(data){
+							self.showContent();
+						});
 					});
-				}, 1000)
+				}
 
 			}
 		}

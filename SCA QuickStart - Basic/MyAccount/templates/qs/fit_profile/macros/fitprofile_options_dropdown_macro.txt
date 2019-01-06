@@ -35,7 +35,6 @@
 	<% if (profiles) { %>
 		<%
 			var stProfiles = JSON.stringify(profiles, 'key', '\t');
-			//console.log('stProfiles: ' + '\n' + stProfiles)
 		%>
 
 			<style>

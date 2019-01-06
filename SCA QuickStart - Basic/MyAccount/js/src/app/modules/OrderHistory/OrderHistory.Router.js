@@ -54,7 +54,9 @@ define('OrderHistory.Router',  ['OrderHistory.Views', 'PlacedOrder.Model','Place
 	// view order's detail
 	,	orderDetails: function (id)
 		{
-			var model = new Model({internalid: id})
+			var customerid = SC.Application('MyAccount').getUser().get('parent');
+
+			var model = new Model()
 			,	view = new Views.Details({
 					application: this.application
 				,	id: id
@@ -63,7 +65,7 @@ define('OrderHistory.Router',  ['OrderHistory.Views', 'PlacedOrder.Model','Place
 
 			model
 				.on('change', view.showContent, view)
-				.fetch();
+				.fetch({data:jQuery.param({internalid: id,customerid:customerid})});
 		}
 	});
 });

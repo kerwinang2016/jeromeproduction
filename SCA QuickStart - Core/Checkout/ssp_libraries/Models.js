@@ -472,7 +472,7 @@ Application.defineModel('Profile', {
 
 			//Define the fields to be returned
 			this.fields = this.fields || ['isperson', 'email', 'internalid', 'name', 'overduebalance', 'phoneinfo', 'companyname', 'firstname', 'lastname', 'middlename', 'emailsubscribe', 'campaignsubscriptions', 'paymentterms', 'creditlimit', 'balance', 'creditholdoverride'];
-			nlapiLogExecution('debug','Profile Checkout Get' );
+
 			profile = customer.getFieldValues(this.fields);
 
 			//Make some attributes more friendly to the response
@@ -689,7 +689,6 @@ Application.defineModel('LiveOrder', {
 ,	update: function (data)
 	{
 		'use strict';
-		nlapiLogExecution('debug','Update Order');
 		var current_order = this.get();
 
 		// Only do this if it's capable of shipping multiple items.
@@ -732,7 +731,6 @@ Application.defineModel('LiveOrder', {
 		this.setTermsAndConditions(data);
 
 		this.setTransactionBodyField(data);
-		nlapiLogExecution('debug','Finished Update Order');
 	}
 
 ,	submit: function ()
@@ -750,7 +748,6 @@ Application.defineModel('LiveOrder', {
 		{
 			order.setEnableItemLineShipping(false); // By default non order should be MST
 		}
-		nlapiLogExecution('debug','Finished Submit Order');
 		return confirmation;
 	}
 

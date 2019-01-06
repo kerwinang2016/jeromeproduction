@@ -19,7 +19,6 @@ define('ItemDetails.Model', ['ItemOptionsHelper', 'Session'], function (ItemOpti
 				,	Session.getSearchApiParams()
 				)
 			);
-
 			return url;
 		}
 

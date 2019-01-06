@@ -81,13 +81,22 @@
 					href: '/'
 				,   text: _('Home').translate()
 				}];
-				
+
 				var clientId = SC._applications.Shopping.getLayout().currentView.client;
 				var productList = SC._applications.Shopping.getLayout().currentView.productList;
 				// defaultcategory_detail attribute of the item is not consistent with the facets values,
 				// so we are going to use the facet values instead
-				var categories = _.findWhere(item.get('facets'), {id: 'category'})
-				,	walkCategories = function walkCategories(category)
+				var categories = _.findWhere(item.get('facets'), {id: 'category'});
+				var productType = item.get('custitem_clothing_type'),product = "";
+				if(productType == 'Jacket, Trouser, Waistcoat'){
+					product = '3-Piece-Suit';
+				}
+				else if(productType == 'Jacket, Trouser'){
+					product = '2-Piece-Suit';
+				}else{
+					product = productType;
+				}
+				var	walkCategories = function walkCategories(category)
 					{
 						var hasProductList = (!_.isNullOrEmpty(productList)) ? true : false;
 						var urlParamProductList = (hasProductList) ? "|" + productList : ''
@@ -98,14 +107,22 @@
 						,   text: category.url
 						});
 
-						if(category.values && category.values.length > 1){
-							_.each(category.values, function(value){
-								if(value.url){
-									idx = value.url === "Item Types" ? 1 : 0;
+						if( category.url == 'Item Types' && category.values && category.values.length > 0){
+							for(var i=0;i<category.values.length; i++){
+								if(category.values[i].id.indexOf(product) != -1){
+										idx = i;
 								}
-							});
+							}
 						}
-						
+						if(category.url == "Home"){
+							//look for item types, must have
+							for(var i=0;i<category.values.length;i++){
+								if(category.values[i].url == "Item Types"){
+									idx = i;
+									break;
+								}
+							}
+						}
 						category.values && category.values.length && walkCategories(category.values[idx]);
 					};
 
@@ -113,12 +130,10 @@
 				{
 					categories.values && categories.values.length && walkCategories(categories.values[0]);
 				}
-
 				breadcrumb.push({
 					href: item.get('_url')
 				,   text: item.get('_name')
 				});
-
 				breadcrumb.splice(1,1); // removes Home
 
 				return breadcrumb;

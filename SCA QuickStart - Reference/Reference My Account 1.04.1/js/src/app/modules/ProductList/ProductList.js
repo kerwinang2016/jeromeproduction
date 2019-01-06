@@ -1,6 +1,6 @@
 // ProductList.js
 // -----------------
-// Defines the ProductList module (Model, Views, Router). 
+// Defines the ProductList module (Model, Views, Router).
 define('ProductList',
 ['ProductListControl.Views', 'ProductListDetails.View', 'ProductList.Collection','ProductList.Model','ProductListItem.Collection','ProductListItem.Model', 'ProductList.Router','ProductListDeletion.View', 'ProductListCreation.View', 'ProductListLists.View'],
 function (ProductListControlViews, ProductListDetailsView, ProductListCollection, ProductListModel, ProductListItemCollection, ProductListItemModel, ProductListRouter, ProductListDeleteView, ProductListCreateView, ProductListListsView)
@@ -8,9 +8,9 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 	'use strict';
 
 	// ProductLists myaccount's menu items. This is a good example of dynamic-multilevel myaccount's menuitems definition.
-	var productlists_dummy_menuitems = function(application) 
+	var productlists_dummy_menuitems = function(application)
 	{
-		if (!application.ProductListModule.isProductListEnabled()) 
+		if (!application.ProductListModule.isProductListEnabled())
 		{
 			return undefined;
 		}
@@ -21,7 +21,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 		,	url: ''
 		,	index: 2
 		};
-	}; 
+	};
 
 	// Call only when promise was resolved!
 	var productlists_menuitems = function(application)
@@ -39,7 +39,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 				// Returns the correct id of the list in the case of single list and 'productlists' otherwise.
 				var is_single_list = application.ProductListModule.isSingleList();
 
-				if (is_single_list) 
+				if (is_single_list)
 				{
 					var the_single_list = product_lists.at(0);
 					// Check if it's a predefined list before return
@@ -53,28 +53,28 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 		,	name: function (application)
 			{
 				// The name of the first list in the case of single list or generic 'Product Lists' otherwise
-				return application.ProductListModule.isSingleList() ? 
+				return application.ProductListModule.isSingleList() ?
 					product_lists.at(0).get('name') :
 					_('Product Lists').translate();
 			}
 		,	url: function (application)
-			{				
+			{
 				// Returns a link to the list in the case of single list and no link otherwise.
-				var is_single_list = application.ProductListModule.isSingleList(); 
-				if(is_single_list) 
+				var is_single_list = application.ProductListModule.isSingleList();
+				if(is_single_list)
 				{
-					var the_single_list = product_lists.at(0); 
-					return 'productlist/' + (the_single_list.get('internalid') ? the_single_list.get('internalid') : ('tmpl_' + the_single_list.get('templateid'))); 
+					var the_single_list = product_lists.at(0);
+					return 'productlist/' + (the_single_list.get('internalid') ? the_single_list.get('internalid') : ('tmpl_' + the_single_list.get('templateid')));
 				}
-				else 
+				else
 				{
-					return ''; 
+					return '';
 				}
 			}
 			// Index of the menu item for menu order
 		,	index: 2
 			// Sub-menu items
-		,	children: function (application) 
+		,	children: function (application)
 			{
 				// If it's single list, there is no sub-menu
 				if (application.ProductListModule.isSingleList())
@@ -98,12 +98,12 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 					,	url: 'productlist/' + (productlist.get('internalid') || 'tmpl_' + productlist.get('templateid'))
 					,	name: productlist.get('name') + '&nbsp;(' + productlist.get('items').length + ')'
 					,	index: 2
-					}); 
+					});
 				});
 
-				return items; 
+				return items;
 			}
-		}; 
+		};
 
 		return actual_object;
 	};
@@ -135,20 +135,20 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 			};
 
 		// is the Product-List functionality available for this application?
-		var isProductListEnabled = function () 
+		var isProductListEnabled = function ()
 		{
 			var application = app;
 
 			return application.getConfig('product_lists') !== undefined;
 		};
 
-		// are we in the single-list modality ? 
+		// are we in the single-list modality ?
 		var isSingleList = function ()
 		{
 			var application = app;
 
-			return !application.getConfig('product_lists.additionEnabled') && 
-				application.getConfig('product_lists.list_templates') && 
+			return !application.getConfig('product_lists.additionEnabled') &&
+				application.getConfig('product_lists.list_templates') &&
 				_.filter(application.getConfig('product_lists.list_templates'), function (pl) { return !pl.type || pl.type.name !== 'later'; }).length === 1 ;
 		};
 
@@ -166,7 +166,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 					application.productListsInstance.application = application;
 					application.productListsInstance.fetch().done(function(jsonCollection) 
 					{
-						application.productListsInstance.set(jsonCollection);						
+						application.productListsInstance.set(jsonCollection);
 						application.productListsInstancePromise.resolve(application.productListsInstance);
 					});
 				}
@@ -191,7 +191,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 				var productList = new ProductListModel();
 
 				productList.set('internalid', id);
-				
+
 				return productList.fetch();
 			};
 
@@ -201,14 +201,14 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 				var productList = new ProductListModel();
 
 				productList.set('internalid', 'later');
-				
+
 				return productList.fetch();
 			};
 
 			// Application.ProductListModule - reference to this module
 			application.ProductListModule = ProductListModule;
 
-			application.getUserPromise().done(function () 
+			application.getUserPromise().done(function ()
 			{
 				if (SC.ENVIRONMENT.PRODUCTLISTS_CONFIG)
 				{
@@ -222,10 +222,10 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 
 					// rendering product lists
 					application.ProductListModule.renderProductLists();
-					
+
 					layout.on('afterAppendView', function (view)
 					{
-						application.ProductListModule.renderProductLists(view);	
+						application.ProductListModule.renderProductLists(view);
 					});
 
 					layout.on('afterAppendToDom', function ()
@@ -252,14 +252,14 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 
 							if (the_single_list && product_list_menu_item)
 							{
-								var product_list_hashtag = '#productlist/' + (the_single_list.get('internalid') ? the_single_list.get('internalid') : ('tmpl_' + the_single_list.get('templateid')));							
-								
+								var product_list_hashtag = '#productlist/' + (the_single_list.get('internalid') ? the_single_list.get('internalid') : ('tmpl_' + the_single_list.get('templateid')));
+
 								product_list_menu_item.text(the_single_list.get('name'));
 								product_list_menu_item.attr('data-hashtag', product_list_hashtag);
 
 								layout.updateUI();
 							}
-						}						
+						}
 					});
 
 					ProductListItemModel.prototype.keyMapping = application.getConfig('itemKeyMapping', {});
@@ -273,7 +273,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 
 		// renders the control used in shopping pdp and quickview
 		var renderControl = function (view_)
-		{	
+		{
 			var application = app;
 
 			jQuery(placeholder.control).each(function()
@@ -297,7 +297,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 							,	application: application
 							});
 						}
-						else 
+						else
 						{
 							control = new ProductListControlViews.Control({
 								collection: application.getProductLists()
@@ -315,12 +315,12 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 				{
 					$container.empty().append('<button class="btn">' + is_single_list_mode ? _('Loading list...').translate() : _('Loading lists...').translate() + '</button>');
 				}
-			}); 
+			});
 		};
 
 		// render all product-lists related widgets
 		var renderProductLists = function (view)
-		{	
+		{
 			var application = app;
 
 			if (!application.ProductListModule.isProductListEnabled())
@@ -329,7 +329,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 			}
 
 			//global variable with the customer internalid. TODO: stop using it! use application.getUser().get('internalid') instead
-			SC.ENVIRONMENT.customer_internalid = application.getUser().get('internalid'); 
+			SC.ENVIRONMENT.customer_internalid = application.getUser().get('internalid');
 
 			application.ProductListModule.renderControl(view);
 		};
@@ -337,7 +337,7 @@ function (ProductListControlViews, ProductListDetailsView, ProductListCollection
 		// Gets the internal product id for a store item considering it could be a matrix child. TODO: move this to ItemDetails.Model.
 		var internalGetProductId = function (product)
 		{
-			// If its matrix its expected that only 1 item is selected, not more than one nor 0 
+			// If its matrix its expected that only 1 item is selected, not more than one nor 0
 			if (product.getPosibleOptions().length)
 			{
 				var selected_options = product.getSelectedMatrixChilds();

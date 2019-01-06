@@ -24,7 +24,6 @@ function service(request, response){
 
 				if(data){
 					data = JSON.parse(data);
-					//nlapiLogExecution("Debug", "Test1", JSON.stringify(recordFunctions.processColumnData(data.columns)));
 					responseData = recordFunctions.fetchRecord("customrecord_sc_tailor_client", recordFunctions.processFilterData(data.filters), recordFunctions.processColumnData(data.columns));
 				}
 				break;
@@ -161,7 +160,6 @@ var recordFunctions = {
 				}
         start+=1000;
       }while(searchResults.length == 1000);
-     // nlapiLogExecution('debug','Results Length Fit Profiles Clients', results.length);
 			/*var searchResults = nlapiSearchRecord(type, null, arrFilter, arrColumn);
 			if(searchResults != null){
 				for(var j=0; j < searchResults.length; j++){
@@ -355,7 +353,6 @@ var recordFunctions = {
 		if(filterData && filterData.length > 0){
 			var filters = new Array();
 			for(var i = 0; i < filterData.length; i++){
-        //nlapiLogExecution('debug','filterdata',filterData[i]);
 				var filter = new Object();
 				var filterDataArr = filterData[i].split("|");
 

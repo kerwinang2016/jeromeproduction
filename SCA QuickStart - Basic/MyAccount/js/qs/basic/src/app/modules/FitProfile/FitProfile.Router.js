@@ -42,7 +42,6 @@ define('FitProFile.Router',  ['FitProFile.Views', 'FitProfile.Model', 'FormRende
 			});
 
 			view.showContent();
-			console.log(view)
 		}
 	});
 });

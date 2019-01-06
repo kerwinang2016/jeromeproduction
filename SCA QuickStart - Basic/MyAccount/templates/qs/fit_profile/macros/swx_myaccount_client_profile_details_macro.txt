@@ -141,7 +141,7 @@
 					</div>
 
 					<div class="span4">
-						<div><a href="http://store.jeromeclothiers.com/item-types?client=<%=clientInternalId%>" class="btn btn-primary" style="width: 100%; padding-top: 4px; padding-bottom: 4px; padding-left: 0px; padding-right: 0px;">Create Order</a></div>
+						<div><a href="#" data-touchpoint="home" data-hashtag="#item-types?client=<%=clientInternalId%>" class="btn btn-primary" style="width: 100%; padding-top: 4px; padding-bottom: 4px; padding-left: 0px; padding-right: 0px;">Create Order</a></div>
 						<div id="mobile-only" style="height: 10px;"></div>
 					</div>
 				</div>

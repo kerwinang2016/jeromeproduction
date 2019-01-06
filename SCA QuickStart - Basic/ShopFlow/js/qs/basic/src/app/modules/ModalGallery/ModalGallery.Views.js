@@ -13,7 +13,8 @@ define('ModalGallery.Views',  ['Client.Model'], function (ClientModel)
 	,	events: {}
 	,	initialize: function (options)
 		{
-			this.title = options.key == "FABQTY" ? _('Fabric usage chart').translate() : jQuery("#" + options.title).find("option:selected").attr("name");
+
+			this.title = options.key == jQuery("#" + options.title) ? jQuery("#" + options.title).find("option:selected").attr("name"): _(options.title).translate();
 			this.application = options.application;
 			this.key = options.key;
 		}
@@ -27,17 +28,17 @@ define('ModalGallery.Views',  ['Client.Model'], function (ClientModel)
 			,	baseUrl = "http://store.jeromeclothiers.com/assets/images/item_options_images/";
 
 			jQuery.get(_.getAbsoluteUrl('js/DesignOptionsImages_Config.json?nocache=T')).done(function(data){
-					
-					var optionsConfig = JSON.parse(data);
+
+					var optionsConfig = data;
 					if (optionsConfig) {
 						if(optionsConfig[0][key]) {
+
 							for (var i = optionsConfig[0][key].length - 1; i >= 0; i--) {
 								imageArray.push(baseUrl + optionsConfig[0][key][i]);
 							};
 							//var imagePath = baseUrl + optionsConfig[0][key];
 							self.renderImages(imageArray);
 						}
-						
 					};
 				});
 
@@ -58,9 +59,6 @@ define('ModalGallery.Views',  ['Client.Model'], function (ClientModel)
 					slider.reloadSlider();
 				}
 			}, 200);
-
-			
-
 		}
 	});
 

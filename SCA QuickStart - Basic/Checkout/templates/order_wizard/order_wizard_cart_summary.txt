@@ -11,13 +11,13 @@
 	,	is_promocode_valid = promocode && promocode.isvalid
 	,	giftcertificates = cart.get('paymentmethods').where({type: 'giftcertificate'}) || [];
 
-	
+
 	var orderId = '';
 	var hasOrderId = false;
-	
+
 	var objConfirmation = cart.get('confirmation') || {};
 	var hasObjConfirmation = (!_.isNullOrEmptyObject(objConfirmation)) ? true : false;
-	
+
 	if (hasObjConfirmation)
 	{
 		orderId = objConfirmation.internalid || '';
@@ -67,6 +67,15 @@
 					<div class="span9 cart-summary-item-details checkout-summary-item-details">
 						<div>
 							<strong class="cart-summary-item-name"><%= item.get('_name') %></strong>
+
+							<%
+								var producttype = _.find(item.get("options"), function(o){
+									return o.id == "CUSTCOL_PRODUCTTYPE"});
+
+									if(producttype){
+									%>
+										<br/><%= _('Product Type: $(0)').translate(producttype.value)%>
+									<% } %>
 						</div>
 						<div class="cart-summary-item-price">
 							<span itemtype="http://schema.org/Offer" itemscope="" itemprop="offers">
@@ -222,10 +231,7 @@
 <% if (hasObjConfirmation && hasOrderId) {%>
 
 	<div>
-		<a id="btn-download-pdf" class="btn btn-large btn-block btn-primary btn-download-pdf" target="_blank" href="https://jerome.securedcheckout.com/app/site/hosting/scriptlet.nl?script=121&deploy=1&custparam_record_id=<%=orderId%>&custparam_record_type=salesorder&custparam_template=5" style="display: block;">Download as PDF</a>
+		<a id="btn-download-pdf" class="btn btn-large btn-block btn-primary btn-download-pdf" target="_blank" href="<%= window.location.origin %>/app/site/hosting/scriptlet.nl?script=121&deploy=1&custparam_record_id=<%=orderId%>&custparam_record_type=salesorder&custparam_template=5" style="display: block;">Download as PDF</a>
 	</div>
-	
+
 <% } %>
-
-
-

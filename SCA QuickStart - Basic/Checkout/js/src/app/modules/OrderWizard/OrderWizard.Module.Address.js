@@ -42,13 +42,9 @@ define('OrderWizard.Module.Address', ['Wizard.Module', 'Address.Views', 'Address
 			}
 
 			this.addresses = this.wizard.options.profile.get('addresses');
-			console.log('render>this.addresses',this.addresses);
 			this.isGuest = this.getIsCurrentUserGuest();
-			console.log('render>this.isGuest',this.isGuest);
 			this.isSameAsEnabled = true;//_.isFunction(this.options.enable_same_as) ? this.options.enable_same_as() : this.options.enable_same_as;
-			console.log('render>this.isSameAsEnabled',this.isSameAsEnabled);
 			this.addressId = this.model.get(this.manage);
-			console.log('render>this.addressId',this.addressId);
 
 			this.evaluateDisablingSameAsCheckBox();
 
@@ -336,7 +332,6 @@ define('OrderWizard.Module.Address', ['Wizard.Module', 'Address.Views', 'Address
 		{
 			jQuery('.wizard-content .alert-error').hide();
 
-			console.log('jQuery(e.target).data(id).toString()',jQuery(e.target).data('id').toString());
 			// Grabs the address id and sets it to the model
 			// on the position in which our sub class is manageing (billaddress or shipaddress)
 			this.setAddress(jQuery(e.target).data('id').toString());
@@ -345,11 +340,10 @@ define('OrderWizard.Module.Address', ['Wizard.Module', 'Address.Views', 'Address
 
 			// this.model.set('sameAs', true);
 
-			//console.log('selectAddress>this.model.get(this.sameAsManage)',this.model.get(this.sameAsManage));
 			//this.setAddress(this.model.get(this.sameAsManage));
 
 
-			
+
 			// re render so if there is changes to be shown they are represented in the view
 			this.render();
 
@@ -362,11 +356,6 @@ define('OrderWizard.Module.Address', ['Wizard.Module', 'Address.Views', 'Address
 
 	,	setAddress: function (address_id, options)
 		{
-			console.log('setAddress>this.model',this.model);
-			console.log('setAddress>this.manage',this.manage);
-			console.log('setAddress>address_id',address_id);
-			console.log('setAddress>options',options);
-
 			this.model.set(this.manage, address_id, options);
 			this.addressId = address_id;
 
@@ -431,7 +420,6 @@ define('OrderWizard.Module.Address', ['Wizard.Module', 'Address.Views', 'Address
 			//Is Active is overriden by child modules, like Shipping to hide this module in Multi Ship To
 			if (!this.isActive())
 			{
-				console.log('!this.isActive',!this,isActive);
 				return jQuery.Deferred().resolve();
 			}
 			var self = this;

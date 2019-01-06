@@ -1,3 +1,4 @@
+
 <h3 class="pull-left"><%= view.page_header %></h3>
 <style>
 	.pagination.pagination-small.pull-right{
@@ -31,7 +32,6 @@
 	<% if ( view.collection.models.length ) { %>
 		<%
 			var stCollection = JSON.stringify(view.collection, 'key', '\t')
-			//console.log('stCollection: ' + '\n' + stCollection)
 		%>
 		<%= showingCurrent({
 				current_page: view.options.page
@@ -48,7 +48,10 @@
 				,	totalPages: Math.ceil(view.collection.totalRecordsFound / view.collection.recordsPerPage)
 				,	extraClass: 'pagination-small pull-right'
 				,	pager: function (page) {
-						return (page === 1) ? '/ordershistory?sort='+view.options.sort : '/ordershistory?page='+page+'&sort='+view.options.sort;
+						var search = ""
+						if(view.options.search != "")
+							search = "&search="+view.options.search;
+						return (page === 1) ? '/ordershistory?sort='+view.options.sort+search : '/ordershistory?page='+page+'&sort='+view.options.sort+search;
 					}
 				}
 			))

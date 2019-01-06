@@ -426,22 +426,22 @@ Application.defineModel('Profile', {
 Application.defineModel('PlacedOrder', {
 	saveLine: function(options){
 		var recid = options.solinekey.split('_')[0];
-		var url = 'https://forms.na2.netsuite.com/app/site/hosting/scriptlet.nl?script=181&deploy=1&compid=3857857&h=bf9b68501c2e0a0da79f&recid=';
-		nlapiRequestURL(url + recid + '&so_id=' + options.so_id + '&custcol_avt_date_needed=' + options.custcol_avt_date_needed + '&custcol_flag='+options.custcol_flag +'&custcol_flag_comment='+options.custcol_flag_comment);
-	}
-	, list: function (page, clientName,soid,sort,clientId) {
+		var url = nlapiResolveURL('SUITELET','customscript_update_date_needed',1,true);
+		//'https://forms.na2.netsuite.com/app/site/hosting/scriptlet.nl?script=181&deploy=1&compid=3857857&h=bf9b68501c2e0a0da79f&recid=';
+		nlapiRequestURL(url + "&recid="+ recid + '&so_id=' + options.so_id + '&custcol_avt_date_needed=' + options.custcol_avt_date_needed + '&custcol_flag='+options.custcol_flag +'&custcol_flag_comment='+options.custcol_flag_comment);
+
 		'use strict';
+	}
+	, list: function (page, clientName,soid,sort,clientId, customerid) {
 		var url = myaccountsuiteleturl;
-		var response = {};
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		if(body[0] != nlapiGetUser()){
+
+		if(true){//customerid != nlapiGetUser()){
 			//We have a parent.. then we need to just get the orders from the script
-			var res = nlapiRequestURL(url+"&action=getorders&user="+body[0]+"&page="+page+"&clientname="+clientName+"&soid="+soid+"&sort="+sort+"&clientid="+clientId);
+			var res = nlapiRequestURL(url+"&action=getorders&user="+customerid+"&page="+page+"&clientname="+clientName+"&soid="+soid+"&sort="+sort+"&clientid="+clientId);
 			return JSON.parse(res.getBody());
 		}else{
 		// if the store has multiple currencies we add the currency column to the query
-		var isMultiCurrency = context.getFeature('MULTICURRENCY')
+			var isMultiCurrency = context.getFeature('MULTICURRENCY')
 			, total_field = 'custbody_total_tailor_price'
 			, filters = [
 				new nlobjSearchFilter('entity', null, 'is', nlapiGetUser())
@@ -475,6 +475,7 @@ Application.defineModel('PlacedOrder', {
 			columns.push(new nlobjSearchColumn('custcol_avt_cmt_tracking'))
 			columns.push(new nlobjSearchColumn('custcol_fabric_delivery_days'))
 			columns.push(new nlobjSearchColumn('custcol_custom_fabric_details'))
+			columns.push(new nlobjSearchColumn('custcol_producttype'));
 
 			var flagcol = new nlobjSearchColumn('custcol_flag');
 			columns.push(flagcol)
@@ -482,16 +483,11 @@ Application.defineModel('PlacedOrder', {
 			if (isMultiCurrency) {
 				columns.push(new nlobjSearchColumn('currency'));
 			}
+
+			filters.push(new nlobjSearchFilter('mainline', null, 'is', 'F'));
 			if(sort && sort == 'true'){
 				filters.push(new nlobjSearchFilter('status', null, 'anyof', ['SalesOrd:D','SalesOrd:E','SalesOrd:F','SalesOrd:B','SalesOrd:G']));
 			}
-			filters.push(new nlobjSearchFilter('mainline', null, 'is', 'F'));
-
-			//if the site is multisite we add the siteid to the search filter
-			if (context.getFeature('MULTISITE') && session.getSiteSettings(['siteid']).siteid) {
-				filters.push(new nlobjSearchFilter('website', null, 'anyof', [session.getSiteSettings(['siteid']).siteid, '@NONE@']));
-			}
-			var result = {};
 			if(clientId)
 				filters.push(new nlobjSearchFilter('custcol_tailor_client',null,'is',clientId));
 
@@ -501,6 +497,12 @@ Application.defineModel('PlacedOrder', {
 			if(clientName){
 				filters.push( new nlobjSearchFilter('custcol_tailor_client_name', null, 'contains', clientName));
 			}
+			//if the site is multisite we add the siteid to the search filter
+			if (context.getFeature('MULTISITE') && session.getSiteSettings(['siteid']).siteid) {
+				filters.push(new nlobjSearchFilter('website', null, 'anyof', [session.getSiteSettings(['siteid']).siteid, '@NONE@']));
+			}
+			var result = {};
+
 			result = Application.getAllSalesOrderPaginatedSearchResults({
 				record_type: 'salesorder'
 				, filters: filters
@@ -531,11 +533,14 @@ Application.defineModel('PlacedOrder', {
 					record.getValue('item') == '28036' ||
 					record.getValue('item') == '28031' ||
 					record.getValue('item') == '28032'){
-						if(custcol_custom_fabric_details)
-						var custcol_custom_fabric_details_json = JSON.parse(custcol_custom_fabric_details);
-						if(custcol_custom_fabric_details_json)
-						customitemtext = customitemtext.replace('CMT Item',custcol_custom_fabric_details_json.collection+'-'+custcol_custom_fabric_details_json.code);
-
+						if(custcol_custom_fabric_details){
+							var custcol_custom_fabric_details_json = JSON.parse(custcol_custom_fabric_details);
+							if(custcol_custom_fabric_details_json)
+								customitemtext = customitemtext.replace('CMT Item',custcol_custom_fabric_details_json.collection+'-'+custcol_custom_fabric_details_json.code);
+						}
+			}
+			if(record.getValue('custcol_producttype')){
+				customitemtext += ' - ' + record.getValue('custcol_producttype');
 			}
 			today.setHours(0);
 			today.setMinutes(0);
@@ -572,16 +577,11 @@ Application.defineModel('PlacedOrder', {
 			record.getText('custcol_avt_cmt_status') == 'Left factory') && morethan10days)){
 				clearstatus = true;
 			}
-			//nlapiLogExecution('debug','CMT STATUS', cmtstatus);
-			//nlapiLogExecution('debug','CMT fabricstatus', fabricstatus);
 			if ((cmtstatus == 7 || cmtstatus == 8) && fabricstatus != 1) {
 				//check the dates of the fabric should be sent vs today
-				//nlapiLogExecution('debug','CMT custcol_expected_production_date', custcol_expected_production_date);
 				if (custcol_expected_production_date) {
 					expFabDateNeeded = nlapiStringToDate(custcol_expected_production_date);
-					expFabDateNeeded.setDate(expFabDateNeeded.getDate() - parseFloat(record.getValue('custcol_cmt_production_time')))
-					//nlapiLogExecution('debug','CMT expFabDateNeeded', expFabDateNeeded);
-					//nlapiLogExecution('debug','CMT custcol_cmt_production_time', record.getValue('custcol_tailor_delivery_days'));
+					expFabDateNeeded.setDate(expFabDateNeeded.getDate() - parseFloat(record.getValue('custcol_cmt_production_time')));
 					if (expFabDateNeeded < today)
 						fabstatuscheck = true;
 					else
@@ -600,18 +600,14 @@ Application.defineModel('PlacedOrder', {
 			if (cmtstatus == 4) {
 				cmtstatuscheck = true;
 			} else if (dateneeded) {
-				//nlapiLogExecution('debug','CMT dateneeded', dateneeded);
 				dateNeeded = nlapiStringToDate(dateneeded)
 				if (datesent) {
 					confirmedDate = nlapiStringToDate(datesent);
 					confirmedDate.setDate(confirmedDate.getDate() + parseFloat(custcol_tailor_delivery_days ? custcol_tailor_delivery_days : 0));
-					//nlapiLogExecution('debug','CMT confirmedDate has datesent', confirmedDate);
-					//nlapiLogExecution('debug','CMT custcol_tailor_delivery_days', custcol_tailor_delivery_days);
 				}
 				else if (custcol_expected_production_date) {
 					confirmedDate = nlapiStringToDate(custcol_expected_production_date);
 					confirmedDate.setDate(confirmedDate.getDate() + parseFloat(custcol_tailor_delivery_days ? custcol_tailor_delivery_days : 0));
-					//nlapiLogExecution('debug','CMT confirmedDate productiondate', confirmedDate);
 				}
 
 				if (confirmedDate) {
@@ -684,68 +680,71 @@ Application.defineModel('PlacedOrder', {
 		}
 	}
 
-	, get: function (id) {
+	, get: function (id, customerid) {
 		'use strict';
-		var url = myaccountsuiteleturl;
-		var response = {};
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
 		var self = this;
-		//if(body[0] != nlapiGetUser()){
-			//We have a parent.. then we need to just get the orders from the script
-			var res = nlapiRequestURL(url+"&action=getorder&user="+body[0]+"&id="+id);
-			var result = JSON.parse(res.getBody());
 
-			// Preloads info about the item
-			this.store_item = Application.getModel('StoreItem');
-			var items_to_preload = [];
+		// var response = {};
+		//
+
+		if(true){//customerid != nlapiGetUser()){
+			// 	var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
+			// 	var body = JSON.parse(res.getBody());
+			// 	customerid = body[0];
+			var url = myaccountsuiteleturl;
+				var res = nlapiRequestURL(url+"&action=getorder&user="+customerid+"&id="+id),
+				result = JSON.parse(res.getBody());
+
+				//We have a parent.. then we need to just get the orders from the script
+
+				// Preloads info about the item
+				this.store_item = Application.getModel('StoreItem');
+				var items_to_preload = [];
+				result.lines = _.values(result.lines);
+				result.lines.forEach(function (line) {
+					if(line.type != 'Markup'){
+						items_to_preload[line.item] = {
+							id: line.item
+							, type: line.type
+						};
+					}
+				});
+				items_to_preload = _.values(items_to_preload);
+				this.store_item.preloadItems(items_to_preload);
+
+				result.lines.forEach(function (line) {
+					line.item = line.type != 'Markup' ? self.store_item.get(line.item, line.type): line.item;
+				});
+
+				return result;
+		}else{
+
+			var placed_order = nlapiLoadRecord('salesorder', id)
+				, result = this.createResult(placed_order);
+
+			this.setAddresses(placed_order, result);
+			this.setShippingMethods(placed_order, result);
+			this.setLines(placed_order, result);
+			this.setFulfillments(result);
+			this.setPaymentMethod(placed_order, result);
+			this.setReceipts(result, placed_order);
+			this.setReturnAuthorizations(result, placed_order);
+
+			result.promocode = (placed_order.getFieldValue('promocode')) ? {
+				internalid: placed_order.getFieldValue('promocode')
+				, name: placed_order.getFieldText('promocode')
+				, code: placed_order.getFieldText('couponcode')
+			} : null;
+
+			// convert the obejcts to arrays
+			result.addresses = _.values(result.addresses);
+			result.shipmethods = _.values(result.shipmethods);
 			result.lines = _.values(result.lines);
-			result.lines.forEach(function (line) {
-				if(line.type != 'Markup'){
-					items_to_preload[line.item] = {
-						id: line.item
-						, type: line.type
-					};
-				}
-			});
-			items_to_preload = _.values(items_to_preload);
-			this.store_item.preloadItems(items_to_preload);
-
-			result.lines.forEach(function (line) {
-				line.item = line.type != 'Markup' ? self.store_item.get(line.item, line.type): line.item;
-			});
-
-
-			//var placed_order = nlapiLoadRecord('salesorder', id)
-			//this.setLines(placed_order, result);
+			result.fulfillments = _.values(result.fulfillments);
+			result.receipts = _.values(result.receipts);
 			return result;
+		}
 
-		//}
-		// var placed_order = nlapiLoadRecord('salesorder', id)
-		// 	, result = this.createResult(placed_order);
-		//
-		// this.setAddresses(placed_order, result);
-		// this.setShippingMethods(placed_order, result);
-		// this.setLines(placed_order, result);
-		// this.setFulfillments(result);
-		// this.setPaymentMethod(placed_order, result);
-		// this.setReceipts(result, placed_order);
-		// this.setReturnAuthorizations(result, placed_order);
-		//
-		// result.promocode = (placed_order.getFieldValue('promocode')) ? {
-		// 	internalid: placed_order.getFieldValue('promocode')
-		// 	, name: placed_order.getFieldText('promocode')
-		// 	, code: placed_order.getFieldText('couponcode')
-		// } : null;
-		//
-		// // convert the obejcts to arrays
-		// result.addresses = _.values(result.addresses);
-		// result.shipmethods = _.values(result.shipmethods);
-		// result.lines = _.values(result.lines);
-		// result.fulfillments = _.values(result.fulfillments);
-		// result.receipts = _.values(result.receipts);
-
-		// return result;
 	}
 
 
@@ -1074,8 +1073,6 @@ Application.defineModel('PlacedOrder', {
 						, name: 'Tailor Client'
 						, value: clientId
 					});
-					//nlapiLogExecution('debug','Tailor Client', placed_order.getLineItemValue('item', 'custcol_tailor_client', i));
-					//nlapiLogExecution('debug','Tailor Client Name', placed_order.getFieldValue('custbody_customer_name'));
 					lineOption.push({
 						id: 'custcol_tailor_client_name'
 						, name: 'Client Name'
@@ -1106,6 +1103,31 @@ Application.defineModel('PlacedOrder', {
 						, value: placed_order.getLineItemValue('item', 'custcol_avt_date_needed', i) || '1/1/1900'
 					});
 				}
+
+				if (placed_order.getLineItemValue('item', 'custcol_custom_fabric_details', i)) {
+					lineOption.push({
+						id: 'custcol_custom_fabric_details'
+						, name: 'Custom Fabric Details'
+						, value: placed_order.getLineItemValue('item', 'custcol_custom_fabric_details', i)
+					});
+				}
+				if (placed_order.getLineItemValue('item', 'custcol_producttype', i)) {
+					lineOption.push({
+						id: 'custcol_producttype'
+						, name: 'Product Type'
+						, value: placed_order.getLineItemValue('item', 'custcol_producttype', i)
+					});
+				}
+				if (placed_order.getLineItemValue('item', 'custcol_vendorpicked', i)) {
+					lineOption.push({
+						id: 'custcol_vendorpicked'
+						, name: 'CMT Vendor'
+						, value: placed_order.getLineItemValue('item', 'custcol_vendorpicked', i)
+					});
+				}
+				nlapiLogExecution('debug','SET LINES custcol_producttype',placed_order.getLineItemValue('item', 'custcol_producttype', i))
+				nlapiLogExecution('debug','SET LINES custcol_vendorpicked',placed_order.getLineItemValue('item', 'custcol_vendorpicked', i))
+				nlapiLogExecution('debug','SET LINES custcol_custom_fabric_details',placed_order.getLineItemValue('item', 'custcol_custom_fabric_details', i))
 
 				/** end date needed, hold fabric, hold production **/
 
@@ -2962,6 +2984,7 @@ Application.defineModel('Receipts', _.extend({}, PlacedOrder, {
 				, new nlobjSearchColumn('mainline')
 				, new nlobjSearchColumn('duedate').setSort()
 				, new nlobjSearchColumn(amount_field)
+				, new nlobjSearchColumn('custbody_customer_name','createdfrom')
 			]
 			, amount_remaining;
 			var customer = new nlobjSearchFilter('entity', null, 'is', nlapiGetUser())
@@ -3037,6 +3060,7 @@ Application.defineModel('Receipts', _.extend({}, PlacedOrder, {
 				, closedate: close_date
 				, closedateInMilliseconds: close_date?nlapiStringToDate(close_date).getTime():0//new Date(close_date).getTime()
 				, trandate: tran_date
+				, custbody_customer_name: record.getValue('custbody_customer_name','createdfrom')
 				, tranDateInMilliseconds: tran_date?nlapiStringToDate(tran_date).getTime():0//new Date(tran_date).getTime()
 				, duedate: due_date
 				, dueinmilliseconds: due_in_milliseconds
@@ -3076,6 +3100,7 @@ Application.defineModel('Receipts', _.extend({}, PlacedOrder, {
 				, new nlobjSearchColumn('amount')
 				, new nlobjSearchColumn('type')
 				, new nlobjSearchColumn('appliedtoforeignamount')
+
 			]
 			, searchresults = nlapiSearchRecord('transaction', null, filters, columns);
 
@@ -3095,6 +3120,7 @@ Application.defineModel('Receipts', _.extend({}, PlacedOrder, {
 							, tranid: payout.getValue('tranid')
 							, appliedtoforeignamount: toCurrency(payout.getValue('appliedtoforeignamount'))
 							, appliedtoforeignamount_formatted: formatCurrency(payout.getValue('appliedtoforeignamount'))
+
 						});
 					}
 					else {
@@ -3315,7 +3341,7 @@ Application.defineModel('Receipts', _.extend({}, PlacedOrder, {
 						, tax_amount: tax_amount
 						, tax_rate: placed_order.getLineItemValue('item', 'taxrate1', i)
 						, tax_code: placed_order.getLineItemValue('item', 'taxcode_display', i)
-
+						, description: placed_order.getLineItemValue('item','description',i)
 						, discount: 0
 
 						, total: total
@@ -4011,6 +4037,7 @@ Application.defineModel('LivePayment', {
 				, amount: toCurrency(customer_payment.getLineItemValue('credit', 'amount', i))
 				, amount_formatted: formatCurrency(customer_payment.getLineItemValue('credit', 'amount', i))
 				, refnum: customer_payment.getLineItemValue('credit', 'refnum', i)
+				, memo: nlapiLookupField('creditmemo',customer_payment.getLineItemValue('credit','internalid',i),'memo')
 			};
 
 			result.creditmemosremaining = BigNumber(creditmemo.remaining).plus(result.creditmemosremaining).toNumber();
@@ -4159,6 +4186,7 @@ Application.defineModel('LivePayment', {
 
 	, submit: function (data) {
 		'use strict';
+
 		var url = myaccountsuiteleturl;
 		var res = nlapiRequestURL(url+"&action=createpayment&user="+nlapiGetUser(), JSON.stringify(data));
 		var payment_record_id = JSON.parse(res.getBody());
@@ -4178,9 +4206,9 @@ Application.defineModel('LivePayment', {
 			new_payment_record.confirmation = data;
 		}
 
-
 		return new_payment_record;
 	}
+
 });
 
 
@@ -4391,17 +4419,14 @@ Application.defineModel('ProductList', {
 	}
 
 	// Returns a product list based on a given id and userId
-	, get: function (id) {
+	, get: function (id, customerid) {
 		'use strict';
 
 		// Verify session if and only if we are in My Account...
 		if (request.getURL().indexOf('https') === 0) {
 			this.verifySession();
 		}
-		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+		var parent = customerid;
 		var filters = [new nlobjSearchFilter('internalid', null, 'is', id)
 			, new nlobjSearchFilter('isinactive', null, 'is', 'F')
 			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', parseInt(parent,10))]
@@ -4416,18 +4441,17 @@ Application.defineModel('ProductList', {
 	}
 
 	// Returns the user's saved for later product list
-	, getSavedForLaterProductList: function () {
+	, getSavedForLaterProductList: function (customerid) {
 		'use strict';
 
 		this.verifySession();
-		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+
+			var parent = customerid;
+
 		var filters = [new nlobjSearchFilter('custrecord_ns_pl_pl_type', null, 'is', this.later_type_id)
 			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', parent)
 			, new nlobjSearchFilter('isinactive', null, 'is', 'F')]
-			, product_lists = this.searchHelper(filters, this.getColumns(), true,null, null, parent);
+			, product_lists = this.searchHelper(filters, this.getColumns(), true,null, null, parent,true);
 
 		if (product_lists.length >= 1) {
 			return product_lists[0];
@@ -4461,7 +4485,7 @@ Application.defineModel('ProductList', {
 		return text ? text.replace(/<br>/g, '\n').replace(/</g, '&lt;').replace(/\>/g, '&gt;') : '';
 	}
 
-	, searchHelper: function (filters, columns, include_store_items, order, template_ids, parentparam) {
+	, searchHelper: function (filters, columns, include_store_items, order, template_ids, parentparam, saveforlater) {
 		'use strict';
 
 		// Sets the sort order
@@ -4515,21 +4539,19 @@ Application.defineModel('ProductList', {
 	}
 
 	// Retrieves all Product Lists for a given user
-	, search: function (order) {
+	, search: function (order, customerid) {
 		'use strict';
 
 		// Verify session if and only if we are in My Account...
 		if (request.getURL().indexOf('https') === 0) {
 			this.verifySession();
 		}
-		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+		var parent = customerid;
+
 		var filters = [new nlobjSearchFilter('isinactive', null, 'is', 'F')
-			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', parent)]
+			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', null, 'is', parseInt(parent,10))]
 			, template_ids = []
-			, product_lists = this.searchHelper(filters, this.getColumns(), false, order, template_ids, parent)
+			, product_lists = this.searchHelper(filters, this.getColumns(), true, order, template_ids, parent)
 			, self = this;
 
 		// Add possible missing predefined list templates
@@ -4576,15 +4598,14 @@ Application.defineModel('ProductList', {
 	}
 
 	// Creates a new Product List record
-	, create: function (data) {
+	, create: function (data,customerid) {
 		'use strict';
 
 		this.verifySession();
-		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+
+			var parent = customerid;
 		if(parent != nlapiGetUser()){
+			var url = myaccountsuiteleturl;
 			var res = nlapiRequestURL(url+"&action=createproductlist&user="+parent,JSON.stringify(data));
 			var body = JSON.parse(res.getBody());
 			return body;
@@ -4603,14 +4624,13 @@ Application.defineModel('ProductList', {
 	}
 
 	// Updates a given Product List given its id
-	, update: function (id, data) {
+	, update: function (id, data, customerid) {
 		'use strict';
 
 		this.verifySession();
-		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+
+			var parent = customerid;
+
 		var product_list = nlapiLoadRecord('customrecord_ns_pl_productlist', id);
 
 		if (parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== nlapiGetUser()
@@ -4628,14 +4648,13 @@ Application.defineModel('ProductList', {
 	}
 
 	// Deletes a Product List given its id
-	, delete: function (id) {
+	, delete: function (id, customerid) {
 		'use strict';
 
 		this.verifySession();
-		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+
+			var parent = customerid;
+
 		var product_list = nlapiLoadRecord('customrecord_ns_pl_productlist', id);
 
 		if (parseInt(product_list.getFieldValue('custrecord_ns_pl_pl_owner'), 10) !== nlapiGetUser()
@@ -4668,14 +4687,12 @@ Application.defineModel('ProductListItem', {
 	}
 
 	// Returns a product list item based on a given id
-	, get: function (id) {
+	, get: function (id,customerid) {
 		'use strict';
 
 		this.verifySession();
 		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+		var parent = customerid
 		var filters = [new nlobjSearchFilter('internalid', null, 'is', id)
 			, new nlobjSearchFilter('isinactive', null, 'is', 'F')
 			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', 'custrecord_ns_pl_pli_productlist', 'is', parent)]
@@ -4691,20 +4708,17 @@ Application.defineModel('ProductListItem', {
 		}
 	}
 
-	, delete: function (id) {
+	, delete: function (id, customerid) {
 		'use strict';
 
 		this.verifySession();
-
 		var ProductList = Application.getModel('ProductList')
 			, product_list_item = nlapiLoadRecord('customrecord_ns_pl_productlistitem', id)
-			, parent_product_list = ProductList.get(product_list_item.getFieldValue('custrecord_ns_pl_pli_productlist'));
+			, parent_product_list = ProductList.get(product_list_item.getFieldValue('custrecord_ns_pl_pli_productlist'),customerid);
 			var url = myaccountsuiteleturl;
-			var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-			var body = JSON.parse(res.getBody());
-			var parent = body[0];
+			var parent = customerid;
 		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser()
-			&& parseInt(parent_product_list.owner.id, 10) != parseInt(parent,10)) {
+			&& parseInt(parent_product_list.owner.id, 10) != parseInt(customerid,10)) {
 			throw unauthorizedError;
 		}
 
@@ -4737,21 +4751,19 @@ Application.defineModel('ProductListItem', {
 	}
 
 	// Creates a new Product List Item record
-	, create: function (data) {
+	, create: function (data, customerid) {
 		'use strict';
 
 		this.verifySession();
 		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+		var parent = customerid;
 
 		if (!(data.productList && data.productList.id)) {
 			throw notFoundError;
 		}
 
 		var ProductList = Application.getModel('ProductList')
-			, parent_product_list = ProductList.get(data.productList.id);
+			, parent_product_list = ProductList.get(data.productList.id, customerid);
 
 		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser() && parseInt(parent_product_list.owner.id, 10) != parseInt(parent,10)) {
 			throw unauthorizedError;
@@ -4776,18 +4788,16 @@ Application.defineModel('ProductListItem', {
 	}
 
 	// Updates a given Product List Item given its id
-	, update: function (id, data) {
+	, update: function (id, data, customerid) {
 		'use strict';
 
 		this.verifySession();
 		var url = myaccountsuiteleturl;
-		var res = nlapiRequestURL(url+"&action=getparent&user="+nlapiGetUser());
-		var body = JSON.parse(res.getBody());
-		var parent = body[0];
+		var parent = customerid;
 
 		var ProductList = Application.getModel('ProductList')
 			, product_list_item = nlapiLoadRecord('customrecord_ns_pl_productlistitem', id)
-			, parent_product_list = ProductList.get(product_list_item.getFieldValue('custrecord_ns_pl_pli_productlist'));
+			, parent_product_list = ProductList.get(product_list_item.getFieldValue('custrecord_ns_pl_pli_productlist'),customerid);
 
 		if (parseInt(parent_product_list.owner.id, 10) !== nlapiGetUser() && parseInt(parent_product_list.owner.id, 10) != parseInt(parent,10) ) {
 			throw unauthorizedError;
@@ -4865,7 +4875,6 @@ Application.defineModel('ProductListItem', {
 			, productlist_items = []
 			, StoreItem = Application.getModel('StoreItem')
 			, self = this;
-
 		_(records).each(function (productListItemSearchRecord) {
 			var itemInternalId = productListItemSearchRecord.getValue('custrecord_ns_pl_pli_item')
 				, itemType = productListItemSearchRecord.getValue('type', 'custrecord_ns_pl_pli_item')
@@ -4919,11 +4928,8 @@ Application.defineModel('ProductListItem', {
 			if (!include_store_item && store_item && store_item.matrix_parent) {
 				productlist_item.item.matrix_parent = store_item.matrix_parent;
 			}
-
 			results.push(productlist_item);
-
 		});
-
 		return results;
 	}
 });

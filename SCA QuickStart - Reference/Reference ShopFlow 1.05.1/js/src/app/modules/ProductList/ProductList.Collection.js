@@ -7,10 +7,14 @@ define('ProductList.Collection', ['ProductList.Model'], function (Model)
 
 	return Backbone.Collection.extend({
 
-		url: _.getAbsoluteUrl('services/product-list.ss')
+		url: _.getAbsoluteUrl('services/product-list.ss') +"&TEST=T"
 
 	,	model: Model
-
+	,	initialize: function ()
+		{
+			var customerid = SC.Application('MyAccount').getUser().get('parent');
+			this.url += "?customerid=" +customerid;
+		}
 		// Returns an array of lists where the item is present
 	,	getCheckedLists: function (product)
 		{

@@ -23,7 +23,7 @@
 
 
 
-	var measurementConfiguration = JSON.parse(window.itemRangeConfig);
+	var measurementConfiguration = window.itemRangeConfig;
 
 	var selectedProductType = selectedItemType;
 	if(selectedProductType==='' || selectedProductType === null || selectedProductType === undefined){

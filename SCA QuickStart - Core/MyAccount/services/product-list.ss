@@ -12,7 +12,8 @@ function service (request)
 		,	data = JSON.parse(request.getBody() || '{}')
 		,	id = request.getParameter('internalid') || data.internalid
 		,	ProductList = Application.getModel('ProductList');
-
+		var customerid = request.getParameter('customerid');
+		nlapiLogExecution('debug','REQUEST CUSTOMER', customerid)
 		switch (method)
 		{
 			case 'GET':
@@ -20,32 +21,32 @@ function service (request)
 				{
 					if (id === 'later')
 					{
-						Application.sendContent(ProductList.getSavedForLaterProductList());
+						Application.sendContent(ProductList.getSavedForLaterProductList(customerid));
 					}
 					else
 					{
-						Application.sendContent(ProductList.get(id));
+						Application.sendContent(ProductList.get(id,customerid));
 					}
 				}
 				else
 				{
-					Application.sendContent(ProductList.search('name'));
+					Application.sendContent(ProductList.search('name',customerid));
 				}
 			break;
 
 			case 'POST':
-				var internalid = ProductList.create(data);
+				var internalid = ProductList.create(data,customerid);
 
-				Application.sendContent(ProductList.get(internalid), {'status': 201});
+				Application.sendContent(ProductList.get(internalid,customerid), {'status': 201});
 			break;
 
 			case 'PUT':
-				ProductList.update(id, data);
-				Application.sendContent(ProductList.get(id));
+				ProductList.update(id, data, customerid);
+				Application.sendContent(ProductList.get(id, customerid));
 			break;
 
 			case 'DELETE':
-				ProductList.delete(id);
+				ProductList.delete(id, customerid);
 				Application.sendContent({'status': 'ok'});
 			break;
 

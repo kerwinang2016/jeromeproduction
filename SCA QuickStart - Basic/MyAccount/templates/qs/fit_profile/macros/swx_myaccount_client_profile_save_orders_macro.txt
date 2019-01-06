@@ -1,8 +1,6 @@
 <% registerMacro('swxMyAccountClientProfileSaveOrders', function( saveForLaterItems ){ %>
-    <% 
+    <%
     var items = saveForLaterItems;
-    //console.log(saveForLaterItems.length);
-    //console.log(saveForLaterItems[0]);
 %>
         <style>
             #fitProfileSaveOrdersList .accordion-toggle:after {

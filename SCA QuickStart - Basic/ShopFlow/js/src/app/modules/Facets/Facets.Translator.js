@@ -39,15 +39,6 @@ define('Facets.Translator'
 	function FacetsTranslator(facets, options, configuration)
 	{
 
-		/**
-		console.log('FacetsTranslator: '
-					+ '\n' + 'facets: ' + '\n' + JSON.stringify(facets, 'key', '\t')
-					+ '\n' + 'options: ' + '\n' + JSON.stringify(options, 'key', '\t')
-					+ '\n' + 'configuration: ' + '\n' + JSON.stringify(configuration, 'key', '\t')
-				   );
-		**/
-
-
 		// Enfofces new
 		if (!(this instanceof FacetsTranslator))
 		{
@@ -216,8 +207,6 @@ define('Facets.Translator'
 		// Returns a copy of the internal array of facets containing values and configuration
 	,	getAllFacets: function ()
 		{
-			//console.log('getAllFacets:' + '\n' + JSON.stringify(this.facets.slice(0), 'key', '\t'))
-
 			return this.facets.slice(0);
 
 			//return this.configuration.facets;
@@ -242,7 +231,6 @@ define('Facets.Translator'
 			{
 				return;
 			}
-
 			this.facets.push({
 				config: config
 			//,	id: config.id
@@ -416,24 +404,24 @@ define('Facets.Translator'
 	,	getApiParams: function ()
 		{
 			var params = {};
-
 			_.each(this.facets, function (facet)
 			{
-				switch (facet.config.behavior)
-				{
-				case 'range':
-					var value = (typeof facet.value === 'object') ? facet.value : {from: 0, to: facet.value};
-					params[facet.id + '.from'] = value.from;
-					params[facet.id + '.to'] = value.to;
-					break;
-				case 'multi':
-					params[facet.id] = facet.value.sort().join(',') ; // this coma is part of the api call so it should not be removed
-					break;
-				default:
-					params[facet.id] =  facet.value ;
-				}
+				// if(facet.id != 'category'){
+					switch (facet.config.behavior)
+					{
+					case 'range':
+						var value = (typeof facet.value === 'object') ? facet.value : {from: 0, to: facet.value};
+						params[facet.id + '.from'] = value.from;
+						params[facet.id + '.to'] = value.to;
+						break;
+					case 'multi':
+						params[facet.id] = facet.value.sort().join(',') ; // this coma is part of the api call so it should not be removed
+						break;
+					default:
+						params[facet.id] =  facet.value ;
+					}
+				// }
 			});
-
 			params.sort = this.options.order;
 			params.limit = this.options.show;
 			params.offset = (this.options.show * this.options.page) - this.options.show;
@@ -573,8 +561,6 @@ define('Facets.Translator'
 			var	options = jQuery.extend(true, {}, this.options);
 
 			options[option_id] = option_value;
-
-			//console.log('cloneForOption: ' + '\n' + JSON.stringify(facets, 'key', '\t'))
 
 			/**
 			facets = [{config: {  id: 'category'

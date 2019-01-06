@@ -83,7 +83,7 @@ define('ProductListLists.View'
 		{
 			var self = this
 			,	list = this.getListFromDom(jQuery(target));
-
+			var customerid = SC.Application('MyAccount').getUser().get('parent');
 			this.collection.remove(list);
 			list.url = ProductListModel.prototype.url;
 
@@ -129,8 +129,6 @@ define('ProductListLists.View'
 		// Adds an entire list to the cart
 	,	addListToCart: function (list)
 		{
-			console.log('ProductListLists.View.js >> addListToCart')
-
 			// collect the items data to add to cart
 			var add_items = []
 			,	self = this

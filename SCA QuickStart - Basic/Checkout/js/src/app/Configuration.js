@@ -320,7 +320,6 @@ checkoutSteps: [											//an array with the step groups conforming The Checko
 				]
 				,	save: function()
 					{
-						console.log('The Continue Button is clicked')
 						return true;
 
 					}

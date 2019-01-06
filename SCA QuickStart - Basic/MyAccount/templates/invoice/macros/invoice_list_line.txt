@@ -57,18 +57,20 @@
 				<% } %>
 			</span>
 		</div>
-		<div class="span3 <%= is_link ? '' : 'offset-xs-1' %>">
+		<div class="span2 <%= is_link ? '' : 'offset-xs-1' %>">
 			<span class="list-row-text invoice-amount">
 				<span class="visible-phone list-row-text-info"><%= _('Amount:').translate() %> </span>
 				<span class="amount"><%= _('$(0)').translate(invoice.get('summary').total_formatted) %></span>
 			</span>
 		</div>
-		<div class="span2 responsive-align <%= is_link ? '' : 'offset-xs-1' %>">
-			<span class="list-row-text invoice-currency">
-				<span class="visible-phone list-row-text-info invoice-currency"><%= _('Currency:').translate() %> </span>
-				<span class="currency"><%= _('$(0)').translate(invoice.get('currency').name) %></span>
-			</span>
-		</div>
+		<div class="span2 <%= is_link ? '' : 'offset-xs-1' %>"><span class="list-row-text">
+		<span class="visible-phone list-row-text-info"><%= _('Customer:').translate() %> </span>
+		<span class="Customer"><%= _('$(0)').translate(invoice.get('custbody_customer_name')?invoice.get('custbody_customer_name'):'Multiple') %></span>
+		</span></div>
+		<div class="span2 <%= is_link ? '' : 'offset-xs-1' %>"><span class="list-row-text">
+		<span class="visible-phone list-row-text-info"><%= _('Type:').translate() %> </span>
+		<span class="Type"><%= _('$(0)').translate(invoice.get('custbody_customer_name')?'Production':'Shipping') %></span>
+		</span></div>
 		<% if (options.navigateDetails) { %>
 			<div class="visible-phone span1 pull-right text-right">
 				<% if (is_link) { %>

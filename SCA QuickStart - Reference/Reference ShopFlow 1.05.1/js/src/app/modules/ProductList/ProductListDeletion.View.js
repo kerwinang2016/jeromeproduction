@@ -26,7 +26,7 @@ define('ProductListDeletion.View', function ()
 			this.page_header = options.title;
 			this.body = options.body;
 			this.confirm_delete_method = options.confirm_delete_method;
-			this.confirmLabel = options.confirmLabel || _('Yes, remove it').translate(); 
+			this.confirmLabel = options.confirmLabel || _('Yes, remove it').translate();
 		}
 
 		// Invokes parent view delete confirm callback function

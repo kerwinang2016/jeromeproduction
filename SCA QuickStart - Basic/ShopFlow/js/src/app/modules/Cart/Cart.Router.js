@@ -20,10 +20,9 @@ define('Cart.Router', ['Cart.Views'], function (Views)
 
 	,	showCart: function ()
 		{
-			console.log(this.application.ProductListModule)
-			console.log(this.application.ProductListModule.isProductListEnabled())
-			console.log(this.isSaveForLater)
-			if (this.application.ProductListModule && this.application.ProductListModule.isProductListEnabled() && this.isSaveForLater)
+			// console.log(this.application.ProductListModule.isProductListEnabled());
+
+			if (this.application.ProductListModule  && this.isSaveForLater)
 			{
 				var self = this;
 

@@ -1,7 +1,7 @@
 <% registerMacro('productListListDetails', function(list) {	%>
-	<%	
+	<%
 		var items = list.get('items')
-		, 	out_of_stock_items = items.filter(function(product_list_item) { return !product_list_item.get('item').ispurchasable; }); 
+		, 	out_of_stock_items = items.filter(function(product_list_item) { return !product_list_item.get('item').ispurchasable; });
 	%>
 <article class="row-fluid" data-product-list-id="<%= list.get('internalid') %>">
 	<span class="span8 info-box">
@@ -31,11 +31,11 @@
 				<% } %>
 			<% } %>
 			<% } else { %>
-				<span> <%= _('No items yet').translate() %></span>
+				<!-- <span> <%= _('No items yet').translate() %></span> -->
 			<% } %>
 
 		</p>
-		<% 
+		<%
 			var list_description = list.get('description');
 			if(list_description && list_description.length > 0) {
 		%>
@@ -44,7 +44,7 @@
 			<p class="list-stock">
 				<span class="label label-important products-not-purchasable-message">
 					<%= _('Some products from this list are not available for purchase').translate() %>
-				</span>				
+				</span>
 			</p>
 		<% } %>
 		<% } %>
@@ -59,7 +59,7 @@
 			<% } %>
 			<% if (list.get('scope').name !== 'private') { %>
 			<button class="btn 	btn-link" data-action="share-list"><%= _('Email/Share list').translate() %></button><span class="separator"></span>
-			<% } %>	
+			<% } %>
 		</div>
 	</span>
 </article>

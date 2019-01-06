@@ -40,15 +40,16 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'Profile.Collection
 
 			if (this.model.get("current_profile")) {
 				jQuery("#fit-profile").html(SC.macros.fitProfileOptionDropdown(self.model.profile_collection, self.model.get("current_profile")));
+				// if(self.model.profile_collection){
+					var profileView = new Views.Profile({
+						model: self.model.profile_collection.get(self.model.get("current_profile"))
+						, application: self.application
+						, fitprofile: self.model
+					});
 
-				var profileView = new Views.Profile({
-					model: self.model.profile_collection.get(self.model.get("current_profile"))
-					, application: self.application
-					, fitprofile: self.model
-				});
-
-				profileView.render();
-				jQuery("#profile-section").html(profileView.$el);
+					profileView.render();
+					jQuery("#profile-section").html(profileView.$el);
+				// }
 			}
 			_.toggleMobileNavButt();
 		}
@@ -57,6 +58,8 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'Profile.Collection
 			this.model.set('swx_client_profile_order_history', '');
 			var self = this;
 			jQuery("div[data-type='alert-placeholder']").empty();
+			console.log('client collection');
+			console.log(self.model.client_collection);
 			//var clientModel = this.model.get('current_client')
 			var param = new Object();
 			param.type = "get_client";
@@ -92,7 +95,6 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'Profile.Collection
 					_.toggleMobileNavButt();
 				}
 			});
-
 		}
 
 		, swxOrderClientAdd: function (e) {
@@ -259,7 +261,7 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'Profile.Collection
 			this.model = options.model;
 			this.fitprofile = options.fitprofile;
 			jQuery.get(_.getAbsoluteUrl('js/presetsConfig.json')).done(function (data) {
-				window.presetsConfig = JSON.parse(data);
+				window.presetsConfig = data;
 			});
 			jQuery.get(_.getAbsoluteUrl('js/itemRangeConfig.json')).done(function (data) {
 				window.cmConfig = data;
@@ -290,7 +292,7 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'Profile.Collection
 
 
 			jQuery.get(_.getAbsoluteUrl(configUrl)).done(function (data) {
-				var selectedMeasurementConfig = _.findWhere(JSON.parse(data), { type: productType });
+				var selectedMeasurementConfig = _.findWhere(data, { type: productType });
 
 				_.each(selectedMeasurementConfig.config, function (el) {
 					var fiedlName = el.name;

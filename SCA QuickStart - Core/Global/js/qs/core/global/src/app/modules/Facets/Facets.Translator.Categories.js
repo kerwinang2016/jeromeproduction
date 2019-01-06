@@ -5,10 +5,10 @@ define('Facets.Translator.Categories', ['Facets.Translator', 'Categories'], func
         getApiParams: function ()
         {
             var params = {};
-
             _.each(this.facets, function (facet)
             {
                 var value = facet.value;
+                // if(facet.id != 'category'){
                 if (facet.id === 'category') {
                     value = 'Home/'+value;
                 }
@@ -26,14 +26,15 @@ define('Facets.Translator.Categories', ['Facets.Translator', 'Categories'], func
                     default:
                         params[facet.id] =  value;
                 }
+              // }
             });
-
+            console.log('this.options')
+            console.log(this.options);
             params.sort = this.options.order;
             params.limit = this.options.show;
             params.offset = (this.options.show * this.options.page) - this.options.show;
 
             params.q = this.options.keywords;
-
             return params;
         }
 

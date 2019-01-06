@@ -29,7 +29,7 @@ define('FitProfile.Model', ['Client.Model', 'Client.Collection', 'Profile.Model'
 			});
 
 			jQuery.get(_.getAbsoluteUrl('js/FitProfile_Config.json')).done(function(data){
-				self.measurement_config = JSON.parse(data);
+				self.measurement_config = data;
 			});
 
 			this.on("change:current_client", this.fetchProfile);
@@ -41,8 +41,6 @@ define('FitProfile.Model', ['Client.Model', 'Client.Collection', 'Profile.Model'
 			if(clientID){
 				//var currentUser = this.application.getUser().get("internalid");
 				var currentUser = this.get("current_user");
-
-				console.log('currentUser: ' + currentUser)
 
 				var param = new Object();
 				param.type = "get_profile";

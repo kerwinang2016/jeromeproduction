@@ -27,12 +27,12 @@ define('FitProfile.Model', ['Client.Model', 'Client.Collection', 'Profile.Model'
 				}
 			});
 
-
 			jQuery.get(_.getAbsoluteUrl('js/FitProfile_Config.json')).done(function(data){
-				self.measurement_config = JSON.parse(data);
+				self.measurement_config = data;
 			});
 			this.on("change:current_client", this.fetchProfile);
 			this.on("change:current_profile", this.fetchMeasure);
+			// self.trigger("afterInitialize");
 		}
 	,	fetchProfile : function(){
 			var clientID = this.get("current_client");

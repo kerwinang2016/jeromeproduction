@@ -314,12 +314,11 @@ define('Profile.Views', function ()
 			,	formatValues = []
 			,	param = new Object()
 			,	self = this;
-
 			_.each(formValues, function(formValue){
 				var field = formValue.split("=")[0]
 				,	value = formValue.split("=")[1]
 				,	formatValue = _.where(formatValues, {name: field});
-
+				value = value.replace(/([+])/g,' ')
 				if(formatValue && formatValue.length){
 					formatValue[0].value = formatValue[0].value + "," + value;
 				} else {

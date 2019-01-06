@@ -56,12 +56,13 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
         }
         , initialize: function (options) {
             var self = this;
+            jQuery.get(_.getAbsoluteUrl('js/extraQuantity.json')).done(function (data) {
+                window.extraQuantity = data;
+            });
             jQuery.get(_.getAbsoluteUrl('js/itemRangeConfig.json')).done(function (data) {
                 window.cmConfig = data;
             });
-            jQuery.get(_.getAbsoluteUrl('js/extraQuantity.json')).done(function (data) {
-                window.extraQuantity = JSON.parse(data);
-            });
+
             jQuery.get(_.getAbsoluteUrl('js/itemRangeConfigInches.json')).done(function (data) {
                 window.inchConfig = data;
             });
@@ -85,8 +86,11 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             if (options.pList) {
                 options.pList = decodeURIComponent(options.pList);
                 this.client = options.pList.split("client=")[1].split("|")[0];
-
-                this.productList = options.pList.split("|")[1];
+                if(options.pList.split('|').length >2)
+                  this.productList = options.pList.split("|")[1].split('|')[0];
+                else {
+                  this.productList = options.pList.split("|")[1].split('&')[0];
+                }
                 this.itemList = options.pList.split("|")[2];
             } else {
               if(this.getClientId(historyFragment)){
@@ -238,6 +242,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
 
             var arrSelectedValues = _.getArrAllSelectedOptions();
             var objSelectSelectedValues = _.getObjSelectSelectedValues();
+
             var objConflictCodeMapping = OBJ_CONFLICT;
             var arrErrConflictCodes = _.getArrConflictCodesError(objConflictCodeMapping, arrSelectedValues, objSelectSelectedValues);
             var arrErrConflictCodesTotal = (!_.isNullOrEmpty(arrErrConflictCodes)) ? arrErrConflictCodes.length : 0;
@@ -249,7 +254,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 _.displayModalWindow(modalTitleErrConflictCode, modalContentErrConflictCode, true)
                 return false;
             }
-            if (this.model.isReadyForCart() && this.validateFitProfile()) {
+            if (this.model.isReadyForCart() && this.validateFitProfile() && this.validateCMTQuantity()) {
                 var self = this
                     , cart = this.application.getCart()
                     , layout = this.application.getLayout()
@@ -420,7 +425,35 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 }
             }
         }
+        , validateCMTQuantity: function(){
+          var self = this;
+          var clothingTypes = this.model.get('custitem_clothing_type').split(', ');
+          var internalid = this.model.get('internalid');
+          var error_message = "";
+          if(internalid == '253776'){
+            if(jQuery('#fabric-cmt-code').val() == "" || jQuery('#fabric-cmt-vendor').val() == '' || jQuery('#fabric-cmt-collection').val() == ''){
+              error_message += 'CMT Vendor, Code and Quantity is required for CMT item<br/>';
+            }
 
+          }
+          if(clothingTypes.indexOf('Jacket')!=-1){
+            if((jQuery('#design-option-Jacket #li-vnd').val() != 'Please select') || (jQuery('#design-option-Jacket #li-code').val() != '')){
+              if(jQuery('#design-option-Jacket #li-qty').val() =="" || parseFloat(jQuery('#design-option-Jacket #li-qty').val())< 0.88){
+                error_message += 'CMT Lining for Jacket has minimim quantity of 0.88.<br/>';
+              }
+            }
+          }
+          if(clothingTypes.indexOf('Waistcoat')!=-1){
+            if((jQuery('#design-option-Waistcoat #li-vnd').val() != 'Please select') || (jQuery('#design-option-Waistcoat #li-code').val() != '')){
+              if(jQuery('#design-option-Waistcoat #li-qty').val() == "" || parseFloat(jQuery('#design-option-Waistcoat #li-qty').val()) < 0.84){
+                error_message += 'CMT Lining for Waistcoat has minimum quantity of 0.84.<br/>';
+              }
+            }
+          }
+          if(error_message != "")
+            self.showError(error_message);
+          return error_message != ""? false:true;
+        }
         , validateFitProfile: function () {
             var status = true
                 , self = this;
@@ -488,7 +521,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             var self = this;
 
             var categories = _.where(this.model.get("facets"), { id: "category" })[0].values[0].values;
-
             if (this.model.get('custitem_clothing_type') && this.model.get('custitem_clothing_type') != "&nbsp;") {
                 var clothingTypes = this.model.get('custitem_clothing_type').split(', ');
                 _.each(clothingTypes, function (clothingType) {
@@ -706,11 +738,10 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             self = this;
 
             jQuery.ajax({
-                url: 'http://store.jeromeclothiers.com/api/items?fieldset=relateditems_details&language=en&country=AU&currency=USD&pricelevel=1&c=3857857&n=2&id=42461'
+                url: window.location.origin+'/api/items?fieldset=relateditems_details&language=en&country=AU&currency=USD&pricelevel=1&c=3857857&n=2&id=42461'
             });
             setTimeout(function () {
                 self.recurring();
-
             }, 1140000);
         }
 
@@ -738,7 +769,6 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         selectedItem = currentItem;
                     }
                 }
-
                 // set options to options placeholder
                 var optionsHolder = {};
                 if (selectedItem) {
@@ -1062,7 +1092,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
 
         , propertyValueChange: function (e) {
             e.preventDefault();
-            var key = jQuery(e.target).val() + "|" + jQuery(e.target).prop("id")
+            var key = jQuery(e.target).val() + "|" + jQuery(e.target).attr("fieldname")
                 , keyParent = jQuery(e.target).attr('id')
                 , application = this.application
                 , self = this;

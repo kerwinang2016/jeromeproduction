@@ -24,7 +24,6 @@ define('Cart.SaveForLater.View', ['ErrorManagement', 'ProductListDetails.View', 
 			var self = this;
 
 			// var stFilterSaveForLaterClientName = this.model.get('swx_filter_save_for_later_client');
-
 			application.getSavedForLaterProductList().done(function(json)
 			{
 				var objSFL = json;

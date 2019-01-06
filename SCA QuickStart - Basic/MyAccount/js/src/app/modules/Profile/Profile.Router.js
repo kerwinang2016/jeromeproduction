@@ -133,7 +133,7 @@ define('Profile.Router',  ['Profile.Views','PlacedOrder.Collection','Profile.Upd
 	,	designOptionsRestriction: function(){
 			var self = this;
 			jQuery.get(_.getAbsoluteUrl('js/DesignOptions_Config.json')).done(function(data){
-				var options_config = JSON.parse(data)
+				var options_config = data
 				,	view = null;
 
 				if(options_config){
@@ -151,7 +151,7 @@ define('Profile.Router',  ['Profile.Views','PlacedOrder.Collection','Profile.Upd
 	,	favouriteOptions: function(){
 			var self = this;
 			jQuery.get(_.getAbsoluteUrl('js/DesignOptions_Config.json')).done(function(data){
-				var options_config = JSON.parse(data)
+				var options_config = data
 				,	view = null;
 
 				if(options_config){

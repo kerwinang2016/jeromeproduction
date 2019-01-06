@@ -14,13 +14,16 @@
 	,	thumbnail = item.get('_thumbnail')
 	,	link_attributes = _.getItemLinkAttributes(item)
 	, fitprofile = line.get('fitProfileOptions');
-	var formtype = "Jacket"
-	if(fitprofile.length == 3)
-		formtype = '3-Piece-Suit';
-	else if(fitprofile.length == 2)
-		formtype = '2-Piece-Suit';
-	else if(fitprofile.length>0){
-		formtype = fitprofile[0].name;
+	console.log(line);
+	var formtype = "Jacket";
+	if(fitprofile){
+		if(fitprofile.length == 3)
+			formtype = '3-Piece-Suit';
+		else if(fitprofile.length == 2)
+			formtype = '2-Piece-Suit';
+		else if(fitprofile.length>0){
+			formtype = fitprofile[0].name;
+		}
 	}
 	var item_details = item.get('itemDetails')
 
@@ -57,6 +60,16 @@
 				<% } else { %>
 					<a><%= item.get('_name') %></a>
 				<% } %>
+				</div>
+				<div class="name">
+				<%
+					var producttype = _.find(line.get("options"), function(o){
+						return o.id == "CUSTCOL_PRODUCTTYPE"});
+
+						if(producttype){
+						%>
+							<%= _('Product Type: $(0)').translate(producttype.value)%>
+						<% } %>
 				</div>
 				<div class="price">
 					<span itemtype="http://schema.org/Offer" itemscope="" itemprop="offers">
@@ -202,10 +215,10 @@
 			var editUrl = "/"
 			,	categoryUrl = "product/"
 			,	internalid = item.get('internalid')
-			,	clientID = _.where(item.get("options"), {id:"CUSTCOL_TAILOR_CLIENT"})[0].value.split("=")[_.where(item.get("options"), {id:"CUSTCOL_TAILOR_CLIENT"})[0].value.split("=").length - 1]
+			,	clientID = _.where(item.get("options"), {id:"CUSTCOL_TAILOR_CLIENT"})[0].value
 			,	lineID = item.get("line_id");
 
-			editUrl = editUrl + categoryUrl + internalid + "?client=" + clientID + "|" + lineID
+			editUrl = editUrl + categoryUrl + internalid + "?client=" + clientID + "|" + lineID+"&product="+formtype
 		%>
 		<a class="btn edit" href="<%- _(editUrl).fixUrl() %>" >
 			<%= _('Edit').translate() %>

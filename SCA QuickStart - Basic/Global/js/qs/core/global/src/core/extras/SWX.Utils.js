@@ -719,6 +719,8 @@
 					var isPushArrSelected = (!isSelectedValueInArrSelected) ? arrSelected.push(stSelectedValue.toString()) : '';
 				}
 			}
+
+
 		}
 			catch(ex)
 		{
@@ -921,6 +923,28 @@
 						if (!isSelectedIdExist)
 						{
 							var selectedValue = jQuery("select").eq(dx).val();
+							objReturn['' + selectIdValue + ''] = selectedValue;
+						}
+					}
+				}
+			}
+			var allTextFldsTotal = jQuery("#clothing-details input[type=text]").length;
+			var hasTextFlds = (allTextFldsTotal != 0) ? true : false;
+
+			if (hasTextFlds)
+			{
+				for (var dx = 0; dx < allTextFldsTotal; dx++)
+				{
+					var selectIdValue = jQuery("#clothing-details input[type=text]").eq(dx).attr('id');
+					var hasSelectId = (!isNullOrEmpty(selectIdValue)) ? true : false;
+
+					if (hasSelectId)
+					{
+						var isSelectedIdExist = (isObjectExist(objReturn['' + selectIdValue + '']));
+
+						if (!isSelectedIdExist)
+						{
+							var selectedValue = jQuery("#clothing-details input[type=text]").eq(dx).val();
 							objReturn['' + selectIdValue + ''] = selectedValue;
 						}
 					}

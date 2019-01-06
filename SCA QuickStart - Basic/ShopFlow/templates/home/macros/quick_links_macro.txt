@@ -1,19 +1,14 @@
 <% registerMacro('quickLinks', function(model) { %>
-	
-	<%
-		console.log('ShopFlow > templates > home > macros > quick_links_macro update!')
-	%>
 		
-	
 	<div id="quick-button-content" class="quick-button-area" style="margin:0px;background-color: #ebebeb">
 		<div class="container">
 			<div class="row">
-				<% _.each(model, function (quickLink) { %>			
+				<% _.each(model, function (quickLink) { %>
 					<div class="span2">
 						<a href="<%= quickLink.href %>" data-touchpoint="<%= quickLink.data.touchpoint %>" data-hashtag="<%= quickLink.data.hashtag %>">
 							<div class="quick-button-image-wrapper">
 								<div style=
-									"background-image: url('/assets/images/content/quick buttons/quick_buttons.png'); 
+									"background-image: url('/assets/images/content/quick buttons/quick_buttons.png');
 									 background-position: <%=quickLink.xPosition%> 0px"></div>
 							</div>
 							<div><%= quickLink.text %></div>

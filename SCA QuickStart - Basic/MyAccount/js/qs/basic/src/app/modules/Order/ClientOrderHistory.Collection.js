@@ -8,16 +8,17 @@ define('ClientOrderHistory.Collection', ['PlacedOrder.Model'], function (Model)
 	return Backbone.Collection.extend({
 		model: Model
 	,	url: 'services/placed-order.ss'
-	,	parse: function (response) 
+	,	parse: function (response)
 		{
 			this.totalRecordsFound = response.totalRecordsFound;
 			this.recordsPerPage = response.recordsPerPage;
-			
+
 			return response.records;
 		}
 	,	initialize: function (search)
 		{
-			this.url += "?clientName=" + search;
+			var customerid = SC.Application('MyAccount').getUser().get('parent');
+			this.url += "?clientName=" + search + "&customerid=" +customerid;
 		}
 	});
 });

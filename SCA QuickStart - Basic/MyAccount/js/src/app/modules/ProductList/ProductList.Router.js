@@ -24,6 +24,7 @@ define('ProductList.Router', ['ProductList.Model'], function (ProductListModel)
 		// /productlist/tmpl_$(templateid) in the case the record doesn't exist yet (predefined lists)
 	,	showProductListDetails: function (id, options)
 		{
+			console.log('DATA')
 			var prefix = 'tmpl_'
 			,	self = this
 
@@ -45,15 +46,16 @@ define('ProductList.Router', ['ProductList.Model'], function (ProductListModel)
 			if (id.indexOf(prefix) === 0)
 			{
 				// then this is a predefined template that doesn't exist yet (without internalid)
+				var customerid = SC.Application('MyAccount').getUser().get('parent');
 				var template_id = id.substring(prefix.length, index_of_question !== -1 ? index_of_question : id.length)
-				,	product_lists_promise = self.application.getProductLists().fetch();
+				,	product_lists_promise = self.application.getProductLists().fetch({data:jQuery.param({customerid:customerid})});
 
 				product_lists_promise.done(function()
 				{
 					var template = self.application.getProductLists().findWhere({templateid: template_id});
-					
+
 					self.doShowProductListDetails(template, options);
-					
+
 				});
 			}
 			else
@@ -61,7 +63,7 @@ define('ProductList.Router', ['ProductList.Model'], function (ProductListModel)
 				self.application.getProductList(id).done(function(model)
 				{
 					self.doShowProductListDetails(new ProductListModel(model), options);
-					
+
 				});
 			}
 		}

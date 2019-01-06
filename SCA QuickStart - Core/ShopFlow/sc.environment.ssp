@@ -134,7 +134,7 @@ SC.sessioncheck = function(){
 	console.log('sessioncheck')
 	//if((new Date()-SC.SESSIONTIME) >= 68400000){
     	jQuery.ajax({
-    		url: 'http://store.jeromeclothiers.com/api/items'
+    		url: window.location.origin+'/api/items'
     	});
 			SC.SESSIONTIME = new Date();
 	//}

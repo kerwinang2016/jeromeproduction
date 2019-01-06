@@ -12,16 +12,20 @@
 	if (isOrderPage && Backbone.history.fragment.split("?").length > 1) {
 		var fragmentArray = Backbone.history.fragment.split("?")
 		,	clientId = "";
-	 
-		//for(var i = fragmentArray.length -1; i >= 0; i--){
+
 		for(var i = 0; i <= fragmentArray.length; i++){
 			if(fragmentArray[i].match('client')){
 				clientId = fragmentArray[i].split("=")[1].split("&")[0];
 				break;
 			}
 		}
-		
 		client = "?client=" + clientId;
+		var translator = SC._applications.Shopping.getLayout().currentView.translator.facets;
+		var facet = _.find(translator,function(o){ return o.id == 'category'; });
+		if(facet){
+			client += '&product='+facet.value.split('/')[1];
+
+		}
 	}
 %>
 <% if (isOrderPage && Backbone.history.fragment.split("?").length > 1) { %>
@@ -44,7 +48,7 @@
 		</div>
 		<div class="options-container">
 			<%= item && item.renderAllOptionSelector(
-				_.where(item.getPosibleOptions(), {showSelectorInList: true})	
+				_.where(item.getPosibleOptions(), {showSelectorInList: true})
 			) %>
 		</div>
 		<!-- <div class="item-cell-stock"> -->
@@ -87,7 +91,7 @@
 
 <% } else {%>
 
-	
+
 		<div class="item-cell item-cell-grid" data-type="item" data-item-id="<%= item.get('_id') %>" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
 			<meta itemprop="url" content="<%= item.get('_url') %>">
 			<div class="item-cell-thumbnail thumbnail">
@@ -99,7 +103,7 @@
 				</span>
 			</h4>
 			<div class="item">
-				<span> Supplier :</span> 
+				<span> Supplier :</span>
 				<span itemprop="manufacturer">
 					<%= item.get('manufacturer') %>
 				</span>
@@ -117,9 +121,9 @@
 				<% } %>
 			</div>
 		</div>
-	
-	
-	<% /*	
+
+
+	<% /*
 		<div class="item-cell item-cell-grid" data-type="item" data-item-id="<%= item.get('_id') %>" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
 			<meta itemprop="url" content="<%= item.get('_url') %>">
 			<div class="item-cell-thumbnail thumbnail">
@@ -139,7 +143,7 @@
 			</div>
 			<div class="options-container">
 				<%= item && item.renderAllOptionSelector(
-					_.where(item.getPosibleOptions(), {showSelectorInList: true})	
+					_.where(item.getPosibleOptions(), {showSelectorInList: true})
 				) %>
 			</div>
 			<div class="item-cell-stock">

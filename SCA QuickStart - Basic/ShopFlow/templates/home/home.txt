@@ -1,25 +1,24 @@
 <%
 	var filePath = '/SCA QuickStart - Basic/ShopFlow/templates/home/home.txt';
 	//console.log('filePath: ' + '\n' + filePath);
-	
-	
+
+
 	var user = view.options.application.getUser();
 	var logoUrl = user.get('LogoUrl');
 	var bannerUrl = user.get('BannerUrl');
-	
+
 	var cartParameterFromMyAccount = _.getUrlParameterValue('cartParameterFromMyAccount');
 	var cartParameterFromMyAccountSplit = cartParameterFromMyAccount.split('?')
-	console.log('cartParameterFromMyAccount: ' + cartParameterFromMyAccount)
-	
+
 	if (cartParameterFromMyAccountSplit[0] == 'T')
 	{
-		
-		
+
+
 		window.location = '/cart'
 	}
-	
 
-	
+
+
 %>
 
 <section style="display:inline;">
@@ -28,7 +27,7 @@
     <div class="span4" data-cms-area="home_banner_2" data-cms-area-filters="path"></div>
     <div class="span4" data-cms-area="home_banner_3" data-cms-area-filters="path"></div>
     -->
-    
+
     <!-- <div class="slider-wrapper">
         <div id="home-slider" class="home-slider"></div>
     </div> -->
@@ -37,17 +36,17 @@
         <%
 				//if (SC.ENVIRONMENT.LOGOBRAND.bnrUrl) {
 		%>
-		
+
         <%
 			//	<img src="<!--%= SC.ENVIRONMENT.LOGOBRAND.bnrUrl %-->" class="center-block"%-->
 		%>
-        
+
 		<%
 		//}
 		%>
-		
+
 		<img src="<%=bannerUrl%>" class="center-block">
-		
+
     </div>
     <!-- <div class="footer-clear-line"></div> -->
 

@@ -22,19 +22,26 @@
 				</span>
 			</span>
 		</div>
-		<div class="span5 offset-xs-1">
+		<div class="span4 offset-xs-1">
+			<span class="list-row-text">
+				<span class="list-row-text-bigger input-margin">
+					<%= transaction.get('memo') %>
+				</span>
+			</span>
+		</div>
+		<div class="span2 offset-xs-1 text-right">
 			<span class="list-row-text">
 				<span class="visible-phone list-row-text-info"><%= _('Remaining Amount: ').translate() %></span>
 				<span class="<%= type %>-remaining-amount"><%= _('$(0)').translate(remaining_formatted) %> </span>
 				<% if (remaining_formatted !== total_formatted) { %>
 					<br>
 					<small class="<%= type %>-originial-amount text-success">
-						<%= _('Original Amount: $(0)').translate(total_formatted) %> 
+						<%= _('Original Amount: $(0)').translate(total_formatted) %>
 					</small>
 				<% } %>
 			</span>
 		</div>
-		<div class="span3 offset-xs-1 responsive-align">
+		<div class="span2 offset-xs-1 responsive-align text-right">
 			<span class="list-row-text">
 				<span class="visible-phone list-row-text-info"><%= _('Amount: ').translate() %></span>
 				<span class="<%= type %>-amount"><%= transaction.get('amount_formatted') %> </span>

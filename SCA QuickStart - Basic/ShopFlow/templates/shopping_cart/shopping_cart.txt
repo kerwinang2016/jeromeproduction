@@ -21,8 +21,6 @@
 	var paramFragmentValue = _.getUrlParameterValue('fragment');
 	var isFragmentCart = (paramFragmentValue == 'cart') ? true : false;
 
-	console.log('isFragmentCart: ' + isFragmentCart);
-
 	if (isFragmentCart)
 	{
 		//jQuery("li[class='mini-cart-summary-container']").find("[data-hashtag='#cart']").click()

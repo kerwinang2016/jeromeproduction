@@ -52,8 +52,6 @@
 						<% _.each(fieldset.fields, function(field){
 
 							var fieldName = field.name;
-
-							console.log('values',values);
 							var bodyValue = 0
 							,	allowance = 0
 							,	baseAllowance = 0

@@ -26,8 +26,8 @@ define('ProductList.Model',['ProductListItem.Collection'], function (ProductList
 	,	url: function()
 		{
 			var base_url = Backbone.Model.prototype.url.apply(this, arguments);
-
-			return base_url + '&t=' + new Date().getTime();
+			var customerid = SC.Application('MyAccount').getUser().get('parent');
+			return base_url + '&t=' + new Date().getTime() +"&customerid=" +customerid;
 		}
 
 	,	initialize: function (data)

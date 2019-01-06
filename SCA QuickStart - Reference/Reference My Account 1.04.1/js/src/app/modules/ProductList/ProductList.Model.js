@@ -26,10 +26,10 @@ define('ProductList.Model',['ProductListItem.Collection'], function (ProductList
 	,	url: function()
 		{
 			var base_url = Backbone.Model.prototype.url.apply(this, arguments);
-			
+
 			return base_url + '&t=' + new Date().getTime();
 		}
-		
+
 	,	initialize: function (data)
 		{
 			var collection;
@@ -42,11 +42,11 @@ define('ProductList.Model',['ProductListItem.Collection'], function (ProductList
 			{
 				collection = new ProductListItemCollection([]);
 			}
-			
-			this.set('items', collection);			
+
+			this.set('items', collection);
 		}
 
-		// Returns true if an item with id: productId is in the list 
+		// Returns true if an item with id: productId is in the list
 	,	checked: function (productId)
 		{
 			return this.get('items').some(function (productItem)

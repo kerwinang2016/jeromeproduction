@@ -80,8 +80,12 @@ define('Profile', ['Profile.Views','Profile.Router','User.Model'], function (Vie
 		{
 			var Layout = application.getLayout();
 
-			jQuery.get(_.getAbsoluteUrl('js/DesignOptions_Config.json')).done(function(data){
-				window.design_options = JSON.parse(data)
+			jQuery.ajax({
+				url: _.getAbsoluteUrl('js/DesignOptions_Config.json'),
+				async: false,
+				success: function(data){
+					window.design_options = data
+				},
 			});
 
 			application.UserModel = UserModel.extend({

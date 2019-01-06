@@ -47,7 +47,7 @@
 		,	'Merchandising'
 		,	'Merchandising.Context.DefaultHandlers'
 		// ,	['Categories',  {addToNavigationTabs: true}]
-		,	'ProductList'
+		,	['ProductList',{startRouter: false}]
 		,	'ItemRelations'
 , 'CMSadapter'
 ['Quote', {startRouter: true}]
@@ -241,18 +241,18 @@
 				}
 			}
 
-       ,    {
-            	 id: 'custitem_clothing_type'
-            ,    name: _('Item Type').translate()
-            ,    priority: 1
-            ,    url: 'custitem_clothing_type'
-            ,    behavior: 'single'
-            //,    macro: 'itemCellGrid'
-            ,    uncollapsible: true
-			,	 titleToken: '$(0)'
-            ,    collapsed: false
-            ,    titleSeparator: ', '
-            }
+      //  ,    {
+      //       	 id: 'custitem_clothing_type'
+      //       ,    name: _('Item Type').translate()
+      //       ,    priority: 1
+      //       ,    url: 'custitem_clothing_type'
+      //       ,    behavior: 'single'
+      //       //,    macro: 'itemCellGrid'
+      //       ,    uncollapsible: true
+			// 			,	 titleToken: '$(0)'
+      //       ,    collapsed: false
+      //       ,    titleSeparator: ', '
+      //       }
 
 		]
 		// This options set the title for the facet browse view.

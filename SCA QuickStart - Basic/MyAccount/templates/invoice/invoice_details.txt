@@ -110,17 +110,21 @@
 									}
 
 									var name = itemKey.get('_name');
+									if(itemKey.get('internalid') != "253762"){
 									if (link_attributes) {
 										name = '<a ' + link_attributes + '>' + name + '</a>';
+									}
+									}else{
+										name = item.get('description')
 									}
 								%>
 
 								<div class="row-fluid nav-tabs item-<%= item.get('internalid') %>">
-									
+
 									<div class="span4 popover-content">
 										<div class="item-displayname">
 										<%= name %>
-										</div>										
+										</div>
 										<%= itemKey.renderAllOptionSelected() %>
 									</div>
 									<div class="span1 popover-content item-quantity"><%= _('<span class="show-phone text-light">Qty: </span>$(0)').translate(item.get('quantity')) %></div>

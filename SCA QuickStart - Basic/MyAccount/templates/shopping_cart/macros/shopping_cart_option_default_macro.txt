@@ -4,27 +4,29 @@
 			type_option = _.where(window.design_options, {item_type: "Jacket"})[0],
 			option_values = JSON.parse(value.label),
 			formatted_values = [];
-
 			_.each(option_values, function(option_value){
 				if(!_.isUndefined(type_option)){
 					var fields = _.pluck(type_option.options, "fields")
+
 					_.each(fields, function(field){
 						var selectedField = _.where(field, {name: option_value.name})
-
-						if(selectedField && selectedField.length){
+						if(selectedField && selectedField.length > 0){
 							selectedField = selectedField[0]
 							for(var i = 0;i < selectedField.values.length; i++){
-								if(selectedField.label == 'CMT Lining Code' || selectedField.label == 'CMT Lining Quantity'){
+								if(selectedField.type == 'text' || selectedField.type == 'number'){
 									var value = new Object();
 									value.label = selectedField.label;
 									value.value = option_value.value;
 									formatted_values.push(value);
 								}
-								else if(selectedField.values[i] == option_value.value){
-									var value = new Object();
-									value.label = selectedField.label;
-									value.value = selectedField.texts[i];
-									formatted_values.push(value);
+								else{
+									if(selectedField.values[i] == option_value.value){
+
+										var value = new Object();
+										value.label = selectedField.label;
+										value.value = selectedField.texts[i];
+										formatted_values.push(value);
+									}
 								}
 							}
 						}
@@ -54,14 +56,26 @@
 					_.each(fields, function(field){
 						var selectedField = _.where(field, {name: option_value.name})
 
-						if(selectedField && selectedField.length){
-							selectedField = selectedField[0]
+						if(selectedField && selectedField.length >0){
+
+							selectedField = selectedField[0];
+
 							for(var i = 0;i < selectedField.values.length; i++){
-								if(selectedField.values[i] == option_value.value){
+
+								if(selectedField.type == 'text' || selectedField.type == 'number'){
 									var value = new Object();
 									value.label = selectedField.label;
-									value.value = selectedField.texts[i];
+									value.value = option_value.value;
 									formatted_values.push(value);
+								}
+								else{
+									if(selectedField.values[i] == option_value.value){
+
+										var value = new Object();
+										value.label = selectedField.label;
+										value.value = selectedField.texts[i];
+										formatted_values.push(value);
+									}
 								}
 							}
 						}
@@ -91,14 +105,23 @@
 					_.each(fields, function(field){
 						var selectedField = _.where(field, {name: option_value.name})
 
-						if(selectedField && selectedField.length){
+						if(selectedField && selectedField.length>0){
 							selectedField = selectedField[0]
 							for(var i = 0;i < selectedField.values.length; i++){
-								if(selectedField.values[i] == option_value.value){
+								if(selectedField.type == 'text' || selectedField.type == 'number'){
 									var value = new Object();
 									value.label = selectedField.label;
-									value.value = selectedField.texts[i];
+									value.value = option_value.value;
 									formatted_values.push(value);
+								}
+								else{
+									if(selectedField.values[i] == option_value.value){
+
+										var value = new Object();
+										value.label = selectedField.label;
+										value.value = selectedField.texts[i];
+										formatted_values.push(value);
+									}
 								}
 							}
 						}
@@ -128,14 +151,23 @@
 					_.each(fields, function(field){
 						var selectedField = _.where(field, {name: option_value.name})
 
-						if(selectedField && selectedField.length){
+						if(selectedField && selectedField.length>0){
 							selectedField = selectedField[0]
 							for(var i = 0;i < selectedField.values.length; i++){
-								if(selectedField.values[i] == option_value.value){
+								if(selectedField.type == 'text' || selectedField.type == 'number'){
 									var value = new Object();
 									value.label = selectedField.label;
-									value.value = selectedField.texts[i];
+									value.value = option_value.value;
 									formatted_values.push(value);
+								}
+								else{
+									if(selectedField.values[i] == option_value.value){
+
+										var value = new Object();
+										value.label = selectedField.label;
+										value.value = selectedField.texts[i];
+										formatted_values.push(value);
+									}
 								}
 							}
 						}
@@ -165,14 +197,23 @@
 					_.each(fields, function(field){
 						var selectedField = _.where(field, {name: option_value.name})
 
-						if(selectedField && selectedField.length){
+						if(selectedField && selectedField.length>0){
 							selectedField = selectedField[0]
 							for(var i = 0;i < selectedField.values.length; i++){
-								if(selectedField.values[i] == option_value.value){
+								if(selectedField.type == 'text' || selectedField.type == 'number'){
 									var value = new Object();
 									value.label = selectedField.label;
-									value.value = selectedField.texts[i];
+									value.value = option_value.value;
 									formatted_values.push(value);
+								}
+								else{
+									if(selectedField.values[i] == option_value.value){
+
+										var value = new Object();
+										value.label = selectedField.label;
+										value.value = selectedField.texts[i];
+										formatted_values.push(value);
+									}
 								}
 							}
 						}

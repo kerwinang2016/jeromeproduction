@@ -9,8 +9,6 @@
 
 	var isSecureSite = (location.protocol == 'https:') ? true : false;
 
-	//console.log('isSecureSite: ' + isSecureSite)
-
 %>
 <a href="#" class="dropdown-toggle btn btn-primary" data-toggle="dropdown">
 	<%= SC.macros.miniCartSummary(total_items, is_loading) %>
@@ -24,13 +22,13 @@
 				item = line.get('item');
 				thumbnail = item.get('_thumbnail');
 				var fabricdetails = _.where(item.get("options"), {id:"CUSTCOL_CUSTOM_FABRIC_DETAILS"})
-				if(fabricdetails){
+				if(fabricdetails && fabricdetails[0]){
 					var fabricjson = JSON.parse(fabricdetails[0].value);
 					if(fabricjson.code && fabricjson.collection){
 						var itemsku = item.get('_sku');
 						item.set('_sku', itemsku.replace('CMT Item', fabricjson.collection +'-'+fabricjson.code));
 					}
-				}
+				}else{console.log('here');}
 			%>
 			<li class="cart-summary-item-cell mini-cart-item-cell" data-item="<%= item.get('internalid') %>">
 				<a href="#" class="row-fluid" data-touchpoint="home" data-hashtag="#<%= _(item.get('_url') + item.getQueryStringWithQuantity(1)).fixUrl() %>">
@@ -48,7 +46,6 @@
 
 								var tailorPricingColumn = _.where(line.get("options"), {id: "CUSTCOL_TAILOR_CUST_PRICING"})
 								,	tailorPricing = "0.00";
-
 								if(!_.isUndefined(tailorPricingColumn)){
 									if(!_.isUndefined(tailorPricingColumn[0]))
 									tailorPricing = tailorPricingColumn[0].value;

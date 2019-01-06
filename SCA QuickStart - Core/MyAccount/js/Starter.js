@@ -2,8 +2,13 @@
 SC.sessioncheck = function(){
 	self = this;
 	//console.log('hastimedout');
+	var origin = "";
+	if(window.location.host == 'checkout.netsuite.com')
+		origin = window.location.origin + "/c.3857857_SB1";
+	else
+		origin = window.location.origin + "/c.3857857"
 	jQuery.ajax({
-		url: '/c.3857857/myaccount/services/live-order.ss'
+		url: origin + '/myaccount/services/live-order.ss'
 	});
 	setTimeout(function(){
 		SC.sessioncheck();

@@ -17,15 +17,10 @@
 	objFilters['name'] = filterClientName;
 	objFilters['email'] = filterClientEmail;
 	objFilters['phone'] = filterClientPhone;
-	
+
 	var arrObjClient = _.getArrObjOrderClientList(arrObjClientCollection, objFilters)
 
-
-	console.log('isDisplayClientProfileSearchForm: ' + isDisplayClientProfileSearchForm)
-	
 	jQuery("div[data-type='alert-placeholder']").empty();
-
-	//console.log('stClientCollection: ' + '\n' + stClientCollection)
 %>
 <div data-type="alert-placeholder"></div>
 <h3>Client Profiles</h3>
@@ -35,11 +30,11 @@
 	<div style="display: none;">
 		<%= clientsOptionDropdown(view.model.client_collection, view.options.application.getUser().get("internalid")) %>
 	</div>
-	
+
 	<%=swxMyAccountClientProfileSearchForm(objFilters, view.options.application.getUser().get("internalid"), isDisplayClientProfileSearchForm)%>
-	
+
 	<div id="swx-order-client-list">
-		<% if (isDisplayClientProfileSearchForm) { %>	
+		<% if (isDisplayClientProfileSearchForm) { %>
 			<%=swxOrderClientList(arrObjClient)%>
 		<% } %>
 	</div>
@@ -50,7 +45,7 @@
 <% if (!isDisplayClientProfileSearchForm) { %>
 	<div id="swx-client-profile-view">
 <% } else { %>
-	<div id="swx-client-profile-view" style="display: none;">	
+	<div id="swx-client-profile-view" style="display: none;">
 <% } %>
 
 		<div id="swx-client-profile-details">
@@ -64,6 +59,3 @@
 		<div id="saveForLaterItems"></div>
 
 	</div>
-
-
-
