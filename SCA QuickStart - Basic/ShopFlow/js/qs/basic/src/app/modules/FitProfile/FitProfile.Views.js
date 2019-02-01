@@ -58,8 +58,6 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'Profile.Collection
 			this.model.set('swx_client_profile_order_history', '');
 			var self = this;
 			jQuery("div[data-type='alert-placeholder']").empty();
-			console.log('client collection');
-			console.log(self.model.client_collection);
 			//var clientModel = this.model.get('current_client')
 			var param = new Object();
 			param.type = "get_client";

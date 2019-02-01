@@ -73,6 +73,9 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
       			jQuery.get(_.getAbsoluteUrl('services/influences.ss')).done(function (data) {
       				self.influences = data;
       			});
+            jQuery.get(_.getAbsoluteUrl('services/liningfabrics.ss')).done(function (data) {
+      				self.liningfabrics = data;
+      			});
             jQuery.get(_.getAbsoluteUrl('services/bodyBlockMeasurements.ss')).done(function (data) {
       				window.bodyBlockMeasurements = data;
       			});
@@ -228,7 +231,15 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
             jQuery(".modal.in").modal("hide");
         }
 
-
+        , fabricChecked: function () {
+            var status = true
+                , self = this;
+            if(jQuery('#chkItem:checked').length == 0){
+                self.showError(_('You must tick the box under fabric availability to confirm that this fabric is currently in stock').translate());
+                status = false;
+            }
+            return status;
+        }
         // view.addToCart:
         // Updates the Cart to include the current model
         // also takes care of updateing the cart if the current model is a cart item
@@ -254,7 +265,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 _.displayModalWindow(modalTitleErrConflictCode, modalContentErrConflictCode, true)
                 return false;
             }
-            if (this.model.isReadyForCart() && this.validateFitProfile() && this.validateCMTQuantity()) {
+            if (this.model.isReadyForCart() && this.fabricChecked() && this.validateFitProfile() && this.validateCMTQuantity() ) {
                 var self = this
                     , cart = this.application.getCart()
                     , layout = this.application.getLayout()
@@ -1110,6 +1121,23 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                 })
             });
             window.tempOptions = values;
+            var r = new RegExp(/^[TR]{2}\d{3}($|-+\w*)/)
+
+            if(jQuery(e.target).attr("id") == 'li-b-j' || jQuery(e.target).attr("id") == 'T010227' ||
+            jQuery(e.target).attr("id") == 'li-bl-w' || jQuery(e.target).attr("id") == 'li-bl-o' || jQuery(e.target).attr("id") == 'T010415' ){
+              if(r.test(jQuery(e.target).val())){
+                var found = _.find(this.liningfabrics,function(d){
+                  return d.custrecord_flf_ftcode == jQuery(e.target).val();
+                  });
+                if(!found || found.custrecord_flf_ftstatustext == "Out of Stock"){
+                  jQuery(e.target).nextAll('#liningstatusimage').html('<img title="Out of Stock" src="http://store.jeromeclothiers.com/c.3857857/shopflow/img/red.png"/>')
+                }else{
+                  jQuery(e.target).nextAll('#liningstatusimage').html('<img title="Available" src="http://store.jeromeclothiers.com/c.3857857/shopflow/img/green.png"/>')
+                }
+              }else{
+                jQuery(e.target).nextAll('#liningstatusimage').html('');
+              }
+            }
             this.application.trigger('profileRefresh');
         }
         , designOptionMessageChange: function (e) {

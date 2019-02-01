@@ -50,7 +50,32 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 		, 'click [data-action="archive"]': 'archiveItems'
 		, 'click [data-action="show-archived-items"]': 'filterArchivedItems'
 		}
+	,	initialize: function (options)
+		{
+			this.application = options.application;
+			// this.profileInstance = new FitProfileModel(SC._applications.Shopping.getUser().get("internalid")); // April CSD Issue #046
+			this.options = options;
+			this.sflMode = options.sflMode;
+			this.addToCartCallback = options.addToCartCallback;
+			this.client_collection = new ClientCollection();
+			var param = new Object();
+			var self = this;
 
+			param.type = "get_client";
+			var tailor = SC.Application('Shopping').getUser().get('parent')!=null? SC.Application('Shopping').getUser().get('parent'):SC.Application('Shopping').getUser().id;
+			param.data = JSON.stringify({filters: ["custrecord_tc_tailor||anyof|list|" + tailor], columns: ["internalid", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone"]});
+			jQuery.ajax({
+					url:_.getAbsoluteUrl('services/fitprofile.ss'),
+					async:false,
+					data:param,
+					success: function (result) {
+							self.client_collection.add(result);
+					}
+				});
+			jQuery.get(_.getAbsoluteUrl('services/liningfabrics.ss')).done(function (data) {
+				self.liningfabrics = data;
+			});
+		}
 	, validateItems: function(e){
 			e.preventDefault();
 			var self = this;
@@ -61,8 +86,111 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 			var previousLineInternalId = '';
 			var previousClientId = '';
 			var differentClientIdError = false;
-
+			//Checking for Vendor Picked is Jerome Clothiers
+			if(self.application.getUser().get('isoverdue') == 'T'){
+				jQuery("#cart-alert-placeholder").append(SC.macros.message('You cannot process orders until you have paid your outstanding invoices.', 'error', true));
+				return;
+			}
 			cart.get('lines').each(function (line){
+				var r = new RegExp(/^[TR]{2}\d{3}($|-+\w*)/)
+				/*check for lining status */
+				var options = line.get('item').get('options');
+
+				var designoption = _.find(options,function(op){return op.id == 'CUSTCOL_DESIGNOPTIONS_JACKET'});
+				if(designoption){
+					var doJSON = JSON.parse(designoption.value);
+					//Jacket
+					var lfab = _.find(doJSON,function(b){return b.name == 'li-b-j';});
+					if(lfab && r.test(jQuery(lfab.value)){
+						var found = _.find(self.liningfabrics,function(d){
+							return d.custrecord_flf_ftcode == lfab.value;
+							});
+						if(!found || found.custrecord_flf_ftstatustext == "Out of Stock"){
+							jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Lining fabric is out of stock.', 'error', true));
+							hasError = true;
+						}else{
+
+						}
+					}
+					var lfab = _.find(doJSON,function(b){return b.name == 'T010227';});
+					if(lfab && r.test(jQuery(lfab.value)){
+						var found = _.find(self.liningfabrics,function(d){
+							return d.custrecord_flf_ftcode == lfab.value;
+							});
+						if(!found || found.custrecord_flf_ftstatustext == "Out of Stock"){
+							jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Interior pocket lining is out of stock.', 'error', true));
+							hasError = true;
+						}else{
+
+						}
+					}
+				}
+				//Waistcoat
+				var designoption = _.find(options,function(op){return op.id == 'CUSTCOL_DESIGNOPTIONS_WAISTCOAT'});
+				if(designoption){
+					var doJSON = JSON.parse(designoption.value);
+					var lfab = _.find(doJSON,function(b){return b.name == 'li-bl-w';});
+					if(lfab && r.test(jQuery(lfab.value)){
+						var found = _.find(self.liningfabrics,function(d){
+							return d.custrecord_flf_ftcode == lfab.value;
+							});
+						if(!found || found.custrecord_flf_ftstatustext == "Out of Stock"){
+							jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Lining fabric is out of stock.', 'error', true));
+							hasError = true;
+						}else{
+
+						}
+					}
+				}
+				//Overcoat
+				var designoption = _.find(options,function(op){return op.id == 'CUSTCOL_DESIGNOPTIONS_OVERCOAT'});
+				if(designoption){
+					var doJSON = JSON.parse(designoption.value);
+					var lfab = _.find(doJSON,function(b){return b.name == 'li-bl-o';});
+					if(lfab && r.test(jQuery(lfab.value)){
+						var found = _.find(self.liningfabrics,function(d){
+							return d.custrecord_flf_ftcode == lfab.value;
+							});
+						if(!found || found.custrecord_flf_ftstatustext == "Out of Stock"){
+							jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Lining fabric is out of stock.', 'error', true));
+							hasError = true;
+						}else{
+
+						}
+					}
+					var lfab = _.find(doJSON,function(b){return b.name == 'T010415';});
+					if(lfab && r.test(jQuery(lfab.value)){
+						var found = _.find(self.liningfabrics,function(d){
+							return d.custrecord_flf_ftcode == lfab.value;
+							});
+						if(!found || found.custrecord_flf_ftstatustext == "Out of Stock"){
+							jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Interior pocket piping is out of stock.', 'error', true));
+							hasError = true;
+						}else{
+
+						}
+					}
+				}
+
+				//Checking for Vendor Picked is Jerome Clothiers
+				if(line.get('item').get('internalid')== '253776'){
+					var options = line.get('item').get('options');
+					if(options){
+						var b = _.find(options,function(op){return op.id == 'CUSTCOL_VENDORPICKED'});
+						if(b.value == '11'){
+							hasError = true;
+							jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('You cannot process a CMT item for the fabric vendor Jerome Clothiers. Please search for the specific item code that you require, or contact your account manager.', 'error', true));
+						}
+					}
+				}
+
+				//End Checking for Vendor Picked Jerome Clothiers
+				//Checking for Out of Stock items
+				if(line.get('item').get('_outOfStockMessage') && line.get('item').get('_outOfStockMessage') == "Out of Stock"){
+					jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('You cannot process an item that is out of stock.', 'error', true));
+					hasError = true;
+				}
+				//End Checking Out of stock items
 				var itemoptions = line.get('item').get('options');
 				var itemid = line.get('item').id;
 				var item = line.get('item');
@@ -88,7 +216,6 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 
 					//jQuery("[data-id='"+itemid+"']").find('[class="alert-placeholder"]').append(SC.macros.message('Item name is different to SKU', 'error', true));
 					jQuery("#"+line.get('internalid')+" .item .alert-placeholder").append(SC.macros.message('Item name is different to SKU', 'error', true));
-
 				}
 
 				var forCheckClientId = _.where(line.get("options"), {id: "CUSTCOL_TAILOR_CLIENT"})[0].value;
@@ -192,28 +319,6 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 			}
 
 		}
-	,	initialize: function (options)
-		{
-			this.application = options.application;
-			// this.profileInstance = new FitProfileModel(SC._applications.Shopping.getUser().get("internalid")); // April CSD Issue #046
-			this.options = options;
-			this.sflMode = options.sflMode;
-			this.addToCartCallback = options.addToCartCallback;
-			this.client_collection = new ClientCollection();
-			var param = new Object();
-			var self = this;
-			param.type = "get_client";
-			var tailor = SC.Application('Shopping').getUser().get('parent')!=null? SC.Application('Shopping').getUser().get('parent'):SC.Application('Shopping').getUser().id;
-			param.data = JSON.stringify({filters: ["custrecord_tc_tailor||anyof|list|" + tailor], columns: ["internalid", "custrecord_tc_first_name", "custrecord_tc_last_name", "custrecord_tc_email", "custrecord_tc_addr1", "custrecord_tc_addr2", "custrecord_tc_country", "custrecord_tc_city", "custrecord_tc_state", "custrecord_tc_zip", "custrecord_tc_phone"]});
-			jQuery.ajax({
-					url:_.getAbsoluteUrl('services/fitprofile.ss'),
-					async:false,
-					data:param,
-					success: function (result) {
-							self.client_collection.add(result);
-	        }
-				});
-		}
 
 		// showContent:
 		// initializes tooltips.
@@ -234,7 +339,6 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 						// 		url:urlDesignOptions,
 						// 		async:false,
 						// 		success: function (result) {
-						// 				console.log(result)
 						// 				self.renderLineItemOptions(JSON.parse(result), self);
 				    //         // if (result.isOk == false) alert(result.message);
 						// 				self.downloadQuote();
@@ -433,11 +537,9 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 							 a.value = dateneeded;
 							 a.displayvalue = dateneeded;
 							 model.save().done(function(){
-								 console.log('saved')
 							 });
 
 						});
-						console.log('timeout')
 						setTimeout(function(){
 							self.model.save().done(function(data){
 								self.showContent();

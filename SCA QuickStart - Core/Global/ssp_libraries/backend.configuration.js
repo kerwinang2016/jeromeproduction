@@ -84,6 +84,7 @@ SC.Configuration = {
     ,	'storedisplayimage'
     ,	'storedisplayname2'
     ,	'storedisplaythumbnail'
+		, 'custitem_ftstatus'
 	]
 
 	// product reviews configuration
@@ -100,7 +101,7 @@ SC.Configuration = {
 	,	resultsPerPage: 25
 	}
 
-	// Product lists configuration. 
+	// Product lists configuration.
 	// Note: for activating the "single list" user experience use additionEnabled==false && list_templates.length === 1
 ,	product_lists: {
 

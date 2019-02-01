@@ -4835,7 +4835,8 @@ Application.defineModel('ProductListItem', {
 		var filters = [
 			new nlobjSearchFilter('custrecord_ns_pl_pli_productlist', null, 'is', product_list_id)
 			, new nlobjSearchFilter('isinactive', null, 'is', 'F')
-			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', 'custrecord_ns_pl_pli_productlist', 'is', parent)]
+			, new nlobjSearchFilter('custrecord_ns_pl_pl_owner', 'custrecord_ns_pl_pli_productlist', 'is', parent)
+			,	new nlobjSearchFilter('isinactive', 'custrecord_ns_pl_pli_item', 'is', 'F' )]
 			, sort_column = sort_and_paging_data.sort
 			, sort_direction = sort_and_paging_data.order;
 

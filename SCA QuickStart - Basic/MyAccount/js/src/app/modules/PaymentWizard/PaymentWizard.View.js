@@ -55,6 +55,8 @@ define('PaymentWizard.View', ['Wizard.View'], function (WizardView)
 			    data: data,
 			    dataType: 'json',
 			    success: function (d) {
+						if(d.result == "ERROR"){}
+						else{
 						Checkout.configure({
 								merchant: 'JERCLOMCC201',
 								session:{id:d.session.id},
@@ -78,6 +80,7 @@ define('PaymentWizard.View', ['Wizard.View'], function (WizardView)
 								}
 						});
 						Checkout.showLightbox();
+					}
 			    }
 			});
 		}

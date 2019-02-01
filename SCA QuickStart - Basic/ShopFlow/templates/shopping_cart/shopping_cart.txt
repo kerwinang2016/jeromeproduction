@@ -57,6 +57,9 @@
     <div class="container">
         <div class="row-fluid view-body">
             <section class="span9">
+								<div id="cart-alert-placeholder" class="alert-placeholder" data-type="alert-placeholder">
+
+								</div>
                 <div class="box-cont">
                     <div data-confirm-message class="confirm-message"></div>
                     <header class="shopping-cart-heading">

@@ -43,6 +43,13 @@
 				</span>
 			</a>
 		</h2>
+		<% if(item.get('outofstockmessage') == "Low Stock" || item.get('outofstockmessage') == "Out of Stock" ){ %>
+		<h2 class="item-cell-stockstatus">
+				<span itemprop="outofstockmessage">
+					<%= item.get('outofstockmessage') %>
+				</span>
+		</h2>
+		<% } %>
 		<div class="item-cell-price">
 			<%= macros.showItemPrice(item.getPrice(), stock_info.isInStock) %>
 		</div>
@@ -55,20 +62,6 @@
 			<%/*= macros.itemDetailsStock(stock_info)*/%>
 		<!-- </div> -->
 
-		<!-- April CSD Issue #072 -->
-		<!-- Stock Availability -->
-		<div class="item" style='display:none;'>
-			<span> Availability :</span>
-			<% if (item.get('custitem_ps_item_available')){ %>
-				<span class="fabric-available" itemprop="custitem_ps_item_available">
-					In Stock
-				</span>
-			<% } else { %>
-				<span class="fabric-unavailable" itemprop="custitem_ps_item_available">
-					Out of Stock
-				</span>
-			<% } %>
-		</div>
 		<!-- Stock Availability Date-->
 		<div class="item">
 			<% if (!item.get('custitem_ps_item_available')){ %>
@@ -102,24 +95,21 @@
 					<b><%= item.get('_name') %></b>
 				</span>
 			</h4>
+
+
 			<div class="item">
 				<span> Supplier :</span>
 				<span itemprop="manufacturer">
 					<%= item.get('manufacturer') %>
 				</span>
 			</div>
-			<div class="item">
-				<span> Availability :</span>
-				<% if (item.get('custitem_ps_item_available')){ %>
-					<span class="fabric-available" itemprop="custitem_ps_item_available">
-						In Stock
+			<% if(item.get('outofstockmessage') == "Low Stock" || item.get('outofstockmessage') == "Out of Stock" ){ %>
+			<h2 class="item-cell-stockstatus">
+					<span itemprop="outofstockmessage">
+						<%= item.get('outofstockmessage') %>
 					</span>
-				<% } else { %>
-					<span class="fabric-unavailable" itemprop="custitem_ps_item_available">
-						Out of Stock
-					</span>
-				<% } %>
-			</div>
+			</h2>
+			<% } %>
 		</div>
 
 
@@ -138,6 +128,7 @@
 					</span>
 				</a>
 			</h2>
+
 			<div class="item-cell-price">
 				<%= macros.showItemPrice(item.getPrice(), stock_info.isInStock) %>
 			</div>
@@ -160,7 +151,5 @@
 			<% } %>
 		</div>
 	<% */ %>
-
 <% } %>
-
 <% }) %>

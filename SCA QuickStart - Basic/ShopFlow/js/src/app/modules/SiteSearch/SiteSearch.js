@@ -9,7 +9,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 
 	// SiteSearch.currentSearchOptions() - Returns current search options formatted as query params.
 	var currentSearchOptions = function ()
-	{			
+	{
 		var newOptions = []
 		,	currentOptions = SC.Utils.parseUrlOptions(window.location.href);
 
@@ -30,7 +30,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 			newOptionsStr = '&' + newOptionsStr;
 		}
 
-		return newOptionsStr;					
+		return newOptionsStr;
 	};
 
 	// This object's methods are ment to be added to the layout
@@ -40,7 +40,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 		searchEventHandler: function (e)
 		{
 			e.preventDefault();
-			
+
 			this.search(jQuery(e.target).find('input').val());
 		}
 
@@ -53,7 +53,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 		{
 			this.$search.find('input').typeahead('lookup');
 		}
-		 
+
 		//SiteSearch.formatKeywords() - format a search query string according to configuration.js (searchPrefs)
 	,	formatKeywords: function (app, keywords)
 		{
@@ -61,22 +61,22 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 
 			if (keywordFormatter && _.isFunction(keywordFormatter))
 			{
-				keywords = keywordFormatter(keywords); 
-				var maxLength = app.getConfig('searchPrefs.maxLength') || 99999; 
+				keywords = keywordFormatter(keywords);
+				var maxLength = app.getConfig('searchPrefs.maxLength') || 99999;
 				if (keywords.length > maxLength)
 				{
-					keywords = keywords.substring(0, maxLength); 
+					keywords = keywords.substring(0, maxLength);
 				}
 			}
 
-			return keywords; 
+			return keywords;
 		}
 
 	,	search: function (keywords)
 		{
 			var currentView = this.currentView;
-			
-			keywords = SiteSearch.formatKeywords(this.getApplication(), keywords); 
+
+			keywords = SiteSearch.formatKeywords(this.getApplication(), keywords);
 
 			if (this.getApplication().getConfig('isSearchGlobal') || !(currentView && currentView.options.translator instanceof Translator))
 			{
@@ -101,11 +101,12 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 					// We navigate to the default search url passing the keywords
 					//Backbone.history.navigate(search_url + "?client=" + Backbone.history.fragment.split("?")[1].split("=")[1].split("&")[0] + "&keywords=" + keywords + currentSearchOptions(), {trigger: true});
 					if(rawFragment.indexOf("?") > -1){
+						console.log(rawFragment)
 						Backbone.history.navigate(rawFragment + "&keywords=" + keywords + currentSearchOptions(), {trigger: true});
 					} else {
 						Backbone.history.navigate(rawFragment + "?keywords=" + keywords + currentSearchOptions(), {trigger: true});
 					}
-					
+
 					// on any type of search, the search term is removed from the global input box
 					this.$search.find('input').val('');
 				}
@@ -142,7 +143,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 					});
 
 				// and manually fix the link because it is a touchpoint
-				self.getApplication().getLayout().touchpointMousedown({currentTarget: $anchor}); 
+				self.getApplication().getLayout().touchpointMousedown({currentTarget: $anchor});
 			});
 
 			typeahead.$menu.off('click');
@@ -168,7 +169,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 				this.results = this.results || this.options.results;
 				this.application = this.application || this.options.application;
 
-				query = SiteSearch.formatKeywords(this.application, jQuery.trim(query)); 
+				query = SiteSearch.formatKeywords(this.application, jQuery.trim(query));
 
 				// if the character length from the query is over the min length
 				if (query.length >= this.options.minLength)
@@ -206,7 +207,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 						self.results[item.get('_id') + query] = item;
 						self.labels.push(item.get('_id') + query);
 					});
-					
+
 					process(self.labels);
 					self.$element.trigger('processed', self);
 				});
@@ -245,17 +246,17 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 					}
 					else if (this.ajaxDone)
 					{
-						template = '<strong>' + this.options.noResultsLabel + '<span class="hide">' + this.query + '</span></strong>';	
+						template = '<strong>' + this.options.noResultsLabel + '<span class="hide">' + this.query + '</span></strong>';
 					}
 					else
-					{							
-						template = '<strong>' + this.options.searchingLabel + '<span class="hide">' + this.query + '</span></strong>';	
+					{
+						template = '<strong>' + this.options.searchingLabel + '<span class="hide">' + this.query + '</span></strong>';
 					}
 				}
 
 				return template;
 			}
-			
+
 			// its supposed to return the selected item
 		,	updater: function (itemid)
 			{
@@ -268,7 +269,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 				}
 				return '';
 			}
-			
+
 		,	labels: []
 		,	results: {}
 		,	model: new Model()
@@ -277,7 +278,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 		,	searchingLabel: _('Searching...').translate()
 		}
 	};
-	
+
 	return {
 
 		SiteSearch: SiteSearch
@@ -286,7 +287,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 		{
 			var Layout = application.getLayout()
 			,	config = application.getConfig('typeahead');
-			
+
 			// we add the methods to the layout
 			_.extend(Layout, SiteSearch);
 
@@ -301,7 +302,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 			,	'seeAll #site-search-container input': 'seeAllEventHandler'
 			,	'processed #site-search-container input': 'processAnchorTags'
 			});
-			
+
 			Model.mountToApp(application);
 			// We extend the previously defined typeaheadConfg
 			// with options from the configuration file
@@ -313,7 +314,7 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 			,	limit: config.maxResults
 			,	sort: config.sort
 			});
-			
+
 			Layout.on('afterRender', function ()
 			{
 				// after the layout has be rendered, we initialize the plugin

@@ -34,8 +34,6 @@ define('Facets.Router', ['Facets.Views', 'Facets.Helper', 'Facets.Model', 'Categ
 				return this.showCategoryPage(translator);
 			}
 
-				console.log('apiparam')
-				console.log(translator)
 			// Model
 			var model = new Model()
 			// and View
@@ -46,7 +44,6 @@ define('Facets.Router', ['Facets.Views', 'Facets.Helper', 'Facets.Model', 'Categ
 				,	model: model
 				});
 				if(translator.getOptionValue('keywords')){
-					console.log('haskeywords')
 					model.fetch({
 						data: translator.getApiParams()
 					,	killerId: this.application.killerId
@@ -58,7 +55,6 @@ define('Facets.Router', ['Facets.Views', 'Facets.Helper', 'Facets.Model', 'Categ
 					});
 				}
 				else{
-					console.log('no keywords')
 					model.fetch({
 						data: translator.getApiParams()
 					,	killerId: this.application.killerId

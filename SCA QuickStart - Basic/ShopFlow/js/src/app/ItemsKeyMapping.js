@@ -309,7 +309,6 @@
 			{
 				return false;
 			}
-
 			// Should we show the stock description?
 		,   _showStockDescription: function ()
 			{

@@ -66,12 +66,18 @@
 			<div class="accordion-group">
 					<div class="accordion-heading">
 						<a class="accordion-toggle" data-toggle="collapse" data-target="#quantity-option-<%=line.id%>" data-parent="#quantity-options-<%=line.id%>">
-						Fabric 	Quantity
+						Fabric 	Details
 						</a>
 					</div>
 					<div id="quantity-option-<%=line.id%>" class="accordion-body collapse" style="padding-left:50px;">
-						<div><b><%= !_.isEmpty(line.get('designOptions')) ? _("Fabric Quantity").translate() : _("Quantity").translate() %></b></div>
-						<p><%= fabric_quantity_option.displayvalue %></p>
+						<div>
+							<b><%= !_.isEmpty(line.get('designOptions')) ? _("Fabric Quantity").translate() : _("Quantity").translate() %>: <%= fabric_quantity_option.displayvalue %></b>
+						</div>
+						<% if(line.get('item').get('_outOfStockMessage') && line.get('item').get('_outOfStockMessage') != "Available"){ %>
+						<div>
+							<b> Fabric Status: <%= line.get('item').get('_outOfStockMessage') %></b>
+						</div>
+						<% } %>
 					</div>
 				</div>
 			</div>

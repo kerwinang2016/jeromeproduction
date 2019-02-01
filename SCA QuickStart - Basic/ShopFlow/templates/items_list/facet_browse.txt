@@ -68,7 +68,7 @@
 </div>
 	<div class="gradient-content">
     <div class="container">
-			<% if(isOrderPage) { %>
+
 			<div class="row-fluid" itemscope itemtype="http://schema.org/ItemList">
 				<h2>
 				<%- _('Fabric Selection').translate() %>
@@ -76,12 +76,13 @@
 				<div id="site-search-container" class="site-search-container pull-left">
 					<%= SC.macros.siteSearch('keywords', view) %>
 				</div>
-
+				<% if(isOrderPage) { %>
 				<div class="site-search-container pull-left">
 					<a style="margin-left:20px;height:32px;line-height:32px;" class="btn" href="CMT-Item?<%=client%>&product=<%=product%>">CMT ITEM</a>
 				</div>
+				<% } %>
 			</div>
-			<% } %>
+
   		<div class="row-fluid view-body" itemscope itemtype="http://schema.org/ItemList">
         <% if(!isOrderPage){ %>
 		      <nav class="span3">

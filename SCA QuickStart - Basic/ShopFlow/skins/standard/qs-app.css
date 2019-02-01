@@ -1,3 +1,11 @@
+/*
+Change History
+--------------
+Date: 10-01-2019
+Changed by:Salman Khan
+Change /Jira Ticket #: JHD-3
+Change Description: Make changes in css
+*/
 body {
   background: #ffffff;
   font-family: 'Raleway', sans-serif;
@@ -28,6 +36,7 @@ h1 {
   color: #A6A6A6;
   line-height: 31px;
 }
+
 h2 {
   font-family: 'Raleway', sans-serif;
   font-weight: 400;
@@ -430,11 +439,11 @@ span.btn-group .btn:hover {
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
-.navbar-inverse .nav > li.mini-cart-container > a:hover,
+
 .profile-menu .nav > li.mini-cart-container > a:hover,
-.navbar-inverse .nav > li.mini-cart-container > a:active,
+
 .profile-menu .nav > li.mini-cart-container > a:active,
-.navbar-inverse .nav > li.mini-cart-container > a:focus,
+
 .profile-menu .nav > li.mini-cart-container > a:focus {
   background: #cccccc !important;
   border: 1px solid #d9d9d9;
@@ -1920,6 +1929,11 @@ footer#site-footer .footer-cols ul form#email-sign-up-form input {
     width: 100%;
   }
 }
+
+.item-name { /*JHD-3*/
+  font-weight: bold;
+}
+
 .accordion-heading .accordion-toggle{font-weight: bold;}
 @media (min-width: 1200px){
 .row-fluid .span3-profile {
@@ -1939,4 +1953,55 @@ footer#site-footer .footer-cols ul form#email-sign-up-form input {
   .span3-profile.offset2.measurement{
       margin-left: 17%;
   }
+}
+.product-list-lastmodifieddate{
+display: inline; float: right; margin: 0 20px;
+}
+
+.label-inline{
+vertical-align:top;
+display:inline-block;
+margin-right:2px;
+}
+.mtop-10{
+margin-top:10px;
+}
+.row-fluid .span-w-10{
+width:10%;
+}
+.row-fluid .span-w-25{
+width:25%;
+}
+.row-fluid .span-w-21{
+width:21%;
+}
+.row-fluid .span-w-20-75{
+width:20.75%;
+}
+.product-list-items .row-fluid [class*="span"]{
+margin:0 1% 0 0;
+}
+.row-fluid .span-w-26{
+width:26%;
+}
+.fl-r{
+	float:right !important;
+}
+.margin-0{
+	margin:0 !important;
+}
+.accordion .accordion-toggle:after{
+	font-family: 'Arial';
+	content: "\25BC";
+	float: right;
+	color: grey;
+}
+.row-fluid .offset5p{
+margin-left:5%;
+}
+
+#item-list h2.item-cell-stockstatus span{
+  color: red;
+  font-size: 16px;
+  font-weight: bold;
 }
