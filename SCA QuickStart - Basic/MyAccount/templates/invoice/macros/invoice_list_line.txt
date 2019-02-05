@@ -69,7 +69,7 @@
 		</span></div>
 		<div class="span2 <%= is_link ? '' : 'offset-xs-1' %>"><span class="list-row-text">
 		<span class="visible-phone list-row-text-info"><%= _('Type:').translate() %> </span>
-		<span class="Type"><%= _('$(0)').translate(invoice.get('custbody_customer_name')?'Production':'Shipping') %></span>
+		<span class="Type"><%= _('$(0)').translate(invoice.get('custbody_customer_name')?'Production':'Other') %></span>
 		</span></div>
 		<% if (options.navigateDetails) { %>
 			<div class="visible-phone span1 pull-right text-right">

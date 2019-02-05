@@ -1,5 +1,13 @@
 // Cart.Views.js
 // -------------
+/*
+Change History
+--------------
+Date: 31-01-2019
+Changed by:Salman Khan
+Change /Jira Ticket #: JHD-8
+Change: Tailor can't enter Date Needed that is earlier than the expected delivery date
+*/
 // Cart and Cart Confirmation views
 define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model','Session','ProductList.Model', 'Client.Collection'], function (ErrorManagement, FitProfileModel, ItemDetailsModel,Session,ProductListModel, ClientCollection)
 {
@@ -101,7 +109,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 					var doJSON = JSON.parse(designoption.value);
 					//Jacket
 					var lfab = _.find(doJSON,function(b){return b.name == 'li-b-j';});
-					if(lfab && r.test(jQuery(lfab.value)){
+					if(lfab && r.test(jQuery(lfab.value))){
 						var found = _.find(self.liningfabrics,function(d){
 							return d.custrecord_flf_ftcode == lfab.value;
 							});
@@ -113,7 +121,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 						}
 					}
 					var lfab = _.find(doJSON,function(b){return b.name == 'T010227';});
-					if(lfab && r.test(jQuery(lfab.value)){
+					if(lfab && r.test(jQuery(lfab.value))){
 						var found = _.find(self.liningfabrics,function(d){
 							return d.custrecord_flf_ftcode == lfab.value;
 							});
@@ -130,7 +138,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				if(designoption){
 					var doJSON = JSON.parse(designoption.value);
 					var lfab = _.find(doJSON,function(b){return b.name == 'li-bl-w';});
-					if(lfab && r.test(jQuery(lfab.value)){
+					if(lfab && r.test(jQuery(lfab.value))){
 						var found = _.find(self.liningfabrics,function(d){
 							return d.custrecord_flf_ftcode == lfab.value;
 							});
@@ -147,7 +155,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				if(designoption){
 					var doJSON = JSON.parse(designoption.value);
 					var lfab = _.find(doJSON,function(b){return b.name == 'li-bl-o';});
-					if(lfab && r.test(jQuery(lfab.value)){
+					if(lfab && r.test(jQuery(lfab.value))){
 						var found = _.find(self.liningfabrics,function(d){
 							return d.custrecord_flf_ftcode == lfab.value;
 							});
@@ -159,7 +167,7 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 						}
 					}
 					var lfab = _.find(doJSON,function(b){return b.name == 'T010415';});
-					if(lfab && r.test(jQuery(lfab.value)){
+					if(lfab && r.test(jQuery(lfab.value))){
 						var found = _.find(self.liningfabrics,function(d){
 							return d.custrecord_flf_ftcode == lfab.value;
 							});
@@ -195,6 +203,17 @@ define('Cart.Views', ['ErrorManagement', 'FitProfile.Model', 'ItemDetails.Model'
 				var itemid = line.get('item').id;
 				var item = line.get('item');
 
+				//JHD-8 Start
+				var tempDateExpected = jQuery('#expected-date-' + line.get('internalid')).text();
+				var tempDateNeeded = jQuery('#custcol_avt_date_needed_' + line.get('internalid')).val();
+				var dateExpected = new Date(tempDateExpected);
+				var dateNeeded = new Date(tempDateNeeded);
+				if (dateNeeded < dateExpected) {
+					console.log('dateNeeded : dateExpected' + dateNeeded + ' : ' + dateExpected);
+					hasError = true;
+					jQuery("#" + line.get('internalid') + " .item .alert-placeholder").append(SC.macros.message('You cannot process an item where the date needed is earlier than the expected delivery date', 'error', true));
+				}
+				//JHD-8 End
 
 			    //NOTE: Attributes to compare are _sku and _name, Display error message if different code inside the ()
 				var orderItemCode = item.get('_name');
