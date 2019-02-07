@@ -358,18 +358,20 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         if ($el.find(":selected").text() != "Select a profile") {
                             measureList = currentFitProfile.profile_collection.models;
                             mid = "";
+                            blockvalue = "";
                             _.each(measureList, function (lineItem) {
                                 if (lineItem.get('internalid') == $el.find(":selected").val()) {
                                     measureType = lineItem.get("custrecord_fp_measure_type");
-                                    mid = lineItem.get('internalid')
+                                    mid = lineItem.get('internalid');
+                                    blockvalue = lineItem.get('custrecord_fp_block_value');
                                 }
                             });
                             fitProfileSummary.push({
                                 'name': $el.attr('data-type'),
                                 'value': $el.find(":selected").text(),
                                 'type': measureType,
-                                'id': mid
-
+                                'id': mid,
+                                'blockvalue': blockvalue
                             });
                         }
                     });

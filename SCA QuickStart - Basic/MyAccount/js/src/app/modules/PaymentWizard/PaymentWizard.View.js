@@ -55,17 +55,19 @@ define('PaymentWizard.View', ['Wizard.View'], function (WizardView)
 			    data: data,
 			    dataType: 'json',
 			    success: function (d) {
-						if(d.result == "ERROR"){}
-						else{
+						if(d.result == "ERROR"){
+						}else{
 						Checkout.configure({
 								merchant: 'JERCLOMCC201',
-								session:{id:d.session.id},
+								session:{
+									id: d.session.id
+								},
 								order: {
 										amount: self.model.get('payment'),
 										currency: SC.ENVIRONMENT.currentCurrency.code,
 										description: 'Payment for Invoices',
 									 	id: orderid,
-										items
+										item: items
 								},
 								interaction: {
 										merchant: {
@@ -81,7 +83,7 @@ define('PaymentWizard.View', ['Wizard.View'], function (WizardView)
 						});
 						Checkout.showLightbox();
 					}
-			    }
+			  }
 			});
 		}
     ,	showContent: function()

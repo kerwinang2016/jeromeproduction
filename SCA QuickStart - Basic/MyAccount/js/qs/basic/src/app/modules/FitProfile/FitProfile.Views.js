@@ -87,7 +87,9 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'ClientOrderHistory
 			jQuery.get(_.getAbsoluteUrl('services/influences.ss')).done(function (data) {
 				self.influences = data;
 			});
-
+			jQuery.get(_.getAbsoluteUrl('services/bodyBlockMeasurements.ss')).done(function (data) {
+				window.bodyBlockMeasurements = data;
+			});
 
 		}
 
@@ -1056,32 +1058,73 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'ClientOrderHistory
 				jQuery(this).trigger('change');
 			});
 		}
+		, lookupBlockValue: function(){
 
+			if(jQuery('[name="custrecord_fp_measure_type"]').val() == 'Block'){
+				return jQuery('[name="block"]').val();
+			}else{
+				//Should be a body
+				//3:Jacket, 4:Trouser, 6:Waistcoat, 7:Shirt, 8:Overcoat
+				var ptype = jQuery('[name="custrecord_fp_product_type"]').val(), result;
+				switch(ptype){
+					case 'Jacket':
+					case 'Shirt':
+					case 'Overcoat':
+						var partvalue = 0;
+						var partmeasure = jQuery('[id*="finish_Waist"]').html(), partvalue = 0;
+
+						if(partmeasure){
+						partvalue = jQuery('[name="units"]').val() == 'CM'?partmeasure:parseFloat(partmeasure)*2.54;
+						partvalue = parseFloat(partvalue)/2
+						var filtered = _.filter(window.bodyBlockMeasurements,function(data){
+						return parseFloat(data.custrecord_bbm_bodymeasurement) >= parseFloat(partvalue) && data.custrecord_bbm_producttypetext == ptype;
+						})
+						if(filtered && filtered.length>0)
+						result = filtered.reduce(function(prev, curr){
+				        return parseFloat(prev['custrecord_bbm_bodymeasurement']) < parseFloat(curr['custrecord_bbm_bodymeasurement']) ? prev : curr;
+				    });
+						}
+						break;
+					case 'Waistcoat':
+						var partvalue = 0;
+						var partmeasure = jQuery('[id*="finish_waist"]').html(), partvalue = 0;
+
+						if(partmeasure){
+						partvalue = jQuery('[name="units"]').val() == 'CM'?partmeasure:parseFloat(partmeasure)*2.54;
+						partvalue = parseFloat(partvalue)/2
+						var filtered = _.filter(window.bodyBlockMeasurements,function(data){
+						return parseFloat(data.custrecord_bbm_bodymeasurement) >= parseFloat(partvalue) && data.custrecord_bbm_producttypetext == ptype;
+						})
+						if(filtered && filtered.length>0)
+						result = filtered.reduce(function(prev, curr){
+								return parseFloat(prev['custrecord_bbm_bodymeasurement']) < parseFloat(curr['custrecord_bbm_bodymeasurement']) ? prev : curr;
+						});
+					}
+						break;
+					case 'Trouser':
+						var partvalue = 0;
+						var partmeasure = jQuery('[id*="finish_seat"]').html(), partvalue = 0;
+						if(partmeasure){
+						partvalue = jQuery('[name="units"]').val() == 'CM'?partmeasure:parseFloat(partmeasure)*2.54;
+						partvalue = parseFloat(partvalue)/2
+						var filtered = _.filter(window.bodyBlockMeasurements,function(data){
+						return parseFloat(data.custrecord_bbm_bodymeasurement) >= parseFloat(partvalue) && data.custrecord_bbm_producttypetext == ptype;
+						})
+						if(filtered && filtered.length>0)
+						result = filtered.reduce(function(prev, curr){
+								return parseFloat(prev['custrecord_bbm_bodymeasurement']) < parseFloat(curr['custrecord_bbm_bodymeasurement']) ? prev : curr;
+						});
+						}
+						break;
+					default:
+				}
+				return result?result.custrecord_bbm_block:0;
+			}
+		}
 
 		, submitProfile: function (e) {
 			e.preventDefault();
 			var finishMeasurements = jQuery('#profile-form span[id*="finish_"]');
-			// if(jQuery('[id*="custrecord_fp_product_type"]').val() == 'Jacket'){
-			// 	if(jQuery('#units').val() == 'CM'){
-			// 		if(parseFloat(jQuery('[id*="finish_Cuff"]').html()) < 19 && parseFloat(jQuery('[id*="finish_Cuff"]').html()) != 0) {alert('Cuff measurement not valid'); return;}
-			// 		if(parseFloat(jQuery('[id*="finish_Front-Lt"]').html()) < 60 && parseFloat(jQuery('[id*="finish_Front-Lt"]').html()) != 0){ alert('Front Length measurement not valid');return;}
-			// 		if(parseFloat(jQuery('[id*="finish_Top-Button"]').html()) < 25 && parseFloat(jQuery('[id*="finish_Top-Button"]').html()) != 0){ alert('Top Button measurement not valid');return;}
-			// 	}
-			// 	else{
-			// 		if(parseFloat(jQuery('[id*="finish_Cuff"]').html()) < 7.5 && parseFloat(jQuery('[id*="finish_Cuff"]').html()) != 0) {alert('Cuff measurement not valid'); return;}
-			// 		if(parseFloat(jQuery('[id*="finish_Front-Lt"]').html()) < 23.6 && parseFloat(jQuery('[id*="finish_Front-Lt"]').html()) != 0){ alert('Front Length measurement not valid');return;}
-			// 		if(parseFloat(jQuery('[id*="finish_Top-Button"]').html()) < 9.8 && parseFloat(jQuery('[id*="finish_Top-Button"]').html()) != 0){ alert('Top Button measurement not valid');return;}
-			// 	}
-			// }else if(jQuery('[id*="custrecord_fp_product_type"]').val() == 'Waistcoat'){
-			// 	if(jQuery('#units').val() == 'CM'){
-			// 		if(parseFloat(jQuery('[id*="finish_front-lt"]').html()) < 48 && parseFloat(jQuery('[id*="finish_front-lt"]').html()) != 0) {alert('Front Length measurement not valid'); return;}
-			// 		if(parseFloat(jQuery('[id*="finish_top-button"]').html()) < 20 && parseFloat(jQuery('[id*="finish_top-button"]').html()) != 0){ alert('Top Button measurement not valid');return;}
-			// 	}
-			// 	else{
-			// 		if(parseFloat(jQuery('[id*="finish_front-lt"]').html()) < 18.9 && parseFloat(jQuery('[id*="finish_front-lt"]').html()) != 0) {alert('Front Length measurement not valid'); return;}
-			// 		if(parseFloat(jQuery('[id*="finish_top-button"]').html()) < 7.9 && parseFloat(jQuery('[id*="finish_top-button"]').html()) != 0){ alert('Top Button measurement not valid');return;}
-			// 	}
-			// }
 			var hasErrors = false;
 			for (var i = 0; i < finishMeasurements.length; i++) {
 				if (finishMeasurements[i].attributes['min-value'] && finishMeasurements[i].attributes['max-value']) {
@@ -1215,6 +1258,10 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'ClientOrderHistory
 
 
 				var param = new Object();
+				var bvalue = this.lookupBlockValue();
+				if(bvalue){
+					dataToSend.push({"name":"custrecord_fp_block_value","value":bvalue,"type":"field","sublist":""});
+				}
 				dataToSend.push({ "name": "custrecord_fp_measure_value", "value": JSON.stringify(measurementValues), "type": "field", "sublist": "" })
 				param.type = self.fitprofile.get("current_profile") ? "update_profile" : "create_profile";
 				if (self.fitprofile.get("current_profile")) {
