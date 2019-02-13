@@ -491,7 +491,6 @@ define('FitProFile.Views', ['Client.Model', 'Profile.Model', 'Profile.Collection
 			_.each(blockfields,function(blockfield){
 				if(blockfield.value != '0'){
 					var in_items = _.filter(self.options.layout.currentView.influences,function(c){
-
 						return c.custrecord_in_producttypetext== producttype && c.custrecord_in_bodyparttext == blockfield.dataset.field;
 					});
 

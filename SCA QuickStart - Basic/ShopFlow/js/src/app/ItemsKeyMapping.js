@@ -84,6 +84,7 @@
 
 				var clientId = SC._applications.Shopping.getLayout().currentView.client;
 				var productList = SC._applications.Shopping.getLayout().currentView.productList;
+				var itemList = SC._applications.Shopping.getLayout().currentView.itemList;
 				// defaultcategory_detail attribute of the item is not consistent with the facets values,
 				// so we are going to use the facet values instead
 				var categories = _.findWhere(item.get('facets'), {id: 'category'});
@@ -99,7 +100,9 @@
 				var	walkCategories = function walkCategories(category)
 					{
 						var hasProductList = (!_.isNullOrEmpty(productList)) ? true : false;
-						var urlParamProductList = (hasProductList) ? "|" + productList : ''
+						var urlParamProductList = (hasProductList) ? "|" + productList : '';
+						var hasItemList = (!_.isNullOrEmpty(itemList))? true : false;
+						urlParamProductList += (hasItemList) ? "|" + itemList : "";
 						var idx = 0;
 						breadcrumb.push({
 							//href: '/' + category.id.replace("Home/", "") + "?client=" + clientId + "|" + productList

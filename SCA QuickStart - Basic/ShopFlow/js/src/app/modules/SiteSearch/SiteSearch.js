@@ -101,7 +101,6 @@ define('SiteSearch', ['Facets.Translator', 'TypeAhead.Model', 'Session'], functi
 					// We navigate to the default search url passing the keywords
 					//Backbone.history.navigate(search_url + "?client=" + Backbone.history.fragment.split("?")[1].split("=")[1].split("&")[0] + "&keywords=" + keywords + currentSearchOptions(), {trigger: true});
 					if(rawFragment.indexOf("?") > -1){
-						console.log(rawFragment)
 						Backbone.history.navigate(rawFragment + "&keywords=" + keywords + currentSearchOptions(), {trigger: true});
 					} else {
 						Backbone.history.navigate(rawFragment + "?keywords=" + keywords + currentSearchOptions(), {trigger: true});

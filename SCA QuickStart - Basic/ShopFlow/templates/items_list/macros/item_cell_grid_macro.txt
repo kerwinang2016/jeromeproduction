@@ -45,8 +45,20 @@
 		</h2>
 		<% if(item.get('outofstockmessage') == "Low Stock" || item.get('outofstockmessage') == "Out of Stock" ){ %>
 		<h2 class="item-cell-stockstatus">
-				<span itemprop="outofstockmessage">
+				<span itemprop="outofstockmessage" class="outofstockmessage">
 					<%= item.get('outofstockmessage') %>
+				</span>
+		</h2>
+		<% }else if(item.get('custitem_ftorderstock') && parseFloat(item.get('custitem_ftorderstock'))>0){ %>
+		<h2 class="item-cell-stockstatus">
+				<span itemprop="instockmessage" class="instockmessage">
+					In stock(m): <%= item.get('custitem_ftorderstock') %>
+				</span>
+		</h2>
+		<% }else{ %>
+		<h2 class="item-cell-stockstatus">
+				<span itemprop="instockmessage" class="checkstockmessage">
+					Check stock
 				</span>
 		</h2>
 		<% } %>
@@ -105,8 +117,14 @@
 			</div>
 			<% if(item.get('outofstockmessage') == "Low Stock" || item.get('outofstockmessage') == "Out of Stock" ){ %>
 			<h2 class="item-cell-stockstatus">
-					<span itemprop="outofstockmessage">
+					<span itemprop="outofstockmessage" class="outofstockmessage">
 						<%= item.get('outofstockmessage') %>
+					</span>
+			</h2>
+			<% }else if(item.get('custitem_ftorderstock') && parseFloat(item.get('custitem_ftorderstock'))>0){ %>
+			<h2 class="item-cell-stockstatus">
+					<span itemprop="instockmessage" class="instockmessage">
+						Available stock(m): <%= item.get('custitem_ftorderstock') %>
 					</span>
 			</h2>
 			<% } %>

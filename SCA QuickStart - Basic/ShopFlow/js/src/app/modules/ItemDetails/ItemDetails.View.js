@@ -99,6 +99,7 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
               if(this.getClientId(historyFragment)){
                 this.client = this.getClientId(historyFragment).split('|')[0]// || historyFragment.split("?")[1].split("client=")[1].split("&")[0] || null;
                 this.productList = this.getClientId(historyFragment).split('|')[1];
+                this.itemList = this.getClientId(historyFragment).split('|')[2];
               }
             }
 
@@ -484,6 +485,25 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         self.showError(_('Quantity should be greater than 3.4 for 3 Piece Suit').translate());
                         status = false;
                     }
+                    var measureType = "";
+                    //Check the fitprofile if they are all block or body
+                    jQuery(".profiles-options").each(function (index) {
+                        var $el = jQuery(this);
+                        if ($el.find(":selected").text() != "Select a profile") {
+                            var measureList = window.currentFitProfile.profile_collection.models;
+
+                            _.each(measureList, function (lineItem) {
+                                if (lineItem.get('internalid') == $el.find(":selected").val()) {
+                                    if(!measureType){
+                                      measureType = lineItem.get("custrecord_fp_measure_type");
+                                    }else if(measureType && measureType != lineItem.get("custrecord_fp_measure_type")){
+                                      self.showError(_('Measurement Type should be the same for all products').translate());
+                                      status = false;
+                                    }
+                                }
+                            });
+                        }
+                    });
                     break;
                 case "Jacket":
                     if (parseFloat(jQuery('[name="custcol_fabric_quantity"]').val()) < 2) {
@@ -520,6 +540,25 @@ define('ItemDetails.View', ['FitProFile.Views', 'FitProfile.Model', 'Facets.Tran
                         self.showError(_('Quantity should be greater than 3 for 2 Piece Suit').translate());
                         status = false;
                     }
+                    var measureType = "";
+                    //Check the fitprofile if they are all block or body
+                    jQuery(".profiles-options").each(function (index) {
+                        var $el = jQuery(this);
+                        if ($el.find(":selected").text() != "Select a profile") {
+                            var measureList = window.currentFitProfile.profile_collection.models;
+
+                            _.each(measureList, function (lineItem) {
+                                if (lineItem.get('internalid') == $el.find(":selected").val()) {
+                                    if(!measureType){
+                                      measureType = lineItem.get("custrecord_fp_measure_type");
+                                    }else if(measureType && measureType != lineItem.get("custrecord_fp_measure_type")){
+                                      self.showError(_('Measurement Type should be the same for all products').translate());
+                                      status = false;
+                                    }
+                                }
+                            });
+                        }
+                    });
                     break;
                 default:
             }

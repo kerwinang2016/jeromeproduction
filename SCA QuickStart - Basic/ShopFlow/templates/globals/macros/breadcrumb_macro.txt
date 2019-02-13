@@ -1,5 +1,5 @@
 <% registerMacro('breadcrumb', function(pages) {
-	
+
 	var clientid = "", clientname = "";
 	if(location.search.split('?client=')[1])
 	clientid = location.search.split('?client=')[1].split('&')[0].split('?')[0];
